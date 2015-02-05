@@ -1,0 +1,59 @@
+<section class="chapter" data-original-filename="chapter1.asciidoc" id="_quick_contact_list"><div class="titlepage"><div><div><h1 class="title">Chapter 1. Quick Contact List</h1></div></div></div>
+<p id="at_oreilly_yo">At O’Reilly, you’ll have several people who are available to work with you on your project. Your first line of questioning should be your editor and editorial assistant, but please feel free to reach out directly to anyone listed below.</p>
+<div class="sect1" data-original-filename="chapter1.asciidoc" id="_editorial_or_general_questions">
+<div class="titlepage"><div><div><h2 class="title">Editorial or General Questions</h2></div></div></div>
+<p id="please_contact_">Please contact your editor, or contact the Editorial Assistants at <code class="email">&lt;<a class="email" href="mailto:edassistant@oreilly.com">edassistant@oreilly.com</a>&gt;</code></p>
+</div>
+<div class="sect1" data-original-filename="chapter1.asciidoc" id="_production_questions">
+<div class="titlepage"><div><div><h2 class="title">Production Questions</h2></div></div></div>
+<p id="general_help_da">General help
+Dan Fauxsmith, Production Manager
+<code class="email">&lt;<a class="email" href="mailto:dfauxsmith@oreilly.com">dfauxsmith@oreilly.com</a>&gt;</code>
+617-499-7547</p>
+</div>
+<div class="sect1" data-original-filename="chapter1.asciidoc" id="_illustrations_support">
+<div class="titlepage"><div><div><h2 class="title">Illustrations support</h2></div></div></div>
+<p id="technical_illus">Technical Illustrations Team
+<code class="email">&lt;<a class="email" href="mailto:dcps-illustrations@oreilly.com">dcps-illustrations@oreilly.com</a>&gt;</code></p>
+<p id="authoring_tools">Authoring tools and templates, including DocBook and MS Word
+Contact the O’Reilly tools team at <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>.</p>
+</div>
+<div class="sect1" data-original-filename="chapter1.asciidoc" id="_marketing_pr_press_questions">
+<div class="titlepage"><div><div><h2 class="title">Marketing/PR Press Questions</h2></div></div></div>
+<p id="sara_peyton_pu">Sara Peyton, Public Relations Manager
+<code class="email">&lt;<a class="email" href="mailto:peyton@oreilly.com">peyton@oreilly.com</a>&gt;</code> or <code class="email">&lt;<a class="email" href="mailto:press@oreilly.com">press@oreilly.com</a>&gt;</code>
+707-827-7118</p>
+</div></section><section class="preface" data-original-filename="preface.asciidoc" id="_congratulations_and_welcome_from_tim_o_8217_reilly"><div class="titlepage"><div><div><h1 class="title">Congratulations and Welcome from Tim O’Reilly</h1></div></div></div>
+<p id="congratulations">Congratulations on signing with us as an O’Reilly author. You have a lot of work ahead of you, but if you make it all the way to the end, you’ll be in great company. We’re committed to supporting you to create something that lives up to the standard set by David Pogue, Kathy Sierra, Scott Berkun, David Flanagan, David McFarland, and scores of other successful O’Reilly authors.</p>
+<p id="at_oreilly_ou">At O’Reilly, our mission is to spread the knowledge of innovators. To do that, we work with authors whose knowledge and passion shine through. Our goal is to publish information that fills a real need and has enough of an audience to be profitable, so when we commit to launching your product, we believe it can succeed.</p>
+<p id="books_are_a_gre">Books are a great vehicle for transferring knowledge, and we expect them to be around for a good while. But publishing is evolving, and O’Reilly is committed to digital publishing in all its forms (we also produce the TOC Conference to help move the industry forward). Increasingly, we’re offering more options for our authors, including ebooks, mobile apps, instructional videos, online training, webcasts, and speaking opportunities. These allow you to get your message out through many channels and to keep it current as the technology landscape changes.</p>
+<p id="essentially_yo">Essentially, you are telling a story; your task is to present it in an engaging way. When I wrote my very first book, Frank Herbert (a biography of the science fiction writer, now online at <a class="ulink" href="http://tim.oreilly.com/scifi/herbert" target="_top">http://tim.oreilly.com/scifi/herbert</a>), my first draft was so dense that it was unreadable to anyone who was not already deeply into Herbert and his Dune books. I tried to say in 20 pages what ended up being 200. My editor tore it to shreds, and I was devastated. I went back to flesh out the material, and give it room to breathe and flow. The finished book was immeasurably improved, and I was on my way as an author.</p>
+<p id="from_that_first">From that first rather painful experience, I learned that no author writes a book—or completes any creative work—alone. O’Reilly editors are more involved in shaping our products than is typical. They are a tremendous resource, and I urge you to work closely with your editor. Our design, production, marketing, sales, PR, and digital publishing teams will provide guidance and inspiration for conveying your story through the interwoven media that constitute 21st century publishing.</p>
+<p id="best_of_luck_w">Best of luck. We’re looking forward to working with you.</p>
+<p id="regards">Regards,</p>
+<p id="tim_oreilly"><span class="emphasis"><em>Tim O’Reilly</em></span></p></section><section class="chapter" data-original-filename="chapter1.asciidoc" id="_quick_contact_list"><div class="titlepage"><div><div><h1 class="title">Chapter 1. Quick Contact List</h1></div></div></div>
+<p id="at_oreilly_yo">At O’Reilly, you’ll have several people who are available to work with you on your project. Your first line of questioning should be your editor and editorial assistant, but please feel free to reach out directly to anyone listed below.</p>
+<div class="sect1" data-original-filename="chapter1.asciidoc" id="_editorial_or_general_questions">
+<div class="titlepage"><div><div><h2 class="title">Editorial or General Questions</h2></div></div></div>
+<p id="please_contact_">Please contact your editor, or contact the Editorial Assistants at <code class="email">&lt;<a class="email" href="mailto:edassistant@oreilly.com">edassistant@oreilly.com</a>&gt;</code></p>
+</div>
+<div class="sect1" data-original-filename="chapter1.asciidoc" id="_production_questions">
+<div class="titlepage"><div><div><h2 class="title">Production Questions</h2></div></div></div>
+<p id="general_help_da">General help
+Dan Fauxsmith, Production Manager
+<code class="email">&lt;<a class="email" href="mailto:dfauxsmith@oreilly.com">dfauxsmith@oreilly.com</a>&gt;</code>
+617-499-7547</p>
+</div>
+<div class="sect1" data-original-filename="chapter1.asciidoc" id="_illustrations_support">
+<div class="titlepage"><div><div><h2 class="title">Illustrations support</h2></div></div></div>
+<p id="technical_illus">Technical Illustrations Team
+<code class="email">&lt;<a class="email" href="mailto:dcps-illustrations@oreilly.com">dcps-illustrations@oreilly.com</a>&gt;</code></p>
+<p id="authoring_tools">Authoring tools and templates, including DocBook and MS Word
+Contact the O’Reilly tools team at <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>.</p>
+</div>
+<div class="sect1" data-original-filename="chapter1.asciidoc" id="_marketing_pr_press_questions">
+<div class="titlepage"><div><div><h2 class="title">Marketing/PR Press Questions</h2></div></div></div>
+<p id="sara_peyton_pu">Sara Peyton, Public Relations Manager
+<code class="email">&lt;<a class="email" href="mailto:peyton@oreilly.com">peyton@oreilly.com</a>&gt;</code> or <code class="email">&lt;<a class="email" href="mailto:press@oreilly.com">press@oreilly.com</a>&gt;</code>
+707-827-7118</p>
+</div></section>

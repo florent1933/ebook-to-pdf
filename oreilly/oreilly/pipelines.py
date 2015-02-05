@@ -12,6 +12,6 @@ class OreillyPipeline(object):
     		raise DropItem("Missing author or title in %s" % item)
 
     	with open( item['title']+ '.txt', 'a') as f:
-  			f.write( '# Title : ' +item['title']+ "\n# Author : " + item['author'] + "\n\n" +item['content'])
+  			f.write( item['content'])
 
         return item

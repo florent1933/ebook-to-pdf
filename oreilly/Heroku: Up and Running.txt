@@ -1,0 +1,643 @@
+<section class="chapter" data-original-filename="2_how_heroku_works.asciidoc" id="chapid_2"><div class="titlepage"><div><div><h1 class="title">Chapter 2. How Heroku Works</h1></div></div></div>
+<p id="at_the_time_of_">At the time of writing, Heroku has had over three million separate applications deployed on their infrastructure and this number grows day by day.  Running a large number of applications day to day requires a substantially different approach to running just a handful, and this is one the reasons that the Heroku architecture is markedly different to what you or I might develop if we were setting up our own environment on our own hardware for a single application.  Heroku’s task is to support the running of all of these applications at the same time, managing the deployments that users are requesting, as well as scaling application’s needs.</p>
+<p id="in_order_to_ach">In order to achieve this, the Heroku platform is broken up into several key segments, most importantly:</p>
+<div class="itemizedlist" id="routers_which_e_id1"><ul class="itemizedlist">
+<li class="listitem">
+<span class="emphasis"><em>Routers</em></span> which ensure that your application receives the requests from users on the web.
+</li>
+<li class="listitem">
+<span class="emphasis"><em>Dynos</em></span> where your application code actually runs day to day.
+</li>
+</ul></div>
+<p id="aside_from_thes">Aside from these there are a number of extra components such as the <span class="emphasis"><em>Logplex</em></span> and the various add-ons and services available to your applications.</p>
+<div class="figure" id="FIG1_id3">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 480; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 480; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000000018/figs/how_heroku_works/overall_architecture.png" alt="Heroku Architecture"></td></tr></table></div></div>
+<div class="figure-title">Figure 2-1. Overall Architecture of the Heroku platform</div>
+</div>
+<p id="so_lets_walk_">So, let’s walk through all of these parts in turn.</p>
+<div class="sect1" data-original-filename="2_how_heroku_works.asciidoc" id="_what_is_a_emphasis_dyno_emphasis">
+<div class="titlepage"><div><div><h2 class="title">What is a <span class="emphasis"><em>Dyno</em></span>?</h2></div></div></div>
+<p id="when_you_deploy">When you deploy an application to Heroku, it is run in a container called a <span class="emphasis"><em>dyno</em></span>. The more dynos your app has, the more running instances of your application are available to take requests. Each <span class="emphasis"><em>dyno</em></span> is completely isolated from other dynos. Dynos can be added for additional capacity and for fault tolerance since one dyno going down will not affect other dynos. At the time of writing, each <span class="emphasis"><em>dyno</em></span> represents 512MB of physical RAM.</p>
+<p id="applications_ar">Applications are billed by the dyno/hour prorated to the second, and every application is credited with 750 dyno/hours per month. The caveat here is that Heroku idles any applications running a single dyno when not in use to free resources for other applications.</p>
+<p id="so_a_dyno_is_l">So, a <span class="emphasis"><em>dyno</em></span> is like a small virtual computer, but if your application is split up over multiple compute units, how does Heroku know which dynos to send requests to?</p>
+</div>
+<div class="sect1" data-original-filename="2_how_heroku_works.asciidoc" id="_http_routing">
+<div class="titlepage"><div><div><h2 class="title">HTTP Routing</h2></div></div></div>
+<p id="when_a_user_typ">When a user types your application’s URL into their browser, or tries to make a request to it via an API (and so on), there needs to be a way to connect the user with your application running somewhere deep down within the Heroku platform.  There are thousands of applications running on Heroku, and maintaining a persistent location for an application within the platform is an approach fraught with danger.</p>
+<p id="the_heroku_rout">The Heroku router is a piece of software (written using Erlang, called Hermes) which acts as a gateway between your users and the dynos that are running your code.  In its memory it is aware of every single application currently deployed to the platform and the external URLs that each of these applications should respond to (both the *.herokuapp.com URLs, legacy *.heroku.com URLs and any custom domains that you may have added).  Lastly, it stores the current location of your application on the platform at the current time.</p>
+<p id="therefore_the_">Therefore, the routers have a lot of keep track of. So what exactly does it look like when a request comes in from a user on a web browser?</p>
+<div class="sect2" id="_request_life_cycle">
+<div class="titlepage"><div><div><h3 class="title">Request Life-cycle</h3></div></div></div>
+<p id="so_when_a_user">So, when a user wants to visit your site, he types the address into the bar and hits enter. Then a DNS query is made to your provider. They see you’ve pointed your address at Heroku either using an A record, or a CNAME. With this information the request is sent to the Heroku routers.</p>
+<p id="every_time_a_ro">Every time a router receives a request, it carries out a look up on the URL being requested and determines the location of your application code.  Once found, it fires the request at your code and awaits a response.  This is where your application steps in and handles the request, doing whatever you programmed it to do.</p>
+<p id="once_your_code_">Once your code has completed processing the request and a response has been returned the router will pass the response back to the end user.  The best part about this is that the routers are completely transparent to the outside world.</p>
+<p id="now_that_you_kn_id1">Now that you know what happens when a request goes through, what happens if something hangs in your application? Does Heroku just keep thousands of dead requests alive?</p>
+</div>
+<div class="sect2" id="_long_running_requests">
+<div class="titlepage"><div><div><h3 class="title">Long-Running Requests</h3></div></div></div>
+<p id="as_a_way_of_pro">As a way of protecting the user from long running requests, the router processing the request will only wait for 30 seconds before returning a timeout error to the end user.  The error returned in these instances shows in your application logs as an H12.  Note though that this only counts the first byte returned. Once that first byte of response is returned, the router will then set a 55 second rolling window before an error is returned (in these instances the error code changes to an H15).  This, therefore, means that you are effectively able to stream responses back to the user without worrying about hitting this timeout error.</p>
+<p id="lets_say_were">Let’s say we’re sending a valid request that our server should be able to respond to, we know that our code lives on a dyno but where exactly does a dyno live?</p>
+</div>
+</div>
+<div class="sect1" data-original-filename="2_how_heroku_works.asciidoc" id="_the_dyno_manager_and_dynos">
+<div class="titlepage"><div><div><h2 class="title">The Dyno Manager and Dynos</h2></div></div></div>
+<p id="in_simple_terms">In simple terms, a dyno is an isolated, virtualized Unix container that provides the environment required to run an application.</p>
+<p id="each_dyno_runni">Each dyno running on the platform will be running different application code. For instance, if it were a Ruby on Rails application, one dyno could be running an instance of Unicorn (<a class="ulink" href="http://unicorn.bogomips.org/" target="_top">http://unicorn.bogomips.org/</a>), whereas if you were a Java application you might see Tomcat (<a class="ulink" href="http://tomcat.apache.org/" target="_top">http://tomcat.apache.org/</a>) or something similar.  Across this array of dynos you may have potentially thousands of applications, with each dyno running something different. Some applications running at a higher scale will be running on more than one of those dynos, some will be only running on one or two, but the key thing to remember here is that a single application could be represented <span class="strong"><strong>anywhere</strong></span> within this system.</p>
+<div class="figure" id="FIG2">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 480; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 480; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000000018/figs/how_heroku_works/dyno_manifold.png" alt="The Dyno Manager"></td></tr></table></div></div>
+<div class="figure-title">Figure 2-2. The Dyno Manger</div>
+</div>
+<p id="before_your_app">Before your application code is paired with a dyno, the dynos are all identical. This uniformity allows Heroku to easily manage the thousands of applications on the platform. When you send your code to Heroku it is compiled into a format known internally as a "slug" that can then be quickly run on any of the available dynos. Since Heroku manages such a staggering array of dynos it is inevitable that performance of an underlying server may slow to a halt or a hardware failure will occur. Luckily when this is detected dynos will be automatically stopped and restarted.</p>
+<p id="while__ho">While 10,000 hours of up-time on a hard-drive might sound like a long time, if you’re running 10,000 hard-drives thats one failure per hour.</p>
+<p id="because_of_this">Because of this Heroku advocates building stateless web apps. As an additional measure towards stability, each dyno is restarted once every 24 hours. All of this requires no interaction on your part leaving you to focus on developing your app code.</p>
+<div class="sect2" id="_configuration">
+<div class="titlepage"><div><div><h3 class="title">Configuration</h3></div></div></div>
+<p id="a_given_codebas">A given codebase may have numerous deployments: a production site, a staging site, and any number of local environments maintained by each developer. An open source app may have hundreds or thousands of deployments.</p>
+<p id="although_all_ru">Although all running the same code, each of these deploys have environment-specific configurations. One example would be credentials for an external service, such as Amazon S3. Developers may share one S3 account, while the staging site and production sites each have their own keys.</p>
+<p id="the_traditional">The traditional approach for handling such config vars is to put them under source - in a properties file of some sort. This is an error-prone process, and is especially complicated for open source apps, which often have to maintain separate (and private) branches with app-specific configurations.</p>
+<p id="a_better_soluti">A better solution is to use environment variables, and keep the keys out of the code. On a traditional host or working locally, you can set environment vars in your <code class="literal">bashrc</code>. On Heroku, you use config vars.</p>
+<pre class="screen" id="heroku_config">$ heroku config:set GITHUB_USERNAME=joesmith
+Adding config vars and restarting myapp... done, v12
+GITHUB_USERNAME: joesmith
+
+$ heroku config
+GITHUB_USERNAME: joesmith
+OTHER_VAR:       production
+
+$ heroku config:get GITHUB_USERNAME
+joesmith
+
+$ heroku config:unset GITHUB_USERNAME
+Unsetting GITHUB_USERNAME and restarting myapp... done, v13</pre>
+<p id="heroku_manifest">Heroku manifests these config vars as environment variables to the application. These environment variables are persistent – they will remain in place across deploys and app restarts – so unless you need to change values, you only need to set them once.</p>
+<p id="by_making_use_o">By making use of these configuration variables it is therefore possible to have two different dynos, containing the same application code to behave differently.  For instance, one may be a production grade application that sends emails to it’s users, whilst the other may be a development system that only emails the developers.</p>
+<p id="so_a_dyno_is_a_">So a dyno is a container that holds our code and our configuration, but how do we get our application code on to them? Heroku calls this process "slug compilation."</p>
+</div>
+<div class="sect2" id="_releases">
+<div class="titlepage"><div><div><h3 class="title">Releases</h3></div></div></div>
+<p id="before_we_talk_">Before we talk about the process of creating a release that is deployed onto Heroku, let’s quickly define what a release is.</p>
+<p id="as_far_as_herok">As far as Heroku is concerned, a release comprises a combination of your application code (or slug), and the configuration around it.  Therefore, any changes to either of these will generate a new "release" which can be seen via the <code class="literal">releases</code> commands in the CLI:</p>
+<pre class="screen" id="heroku_releas">$  heroku releases -a neilmiddleton
+=== neilmiddleton Releases
+v62  Deploy e5b55f5                 neil@heroku.com         2013/04/29 22:24:44
+v61  Deploy 5155279                 neil@heroku.com         2013/04/24 18:44:57
+v60  Add-on add newrelic:standard   neil@heroku.com         2013/04/19 00:04:06
+v59  Add papertrail:choklad add-on  neil@heroku.com         2013/04/19 00:03:00
+v58  Deploy 0685e10                 neil@heroku.com         2013/04/18 17:53:20
+v57  Deploy 823fbdf                 neil@heroku.com         2013/04/18 17:25:55
+v56  Remove librato:dev add-on      neil@heroku.com         2013/04/16 23:42:39</pre>
+<p id="by_using_this_d">By using this definition of releases it is therefore possible to rollback to previous versions of your code, and the configuration surrounding it.  This is very useful if a deploy goes bad or your configuration changes cause unforeseen issues.</p>
+</div>
+<div class="sect2" id="_slug_compilation">
+<div class="titlepage"><div><div><h3 class="title">Slug Compilation</h3></div></div></div>
+<p id="from_the_moment">From the moment Heroku detects you are pushing code it will fire up a runtime instance to <span class="emphasis"><em>compile</em></span> your app. In the very early days of Heroku, this wasn’t needed as the only web framework that was supported was Rails. Additionally, external dependencies, such as gems, could simply be pre-installed on every <span class="emphasis"><em>dyno.</em></span>  While that was a neat idea, the list of external dependencies your code might rely on grows exponentially. Instead of trying to pre-install all of that software Heroku relies on tools adopted by the community for dependency management.</p>
+<p id="before_any_code">Before any code is coupled to your dyno or any dependencies are installed the <span class="emphasis"><em>dyno</em></span> has a base image of pre-existing software. This is known internally as the <span class="emphasis"><em>runtime</em></span> since the image will need to have enough functionality to run your code or at least install dependencies needed to run your code. This image is kept fairly lightweight to minimize overhead. All software on the base image, for example cURL, is available as Open Source. This is an intentional choice to maximize code portability and to increase compatibility with a user’s development machine. This includes the base operating system which is and always has been a flavor of Linux. By keeping all the base images of dynos the same, security updates of components are completed by Heroku engineers quickly and with little or no impact to running applications.</p>
+<p id="while_some_crit">While some criticisms over Platforms as a Service (PaaS) circle around the so-called "Vendor lock-in," such incompatibilities in the ecosystem would mean there would be a cost associated to adopting the platform. It is Heroku’s goal to provide as seamless and transparent of a deploy process as possible while maintaining reliability and consistency. Heroku supports open source software and so should you.</p>
+<p id="so_now_that_he">So, now that Heroku has a secure base image with suitable tools, and they have your application code, they run a buildpack to determine exactly what needs to be done to set up your code to run. The buildpacks are all open source and can be forked and customized. For more information see the section on how buildpacks work <a class="xref" href="">???</a>.</p>
+<p id="once_the_buildp">Once the buildpack is done executing successfully, a snapshot of the finished product (minus runtime image) is placed in storage for easy access at later time. This product is referred to as a <span class="emphasis"><em>slug</em></span> and you may have noticed while deploying that Heroku will tell you your slug size. One reason to pay attention is that larger slugs take longer to transfer over the network, and therefore take longer to spin up on new dynos.</p>
+<p id="now_that_your_s">Now that your slug is saved, dynos carrying old application code are sent commands to begin killing off their processes. While this is being done your code is copied over to other dynos. Once the old application quits running, the new dynos are brought online and made available to the routers ready to serve requests.</p>
+<p id="since_heroku_ke">Since Heroku keeps a copy of your application in storage, if you need to scale out to more dynos they can easily copy the slug to a new dyno and spin it up. This type of quick turnaround means that we can do things like run a scheduler in it’s own dyno, and every time a command is executed on one of your apps via the <code class="literal">run</code> command like <code class="literal">$ heroku run bash</code>, you are actually running it inside of a completely fresh and isolated dyno. This protects you from accidentally <code class="literal">rm -rf</code>-ing your production web server.</p>
+<p id="now_that_you_kn_id2">Now that you know a bit more about what actually goes on in the process of building a <span class="emphasis"><em>slug</em></span> and spinning it up as a running process, let’s take a look at how we can use this to our advantage.</p>
+</div>
+<div class="sect2" id="_scale_out_not_up">
+<div class="titlepage"><div><div><h3 class="title">Scale Out, Not Up</h3></div></div></div>
+<p id="traditionally_">Traditionally, when servers run out of capacity they are scaled up. That is, developers turn off the machine and add RAM, a bigger hard drive, more cores, a better networking card, etc., and then turn it back on. This might buy some time but eventually as an application grows in user-base, a server will max out on upgrades and engineers will have no choice but to scale out. Scaling out is when you add extra servers for capacity rather than extra capacity to your server. This is a great practice since you can scale out in an unlimited way, where as scaling up is very limited. Typically scaling up is easy, and scaling out is hard. It requires provisioning new hardware, networking it, installing software, patching and updating that software, building out a load balancing infrastructure and then buying a bunch of pagers since more hardware means more failures.</p>
+<p id="when_you_run_on">When you run on Heroku your application is already primed to scale out, all without the pagers. By storing <span class="emphasis"><em>compiled</em></span> application code into <span class="emphasis"><em>slugs</em></span> and keeping this separate from your running instances means you are given a massive amount of <span class="emphasis"><em>elasticity.</em></span>  When you give Heroku the command they pair your compiled slug with a dyno to give your more capacity. This means you could take your app from two dynos to one-hundred-and-two dynos with one command (that’s 51 gigs of RAM if you’re doing the math at home). So if your big V2 product launch is coming up in a few days, you can sleep sound knowing that extra capacity is available if you need it, but you’re not obligated to use it.</p>
+<p id="this_ability_to">This ability to scale out is not by accident, and it comes with a host of side benefits. As we mentioned earlier, it makes your application more fault tolerant of hardware errors. For instance a single server could be running several dynos when the memory fails.  Normally this would be a significant issue in traditional environments, but the dyno manager is able to spot the dead instance and migrate the dynos somewhere else in a heartbeat.</p>
+<div class="figure" id="FIG3">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 480; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 480; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000000018/figs/how_heroku_works/dyno_failure.png" alt="The Dyno Manager"></td></tr></table></div></div>
+<div class="figure-title">Figure 2-3. The dyno manager recovering from a node failure</div>
+</div>
+<p id="another_benefit">Another benefit of the dyno architecture is that of isolation. Each dyno is a completely separate container from all others so there is no possibility of another application  accessing your application code, or suffering because a rogue dyno is spinning out of control and using up all the CPU on the host instance.  As far as you as the developer are concerned, these are all separate entities.</p>
+</div>
+<div class="sect2" id="_erosion_resistance">
+<div class="titlepage"><div><div><h3 class="title">Erosion Resistance</h3></div></div></div>
+<p id="a_nontechnical">A non-technical benefit to the dyno architecture is that of "Erosion Resistance."  Software erosion is what happens to your app without your knowledge or consent over time: it was working at one point, but doesn’t work anymore. Imagine a security vulnerability is discovered in the operating system your app is running. If you don’t patch the vulnerability quickly then attackers may take advantage of the exploit and gain access to your code, or worse. While you didn’t intentionally put the vulnerability in your app, doing nothing erodes the ability of your app to perform it’s job safely and securely.</p>
+<p id="when_your_appli">When your application experiences an error due to an erosion of software, you have to invest energy diagnosing and resolving the problem. Erosion is a problem which all applications suffer from regardless of size, and one which many applications have problems dealing with if left for too long.</p>
+<p id="software_erosio">Software erosion can be thought of principally as your application getting "out of date."  Your application consists of many moving parts, some of which are being constantly updated by the communities around the world.  For instance, you have operating system upgrades, kernel patches, and infrastructure software (e.g., Apache, MySQL, ssh, OpenSSL) updates to fix security vulnerabilities or add features. All of these need keeping up to date and are often left by the wayside by some due to the effort required to keep them up to date.</p>
+<p id="because_all_dyn">Because all dynos are derived from the same image, it is guaranteed to be the latest and greatest image that the Heroku operations team has put together at the time the <span class="emphasis"><em>dyno</em></span> is created.  These images are put through lengthy test processes and evaluation before being placed into production.</p>
+<p id="once_your_appli_id1">Once your application is up and running its dynos are silently <span class="emphasis"><em>cycled</em></span> automatically once a day to ensure that the dyno image version they are running is the latest available runtime (your slug will stay the same) You can see this in your application logs as <span class="emphasis"><em>Cycling</em></span> against a particular dyno.  Therefore, if you were to deploy an application to Heroku and leave it for several months, it would be no more out of date than one deployed a day ago.</p>
+</div>
+<div class="sect2" id="_workers_and_background_processing">
+<div class="titlepage"><div><div><h3 class="title">Workers and Background processing</h3></div></div></div>
+<p id="not_all_dynos_n">Not all dynos need be ones that respond to HTTP requests.  A dyno can be thought of like a container for UNIX processes. Dynos can therefore handle a variety of different types of tasks. While your web dynos will handle all your web requests, other dynos may also be tasked with carrying out some sort of background processing, be it working a job queue, sending emails or managing event triggers based on a calendar.  The list of possibilities here is endless.  However, note that these dynos still have an attached cost and will therefore need consideration when planning your application architecture and projecting costs.</p>
+<p id="a_very_common_u">A very common use case of a worker dyno is to process outgoing email. When a user signs up on a website, they will typically get a confirmation or welcome email. If you are sending this message during your web request, your user must wait for the email transaction to complete before they get to go to the next page. This makes your site seem slow and can actually lead to timeouts. By putting that information into a lightweight queue, and sending that email off from a background worker, you can improve speed of your web server while increasing its capacity.</p>
+<p id="you_can_also_sc">You can also schedule one-off background tasks with Heroku’s scheduler. This is like a worker, but only runs a specific command for a given interval. This is very similar to how you might schedule a task to be run with Cron. Tasks run by scheduler are only charged for the time they use, so if a task only takes 12 minutes to complete your account will only be debited 12 dyno/minutes.</p>
+<p id="now_that_weve_">Now that we’ve got our web stack and our worker infrastructure under wraps, what other features does Heroku provide to help developers?</p>
+</div>
+</div>
+<div class="sect1" data-original-filename="2_how_heroku_works.asciidoc" id="_other_services">
+<div class="titlepage"><div><div><h2 class="title">Other Services</h2></div></div></div>
+<p id="weve_discussed">We’ve discussed the main components of the Heroku platform that keep your application code up and running, now let’s talk about some of the supporting services that comprise the parts of the platform the user doesn’t see; these include the "Logplex," deployment systems and the various add-ons that you are able to attach to your application to provide ancillary services.</p>
+<div class="sect2" id="LOGPLEX">
+<div class="titlepage"><div><div><h3 class="title">The Logplex</h3></div></div></div>
+<p id="every_applicati">Every application generates output, be it content via generated web pages, or data via an external API.  Another form of output that applications create are log files on the server. If you’ve run a production web server, you’ll know there is no substitute for easy access to logs.</p>
+<p id="in_a_traditiona">In a traditional web server configuration many various log files are created.  First, you have the regular system log files that are generated by the operating system itself.  Then you have the log files created by the services running on the server, such as Apache (web server) logs, or PostgreSQL (database server) logs.  Lastly, you have your own application log files.</p>
+<p id="typically_all_">Typically, all of these files are written to the local disk on their respective servers before processes such as UNIX’s logrotate come along and archive the files to another location, usually compressing them down.  A respectable system administrator at this point will then periodically archive these log files out to a different location for later interrogation or reference.</p>
+<p id="one_of_the_down">One of the downsides of log files is they affect the way we look at the data within a system.  Application and system logs contain a time-ordered stream of information about what is happening in your application at any given time.  This stream is constant and ongoing, which is not how they are typically represented in log files which tend to infer that there is a beginning and an end. Therefore, Heroku developed the Logplex.</p>
+<p id="the_logplex_is_">The Logplex is an open source tool that replaces the log file concept by providing a constant stream of information flowing from your application with no beginning and no end.  What’s more, this stream contains a single canonical source of information from every part of the stack, be it the routers, one of your dynos, and so on. This means that as a developer you are able to tap into this feed at any time and see all of your application’s activity in one place at the same time. Therefore, Heroku does not provide log files per se, but offer this stream.  Should you wish to capture this information, Heroku allow you to <span class="emphasis"><em>drain</em></span> this information into an external store.</p>
+<p id="a_sample_of_a_s">A sample of a simple web applications logplex output:</p>
+<pre class="screen" id="jul__">Jul 19 19:37:30 MyApplication_Production heroku/router:  GET
+  www.myapplication.com/admin/applicants dyno=web.1 queue=0 wait=0ms
+  service=381ms status=200 bytes=22849
+Jul 19 19:37:30 MyApplication_Production app/web.1:  Completed 200
+  OK in 370ms (Views: 213.0ms | ActiveRecord: 131.6ms)
+Jul 19 19:38:27 MyApplication_Production app/postgres:  [5-1] postgres
+  [www] LOG:  duration: 61.517 ms  statement: SELECT count(*) FROM
+  pg_stat_activity;
+Jul 19 19:41:17 MyApplication_Production heroku/router:  GET
+  www.myapplication.com/ dyno=web.2 queue=0 wait=0ms service=14ms
+  status=302 bytes=115
+Jul 19 19:41:17 MyApplication_Production app/web.2:  Started GET
+  "/" for 180.76.5.168 at 2012-07-19 16:41:17 +0000
+Jul 19 19:41:17 MyApplication_Production app/web.2:  Processing by
+  User::SessionsController#index as HTML
+Jul 19 19:41:17 MyApplication_Production app/web.2:  Completed  in 6ms
+Jul 19 19:41:57 MyApplication_Production app/postgres:  [19753-1]
+  [www] LOG:  checkpoint starting: time
+Jul 19 19:41:58 MyApplication_Production app/postgres:  [19754-1]
+  [www] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0
+  transaction log file(s) added, 0 removed, 1 recycled; write=0.000 s,
+  sync=0.000 s, total=0.014 s; sync files=0, longest=0.000 s,
+  average=0.000 s
+Jul 19 19:45:38 MyApplication_Production app/postgres:  [5-1] postgres
+  [www] LOG:  duration: 61.340 ms  statement: SELECT oid, typname
+  FROM pg_type where typtype = 'b' AND typname IN ('hstore')
+Jul 19 19:46:58 MyApplication_Production app/postgres:  [19755-1]
+  [www] LOG:  checkpoint starting: time</pre>
+</div>
+<div class="sect2" id="_databases_and_other_add_ons">
+<div class="titlepage"><div><div><h3 class="title">Databases and Other Add-ons</h3></div></div></div>
+<p id="so_far_we_have_">So far we have talked about how Heroku can take your application code and run it in the cloud, allowing you to scale to meet your application needs.  However, we haven’t talked about how Heroku provide all the other services that a modern web application needs.</p>
+<p id="it_is_not_uncom">It is not uncommon these days for an application to require more than just code.  Databases are an extremely common requirement, as are external services such as Email SMTP or caching services such as Memcached.  Lots of other services are becoming more common as well: Redis, AMQP, Full text search, image and video processing, NoSQL databases and SMS are all growing in usage on a daily basis.</p>
+<p id="so_how_does_her">So how does Heroku provide these services?  Well, in short, Heroku doesn’t.  From a very early stage, Heroku put together the Add-on program (<a class="ulink" href="https://addons.heroku.com/provider" target="_top">https://addons.heroku.com/provider</a>) which is a process whereby an external vendor can develop a service and then make it available to the platform via the add-ons API.</p>
+<p id="by_using_this_a">By using this approach it has been possible for a library of add-ons to build up over time that can provide almost all the ancillary services that an application might ever need to consume.  As most of these services are attached to via simple configuration the effort required to use these services with their own application is very low.</p>
+<div class="tip" id="more_informatio_id1"><p id="more_informatio_id2">More information on the add-ons library can be found at <a class="ulink" href="https://addons.heroku.com/" target="_top">https://addons.heroku.com/</a></p></div>
+<p id="one_of_the_most_id1">One of the most popular add-ons is one that is provided by Heroku themselves.  This add-on is Heroku Postgres, which provides PostgreSQL services to all applications.</p>
+<p id="on_initial_depl">On initial deployment, Heroku will detect the language and type of your application. If you are deploying using a popular database backed web framework, such as Ruby on Rails, then Heroku will provision and configure the PostgreSQL add-on for your application. This means that deploying a database-driven application is as simple pushing your code to Heroku and running a migration.</p>
+<p id="the_heroku_post">The Heroku Postgres service comes in a variety of shapes and forms, so there is a dedicated chapter to this topic later on in the book.</p>
+<p id="however_not_ev">However, not everyone requires PostgreSQL, but might want to use MySQL or some other form of database with their application code.  Whilst Heroku recommends PostgreSQL, most of the alternatives can be found in the add-ons library (for example Amazon’s RDS service or the ClearDB MySQL service).  For more information on these alternative database services please see the relevant sections in the add-ons library.</p>
+</div>
+<div class="sect2" id="_deployment_systems">
+<div class="titlepage"><div><div><h3 class="title">Deployment Systems</h3></div></div></div>
+<p id="one_of_the_most_id2">One of the most commonly overlooked parts of the Heroku platform is that of the deployment system.  This incredibly complex part of Heroku is what takes your code, and transforms it into a platform friendly version that can be scaled up and down instantly and at will.  What’s more, the deployment system also alters your application to suit the platform, injecting in various components and configuration to make your life, as the developer, much easier and simpler.</p>
+<p id="all_heroku_depl">All Heroku deployments are carried out via the use of the Git source control system.  By <span class="emphasis"><em>pushing</em></span> your code to Heroku you are asking the platform to deploy your code.  But how does this work?</p>
+<p id="well_for_start">Well, for starters, Heroku holds a copy of the Git repository for every single application on the platform.  When you push into the <code class="literal">master</code> branch, you initiate a deploy and Heroku will start processing your repository ready for deployment. You can push into other branches if you wish, but these will only be stored on Heroku and not deployed as the platform will only every deploy the master branch.  However, it is possible to push from a remote feature branch such as <code class="literal">staging</code> into the Heroku <code class="literal">master</code>.  More on this later in the chapter where we talk about application management.</p>
+<p id="when_heroku_rec">When Heroku receives your code via push several things then occur.  Heroku takes your code and identifies it (for instance, as a Rails application, Django, Java and so on).  Once identified it runs the code through a buildpack.  Buildpacks are special programs which understand the structure of your application and its appropriate conventions.  By understanding your application structure these buildpacks are able to make the changes required for your application to function correctly on the platform.  This can include a variety of changes such as ensuring configuration settings are correct, to injecting application framework plugins, or overwriting configuration files such as database configurations.</p>
+<p id="buildpacks_are_">Buildpacks are provided by the Heroku operations team, but also by other open source developers.  Anyone can write their own buildpack for their own means.  For more information on Buildpacks in general please see <a class="xref" href="">???</a>.</p>
+<p id="once_your_appli_id2">Once your application has been prepared, it is stored in a`slug`.  This slug is stored in a filestore waiting for a deployment request as mentioned earlier.  In most cases the slug is immediately deployed to new dynos, replacing the ones that you already have running.</p>
+<p id="most_use_cases_">Most use cases already have a buildpack pre-built by the Heroku operations team.  For instance, if you were to push a Django application to Heroku, the hard work of slug compilation is done for you and there is nothing more required for you to do.  Should you wish to push something a little off the beaten track, or need to customize the way that your application deployments are handled, you are now able to write your own custom buildpacks and ask the platform to use these instead of the default.  More information on this can be found in the later in the book on buildpacks.</p>
+<div class="tip" id="all_of_the_defa_id1"><p id="all_of_the_defa_id2">All of the default buildpacks can be seen on GitHub here:  <a class="ulink" href="https://github.com/heroku" target="_top">https://github.com/heroku</a></p></div>
+</div>
+</div></section><section class="preface" data-original-filename="0_preface.asciidoc" id="_preface"><div class="titlepage"><div><div><h1 class="title">Preface</h1></div></div></div>
+<p id="all_day_every__id1">All day, every day, the Internet gets larger and larger and recent estimates show simply phenomenal growth. Every minute, the web is growing at a rate of over 500 new sites while popular video hosting service YouTube is said to be receiving over 48 hours of new video content. Twitter users create over 100,000 new tweets while Facebook users share over 600,000 new items.</p>
+<p id="to_the_common_o_id1">To the common observer, these numbers are amazing. However, to the developer, these numbers are simply incredible, not only because of the sheer size of the applications required to support this growth, but also the infrastructure in the shape of servers and bandwidth required to keep these services ticking over happily 24/7.</p>
+<div class="sect1" data-original-filename="0_preface.asciidoc" id="_so_what_is_heroku">
+<div class="titlepage"><div><div><h2 class="title">So, what is Heroku?</h2></div></div></div>
+<p id="sure_its_a_pla_id1">Sure it’s a place to run your web app, but what makes it different?</p>
+<p id="if_youre_old_e_id1">If you’re old enough and lucky enough to have had access to a computer in the early 1990’s, you may have experienced the joy and wonder that was an MS/DOS game.  These games were marvels of their time, however, a number of the games required you to do something odd, which was reboot your computer and boot into the game itself, thus taking the operating system out of the equation while the game was running.</p>
+<p id="the_reason_for__id1">The reason for this was that the operating system (OS) put constraints on the games program; it used up resources which the game needed and forced certain rules into place which weren’t necessarily helpful for the game to run efficiently.</p>
+<p id="as_time_moved_o_id1">As time moved on, this approach was no longer needed.  Operating systems were becoming more advanced and games were able to run quite happily within the boundaries of the operating system.  They were able to benefit from the additional help that the OS gave interfacing with hardware and so on.</p>
+<p id="these_days_we__id1">These days, we would never imagine running our games outside of the platform that the operating system provides, it’s just too much work and involvement for the developer. Why would a developer re-write a whole hardware interface or library of sound drivers when it can rely on those provided by the OS?</p>
+<p id="now_think_about_id1">Now think about this in the context of the web.  In the early days of deployment, everything was very much a home grown affair, developers and system administrators had to figure out  a lot of how things bolted together themselves, and worry about the things they had missed.  As time rolled on, more and more tools and software became available which made their lives significantly easier.</p>
+<p id="these_days_tho_id1">These days, though, we have platforms such as Heroku, which you could almost consider as one of the operating systems of the web.  As a developer, you can write your application in the way a games designer would — you don’t need to worry about the details of how your database server is setup and you don’t need to worry about how your servers are kept up to date.  Heroku is a platform that takes care of all of these things and allows you in integrate with it how you will.</p>
+<p id="now_we_are_in__id1">Now, we are in a position where the idea of a developer building a server to host an application on is becoming almost a bizarre route to take.  Each day, hundreds of developers deploy applications, and fewer and fewer are getting involved in the nitty gritty of infrastructure, instead choosing to use platforms such as Heroku.</p>
+</div>
+<div class="sect1" data-original-filename="0_preface.asciidoc" id="_who_this_book_is_for">
+<div class="titlepage"><div><div><h2 class="title">Who This Book Is For</h2></div></div></div>
+<p id="this_book_is_ai">This book is aimed at anyone who is already using Heroku in one form or another, and wants to learn more about the best ways to make use of the technology available.  This book makes the assumption that you are already proficient in using your own language of choice and are happy using Git (<a class="ulink" href="http://git-scm.com/" target="_top">http://git-scm.com/</a>) for your source-control needs.</p>
+<p id="whilst_this_boo">Whilst this book assumes no previous knowledge of Heroku itself,  you will get more from it if you have deployed an application or two to the platform already.</p>
+<p id="lastly_you_sho">Lastly, you should not be afraid of documentation.  There is a vast array of content out there available, both on the subject of Heroku itself, and the various languages that can be deployed to Heroku.  Therefore, instead of repeating that content I encourage you, the reader, to go out and read whatever you can find on a given topic.</p>
+<div class="sect2" id="_you_new_around_here">
+<div class="titlepage"><div><div><h3 class="title">You New Around Here?</h3></div></div></div>
+<p id="never_used_hero_id1">Never used Heroku before? Jump on over to heroku.com and give it a spin. We won’t duplicate all of the getting started material on the site. Instead, we’ll focus on giving you in depth insight into how Heroku works and how to get the most out of the platform.</p>
+<p id="unlike_anything_id1">Unlike anything else you’ve probably used before Heroku is a Platform as a Service (PaaS) that has plenty of opinions on how you should run your code.  Whilst these opinions may at first seem severe, you’ll get a flexible, scalable, fault-tolerant app that is a pleasure to run. If you don’t want to stick to the rules, your app not be able to run on Heroku, and it probably won’t run <span class="emphasis"><em>well</em></span> anywhere else.</p>
+</div>
+</div>
+<div class="sect1" data-original-filename="0_preface.asciidoc" id="_the_history_of_heroku">
+<div class="titlepage"><div><div><h2 class="title">The History of Heroku</h2></div></div></div>
+<p id="heroku_is_still_id1">Heroku is still a relatively young company, having only started in 2007 <a href="#ftn.id546144" class="footnote"><sup class="footnote" id="id546144">[1]</sup></a>.  The three founders; James Lindenbaum, Adam Wiggins, and Orion Henry were all working together as a small web development agency at the time and found that the amount of time spent deploying an application once having built it was not proportional.  For instance, they were commonly finding that an application may take a month to develop, but then they would need to spend a week deploying the application onto the web.</p>
+<p id="after_a_while_t_id1">After a while they starting developing applications using Ruby on Rails.  With this came a new found productivity, yet the time for deployment hadn’t changed. Therefore, the three of them had the idea of bringing the same sort of efficiencies to application hosting.</p>
+<p id="in_six_weeks_a_id1">In six weeks, an idea was developed and a prototype was built;  a simple platform that was easy to deploy to, and straight forward for a developer to figure out.</p>
+<div class="figure" id="FIG1_id1">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 480; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 480; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000000018/figs/what_is_heroku/herokugarden_thumb_1.png" alt="Heroku Garden"></td></tr></table></div></div>
+<div class="figure-title">Figure 1. Heroku Garden</div>
+</div>
+<p id="interestingly__id1">Interestingly, the initial prototype was nothing like the Heroku you see today.  For instance, one major component was an application called <span class="emphasis"><em>Heroku Garden</em></span> <a href="#ftn.id532167" class="footnote"><sup class="footnote" id="id532167">[2]</sup></a>, a web-based code editor that users could log into and use to edit their code via a browser.  Once you hit <span class="emphasis"><em>Save</em></span>, the code was deployed and running on the web ready for users to see <a href="#ftn.id507259" class="footnote"><sup class="footnote" id="id507259">[3]</sup></a>.</p>
+<p id="over_time_howe_id1">Over time, however, Heroku found that more and more of their target users were interested in the application hosting aspect of the product instead of the web based editor.  Therefore, Heroku developed an API which developers could use alongside Git, the source control system, that professional developers could use to push their code to the Heroku platform.</p>
+<p id="the_usage_of_th_id1">The usage of this API grew, and Heroku took the decision to turn off the Heroku Garden completely.  In January 2009, Heroku relaunched and rebranded itself as a Ruby/Rack deployment platform and interest in the product was significant and adoption grew.</p>
+<p id="heroku_is_const_id1">Heroku is constantly developing the stack that is available for use, starting with the Aspen and Bamboo stacks, and moving to the current Cedar stack, which this book talks about.</p>
+<p id="cedar_is_a_big__id1">Cedar is a big move forward in that it allows Heroku to become a fully polyglot platform, i.e it can run many different types of application within the same stack.  Ruby is no longer the only option for use on Heroku with the platform now supporting Python, Java, Node.js, Clojure, Scala, and providing the potential for a vast amount more via the use of Heroku buildpacks, which we will talk about more later in the book.</p>
+</div>
+<div class="sect1" data-original-filename="0_preface.asciidoc" id="_the_heroku_culture">
+<div class="titlepage"><div><div><h2 class="title">The Heroku Culture</h2></div></div></div>
+<p id="its_probably_w_id1">It’s probably worth mentioning the Heroku culture and how this affects their approach to software and how things are put together.</p>
+<p id="picture_the_mov_id1">Picture the movie industry just 70 years ago.  If you wanted to watch a film, it had to be what was on show at the local cinema at the time. Hundreds of people would congregate and watch that film together, and it would be fun.</p>
+<p id="by_the_time_the_id1">By the time the eighties came along, someone came up with the magical idea of the video cassette.  Now people could choose what film to watch, and when, assuming that they had the media to hand.  The technology was much smaller, and the media much more readily available.</p>
+<p id="come_the_nineti_id1">Come the nineties, DVD made it’s entrance.  Again, smaller devices, smaller media, but with another iteration in quality and capability.  Over the matter of a couple of iterations we had gone from a massive cinema, to a box no bigger than a large book.</p>
+<p id="these_days_how_id1">These days, however, we’re another step on.  We can no stream any film we like, whenever we want, regardless of the fact of us owning it or not.  What’s more, we don’t need any specific hardware or media in the house.  We just need a device connected to the web.</p>
+<p id="but_why_are_we__id1">But why are we talking about this?  Well, this history matches the ethos at work within Heroku.  Heroku strives to turn the age old and complex process of hosting an application on the web, into one that requires no hardware and no software - you push your code up and the job is done.  Heroku are striving to create the Netflix equivalent of application provisioning.  In the world of Heroku, if it’s a case of software, or service, service wins every time.</p>
+<div class="sect1" data-original-filename="" id="conventions_used_in_this_book">
+<div class="titlepage"><div><div><h2 class="title">Conventions Used in This Book</h2></div></div></div>
+<p id="the_following_t">The following typographical conventions are used in this
+    book:</p>
+<div class="variablelist" id="italicindicates"><dl class="variablelist">
+<dt><span class="term"><span class="emphasis"><em>Italic</em></span></span></dt>
+<dd><p id="indicates_new_t">Indicates new terms, URLs, email addresses, filenames, and
+          file extensions.</p></dd>
+<dt><span class="term"><code class="literal">Constant width</code></span></dt>
+<dd><p id="used_for_progra">Used for program listings, as well as within paragraphs to
+          refer to program elements such as variable or function names,
+          databases, data types, environment variables, statements, and
+          keywords.</p></dd>
+<dt><span class="term"><strong class="userinput"><code>Constant width bold</code></strong></span></dt>
+<dd><p id="shows_commands_">Shows commands or other text that should be typed literally by
+          the user.</p></dd>
+<dt><span class="term"><em class="replaceable"><code>Constant width italic</code></em></span></dt>
+<dd><p id="shows_text_that">Shows text that should be replaced with user-supplied values
+          or by values determined by context.</p></dd>
+</dl></div>
+<div class="tip" id="this_icon_signi_id1"><p id="this_icon_signi_id2">This icon signifies a tip, suggestion, or general note.</p></div>
+<div class="caution" id="this_icon_indic_id1"><p id="this_icon_indic_id2">This icon indicates a warning or caution.</p></div>
+</div>
+<div class="sect1" data-original-filename="" id="using_code_examples">
+<div class="titlepage"><div><div><h2 class="title">Using Code Examples</h2></div></div></div>
+<p id="this_book_is_he">This book is here to help you get your job done. In general, you may
+    use the code in this book in your programs and documentation. You do not
+    need to contact us for permission unless you’re reproducing a significant
+    portion of the code. For example, writing a program that uses several
+    chunks of code from this book does not require permission. Selling or
+    distributing a CD-ROM of examples from O’Reilly books does require
+    permission. Answering a question by citing this book and quoting example
+    code does not require permission. Incorporating a significant amount of
+    example code from this book into your product’s documentation does require
+    permission.</p>
+<p id="we_appreciate_">We appreciate, but do not require, attribution. An attribution
+    usually includes the title, author, publisher, and ISBN. For example:
+    “<span class="emphasis"><em>Book Title</em></span> by Some Author (O’Reilly). Copyright 2011
+    Some Copyright Holder, 978-0-596-xxxx-x.”</p>
+<p id="if_you_feel_you">If you feel your use of code examples falls outside fair use or the
+    permission given above, feel free to contact us at
+    <code class="email">&lt;<a class="email" href="mailto:permissions@oreilly.com">permissions@oreilly.com</a>&gt;</code>.</p>
+</div>
+<div class="sect1" data-original-filename="" id="safari_books_online">
+<div class="titlepage"><div><div><h2 class="title">Safari® Books Online</h2></div></div></div>
+<div class="note safaribooksonline" id="safari_books_on_id1"><p id="safari_books_on_id2">Safari Books Online (<a class="ulink" href="http://my.safaribooksonline.com/?portal=oreilly" target="_top">www.safaribooksonline.com</a>)
+      is an on-demand digital library that delivers expert <a class="ulink" href="http://www.safaribooksonline.com/content" target="_top">content</a> in both
+      book and video form from the world’s leading authors in technology and
+      business.</p></div>
+<p id="technology_prof">Technology professionals, software developers, web designers, and
+    business and creative professionals use Safari Books Online as their
+    primary resource for research, problem solving, learning, and
+    certification training.</p>
+<p id="safari_books_on_id3">Safari Books Online offers a range of <a class="ulink" href="http://www.safaribooksonline.com/subscriptions" target="_top">product mixes</a>
+    and pricing programs for <a class="ulink" href="http://www.safaribooksonline.com/organizations-teams" target="_top">organizations</a>,
+    <a class="ulink" href="http://www.safaribooksonline.com/government" target="_top">government
+    agencies</a>, and <a class="ulink" href="http://www.safaribooksonline.com/individuals" target="_top">individuals</a>.
+    Subscribers have access to thousands of books, training videos, and
+    prepublication manuscripts in one fully searchable database from
+    publishers like O’Reilly Media, Prentice Hall Professional, Addison-Wesley
+    Professional, Microsoft Press, Sams, Que, Peachpit Press, Focal Press,
+    Cisco Press, John Wiley &amp; Sons, Syngress, Morgan Kaufmann, IBM
+    Redbooks, Packt, Adobe Press, FT Press, Apress, Manning, New Riders,
+    McGraw-Hill, Jones &amp; Bartlett, Course Technology, and dozens <a class="ulink" href="http://www.safaribooksonline.com/publishers" target="_top">more</a>. For more
+    information about Safari Books Online, please visit us <a class="ulink" href="http://www.safaribooksonline.com/" target="_top">online</a>.</p>
+</div>
+<div class="sect1" data-original-filename="" id="how_to_contact_us">
+<div class="titlepage"><div><div><h2 class="title">How to Contact Us</h2></div></div></div>
+<p id="please_address_">Please address comments and questions concerning this book to the
+    publisher:</p>
+<table style="border: 0; " class="simplelist">
+<tr><td>O’Reilly Media, Inc.</td></tr>
+<tr><td>1005 Gravenstein Highway North</td></tr>
+<tr><td>Sebastopol, CA 95472</td></tr>
+<tr><td>800-998-9938 (in the United States or Canada)</td></tr>
+<tr><td>707-829-0515 (international or local)</td></tr>
+<tr><td>707-829-0104 (fax)</td></tr>
+</table>
+<p id="we_have_a_web_p">We have a web page for this book, where we list errata, examples,
+    and any additional information. You can access this page at:</p>
+<table style="border: 0; " class="simplelist"><tr><td><a class="ulink" href="http://www.oreilly.com/catalog/&lt;catalog%20page&gt;" target="_top">http://www.oreilly.com/catalog/&lt;catalog page&gt;</a></td></tr></table>
+<p id="to_comment_or_a">To comment or ask technical questions about this book, send email
+    to:</p>
+<table style="border: 0; " class="simplelist"><tr><td><code class="email">&lt;<a class="email" href="mailto:bookquestions@oreilly.com">bookquestions@oreilly.com</a>&gt;</code></td></tr></table>
+<p id="for_more_inform">For more information about our books, courses, conferences, and
+    news, see our website at <a class="ulink" href="http://www.oreilly.com" target="_top">http://www.oreilly.com</a>.</p>
+<p id="find_us_on_face">Find us on Facebook: <a class="ulink" href="http://facebook.com/oreilly" target="_top">http://facebook.com/oreilly</a></p>
+<p id="follow_us_on_tw">Follow us on Twitter: <a class="ulink" href="http://twitter.com/oreillymedia" target="_top">http://twitter.com/oreillymedia</a></p>
+<p id="watch_us_on_you">Watch us on YouTube: <a class="ulink" href="http://www.youtube.com/oreillymedia" target="_top">http://www.youtube.com/oreillymedia</a></p>
+</div>
+</div>
+<div class="sect1" data-original-filename="0_preface.asciidoc" id="_from_the_authors_neil_middleton">
+<div class="titlepage"><div><div><h2 class="title">From the Authors: Neil Middleton</h2></div></div></div>
+<p id="i_started_to_ge">I started to get involved with Heroku back in 2009 when the development shop I was working at was looking for a simple, effective and relatively cheap platform for hosting our Ruby on Rails applications.  After trying a few we were looking at using a VPS or Heroku.  A few days later we knew Heroku was the way to go.  We could get applications running with the least amount of hassle in the least amount of time, and whats more only pay for what we needed when we needed it.</p>
+<p id="as_time_went_on">As time went on my relationship with Heroku grew closer as I got more and more involved in the platform and I started to base my website <a href="#ftn.id552850" class="footnote"><sup class="footnote" id="id552850">[4]</sup></a> articles on best practise and know-how surrounding the product.</p>
+<p id="eventually_a_co">Eventually a couple of things happened.  Firstly I was approached by Heroku and O’Reilly to put this book together with Richard, and secondly I ended up moving to work at Heroku full time as part of the support team.  The last year therefore has been a pretty dramatic one and one that I feel will open up some new horizons.  Some that will improve customer knowledge of the platform, but also to help Heroku confirm that step into the big league of application hosting.</p>
+</div>
+<div class="sect1" data-original-filename="0_preface.asciidoc" id="_from_the_authors_richard_schneeman">
+<div class="titlepage"><div><div><h2 class="title">From the Authors: Richard Schneeman</h2></div></div></div>
+<p id="i_remember_vivi">I remember vividly the first time I heard about Heroku, I had just struggled over the course of seven painful days to deploy my first Rails app to a shared hosting provider. I was running Rails 1.2 then. I looked at Heroku, saw it was free to try and gave it a shot. I was blown away. It took a few minutes to do what took days on another provider, I was addicted. It wasn’t entirely love at first deploy though, I tried several other platforms, all of whom are now out of business, to see how they faired. I actually ended up using one called mor.ph <a href="#ftn.id552890" class="footnote"><sup class="footnote" id="id552890">[5]</sup></a> for a few months because they allowed me to do things that Heroku wouldn’t. Eventually I moved on to my own VPS with a respected cloud provider. I was running a half dozen sites on one VPS and another dedicated VPS running a mail server to receive incoming mail for an email anomizing service I used to run called whyspam.me.</p>
+<p id="life_was_good_">Life was good. Or at least it was until the first of many times my sites went down. I was at work, and couldn’t SSH into my box to diagnose until I got home. The fix was simple, but the message was clear, If I was going to run anything serious I needed to get some more firepower. I switched back to using Heroku and found that those things I couldn’t do once, I had no desire to do anymore. They were the same things that caused my VPS to be unstable, so I ended up re-writing those features anyway. What once seemed like arbitrary limitations, now showed as well seasoned advice from an opinionated platform.</p>
+<p id="this_was_about_">This was about the same time I began to  teach Rails at the University of Texas <a href="#ftn.id552919" class="footnote"><sup class="footnote" id="id552919">[6]</sup></a>, and I needed the easiest way for my students to deploy, I picked Heroku. After the lecture on deployment one of my students actually asked me why programming rails couldn’t be as easy as deploying it. I believe I replied starting off "back in my day…", if only they knew.</p>
+<p id="in_the_mean_tim">In the mean time I began working full time for a social network called Gowalla. I loved working on it like only a crazed programmer bent to change the world can love something. When Gowalla was purchased by Facebook in 2011 I sent a note out to my favorite Ruby backed companies. Luckily for me Heroku, my number one choice, decided to write back, and I’ve been working there ever since.</p>
+<p id="i_love_working_">I love working on Heroku, and I love introducing people to the beauty on the surface and under the covers of the platform. When the opportunity to write a few words about Heroku came up, I jumped on the chance and here I am now.</p>
+</div>
+<div class="sect1" data-original-filename="0_preface.asciidoc" id="_disclaimer">
+<div class="titlepage"><div><div><h2 class="title">Disclaimer</h2></div></div></div>
+<p id="these_days_thi">These days, things are moving fast, and especially so in technology.  In fact, almost every day we are seeing changes being made to the Heroku platform.  Most of these changes are invisible to the user, but changes nonetheless.</p>
+<p id="in_the_print_wo">In the print world however, things are set in stone (or ink).  Therefore, there are likely to be some inaccuracies or apparent mistakes which have occurred due to these changes.  If in doubt, check out the Heroku DevCenter <a href="#ftn.id552968" class="footnote"><sup class="footnote" id="id552968">[7]</sup></a> for the authoritative source of current and up to date documentation.</p>
+</div>
+<div class="footnotes">
+<br><hr style="width: 100; align: left;">
+<div id="ftn.id546144" class="footnote"><p><a href="#id546144" class="simpara"><sup class="simpara">[1] </sup></a>Making Heroku younger than the Apple iPhone!</p></div>
+<div id="ftn.id532167" class="footnote"><p><a href="#id532167" class="simpara"><sup class="simpara">[2] </sup></a>Although, at the time it was not known by this name, but as part of the complete product</p></div>
+<div id="ftn.id507259" class="footnote"><p><a href="#id507259" class="simpara"><sup class="simpara">[3] </sup></a>Interestingly, there are more web based code editors popping up in 2013, which shows how far ahead of the curve it was</p></div>
+<div id="ftn.id552850" class="footnote"><p><a href="#id552850" class="simpara"><sup class="simpara">[4] </sup></a><a class="ulink" href="http://www.neilmiddleton.com" target="_top">http://www.neilmiddleton.com</a></p></div>
+<div id="ftn.id552890" class="footnote"><p><a href="#id552890" class="simpara"><sup class="simpara">[5] </sup></a><a class="ulink" href="http://mor.ph" target="_top">http://mor.ph</a></p></div>
+<div id="ftn.id552919" class="footnote"><p><a href="#id552919" class="simpara"><sup class="simpara">[6] </sup></a><a class="ulink" href="http://schneems.com/ut-rails" target="_top">http://schneems.com/ut-rails</a></p></div>
+<div id="ftn.id552968" class="footnote"><p><a href="#id552968" class="simpara"><sup class="simpara">[7] </sup></a><a class="ulink" href="http://devcenter.heroku.com" target="_top">http://devcenter.heroku.com</a></p></div>
+</div></section><section class="chapter" data-original-filename="1_what_is_heroku.asciidoc" id="chapid_1"><div class="titlepage"><div><div><h1 class="title">Chapter 1. What is Heroku?</h1></div></div></div>
+<p id="all_day_every__id2">All day, every day, the Internet gets larger and larger and recent estimates show simply phenomenal growth. Every minute, the web is growing at a rate of over 500 new sites while popular video hosting service YouTube is said to be receiving over 48 hours of new video content. Twitter users create over 100,000 new tweets while Facebook users share over 600,000 new items.</p>
+<p id="to_the_common_o_id2">To the common observer, these numbers are amazing. However, to the developer, these numbers are simply incredible, not only because of the sheer size of the applications required to support this growth, but also the infrastructure in the shape of servers and bandwidth required to keep these services ticking over happily 24/7.</p>
+<div class="sect1" data-original-filename="1_what_is_heroku.asciidoc" id="_you_new_around_here_2">
+<div class="titlepage"><div><div><h2 class="title">You New Around Here?</h2></div></div></div>
+<p id="never_used_hero_id2">Never used Heroku before? Jump on over to heroku.com and give it a spin. We won’t duplicate all of the getting started material on the site. Instead, we’ll focus on giving you in depth insight into how Heroku works and how to get the most out of the platform.</p>
+<p id="if_youve_deplo">If you’ve deployed to shared or VPS servers there are some differences, which we’ll cover later, but here is a quick list to check out before getting started:</p>
+<div class="itemizedlist" id="ephemeral_file__id1"><ul class="itemizedlist">
+<li class="listitem">
+Ephemeral file system: You can write to disk, you can read from disk, but as soon as your server restarts, and it will, that’s all gone. Instead, use a shared file storage system such as S3. This also makes running on multiple machines easier.
+</li>
+<li class="listitem">
+Shared state: If you want to store session data on your server, you’ll need to find a way to persist it across multiple machines if you want to scale out. To do this, you can use secure cookies and a distributed store such as memcache.
+</li>
+<li class="listitem">
+Dependency Management: If you want to install external code libraries for your app you’ll need to do it using a dependency management tool like Bundler for Ruby or Ivy for java.
+</li>
+<li class="listitem">
+Scale out not up: Heroku currently only offers one size of server called a Dyno, if you need more horsepower use more Dynos. If one Dyno isn’t big enough to get your app to run, maybe you should consider splitting out your app into smaller services, all talking over HTTP. It works for companies like Google, Facebook, and even Heroku, maybe it can work for you.
+</li>
+<li class="listitem">
+<p id="logs_once_you_" class="simpara">
+Logs:  Once you get your app on Heroku, you might need to debug your application code by looking at the logs. Since Heroku is different from a VPS or a shared host you can’t SSH or FTP into your box to see your logs. Instead use the Heroku CLI to run
+</p>
+<pre class="screen" id="heroku_logs_">$ heroku logs --tail</pre>
+<p id="this_saves_you_" class="simpara">This saves you from having to SSH into multiple machines at
+the same time. See <a class="xref" href="ch02.html#LOGPLEX" title="The Logplex">“The Logplex”</a> for more information.</p>
+</li>
+</ul></div>
+<p id="unlike_anything_id2">Unlike anything else you’ve probably used before Heroku is a Platform as a Service (PaaS) that has plenty of opinions on how you should run your code.  Whilst these opinions may at first seem severe, you’ll get a flexible, scalable, fault-tolerant app that is a pleasure to run. If you don’t want to stick to the rules, your app not be able to run on Heroku, and it probably won’t run <span class="emphasis"><em>well</em></span> anywhere else.</p>
+<p id="now_that_youve">Now that you’ve got the run down, let’s take the deep dive; what makes Heroku so special and how does it deliver such an amazing developer experience? To answer these questions we’ll need to take a look back in the past to see how our industry and Heroku got to where it is today.</p>
+</div>
+<div class="sect1" data-original-filename="1_what_is_heroku.asciidoc" id="_the_dawn_of_virtual_servers">
+<div class="titlepage"><div><div><h2 class="title">The Dawn of Virtual Servers</h2></div></div></div>
+<p id="no_more_than_te">No more than ten years ago, the way a developer such as yourself would bring a new website or application on to the web was to go out and purchase a new server, configure it and find someone who would host the server in a rack for you in a datacenter. This datacenter would provide your server with the life support that it needed to function to carry out its task: bandwidth, power, cooling and the list goes on. Only once you had all these items lined up would a user on the web be able to type in your URL and find themselves looking at your website.</p>
+<p id="now_fast_forwar">Now fast forward a few years. Developers increasingly had the option of virtualization. Virtualization is the practise of renting a “virtual” server from a third party (be it another company, or an internal IT team) and using that in place of your own purchased physical machine. A virtual server to the outside world would appear to be just the same as a regular physical server, however, it only exists with the processes of a parent server, sharing resources and saving costs.</p>
+<p id="as_a_physical_s">As a physical server is able to contain multiple virtual servers, an industry sprung up where companies would create data centres filled with machines, which would then be sliced up and rented out to developers to use for their applications. This brought great gains for the developer; there was no longer a need to tie up capital in purchasing a physical server, there was no need to worry about maintaining the machine if things went wrong, and what’s more, it was available within hours rather than the days that it would have taken to procure and install a physical server of their own.</p>
+</div>
+<div class="sect1" data-original-filename="1_what_is_heroku.asciidoc" id="_enter_the_cloud">
+<div class="titlepage"><div><div><h2 class="title">Enter the cloud</h2></div></div></div>
+<p id="the_first_decad">The first decade of this century brought the concept of cloud computing. As demand for hosting grew and grew, and applications became larger and larger a new form of hosting became apparent — that of cloud computing. Pioneered at a massive scale by Amazon’s Elastic Cloud Computing service (EC2) developers were now able to “spin up” virtual instances of servers on the web and interact with them in the same way as normal machines. The key difference between these servers and traditional virtualisation is that they are generally billed on a usage basis (usually by the hour) and at no point does the developer have any real idea of where their server is physically.</p>
+<p id="cloud_computing">Cloud computing vendors such as Amazon do not rent out a virtual server to a developer, but rather rent out a certain amount of computing capacity. It is up to the vendor where this capacity is provided from, and it is up to the vendor to provide and manage all the ancillary services that surround it.</p>
+<p id="as_the_vendor_i">As the vendor is in complete control of the capacity and the ancillary services there are new possibilities available. For instance, you might have your website mentioned on the homepage of Hacker News <a href="#ftn.id553288" class="footnote"><sup class="footnote" id="id553288">[8]</sup></a> and have ten times the normal amount of traffic coming to visit your site.</p>
+<p id="in_the_good_old">In the good old days of physical servers, your site would go down under the load and you’d be powerless to stop it, as you would be reliant on being able to purchase new hardware and being able to configure and install it in your datacenter.</p>
+<p id="with_virtualiza">With virtualization you’d be better off, you’d be able to buy more servers from your vendor and have them up and running within a couple of hours, but until then your site would be down.</p>
+<p id="with_modern_clo">With modern cloud based hosts, you’d simply add more capacity to your application and are able to instantly scale to meet the demand. What’s more, you wouldn’t be locked into this larger infrastructure as you would with the other options — you simply scale back down and only use the resources you have paid for.</p>
+</div>
+<div class="sect1" data-original-filename="1_what_is_heroku.asciidoc" id="_so_what_is_heroku_2">
+<div class="titlepage"><div><div><h2 class="title">So, what is Heroku?</h2></div></div></div>
+<p id="sure_its_a_pla_id2">Sure it’s a place to run your web app, but what makes it different?</p>
+<p id="if_youre_old_e_id2">If you’re old enough and lucky enough to have had access to a computer in the early 1990’s, you may have experienced the joy and wonder that was an MS/DOS game.  These games were marvels of their time, however, a number of the games required you to do something odd, which was reboot your computer and boot into the game itself, thus taking the operating system out of the equation while the game was running.</p>
+<p id="the_reason_for__id2">The reason for this was that the operating system (OS) put constraints on the games program; it used up resources which the game needed and forced certain rules into place which weren’t necessarily helpful for the game to run efficiently.</p>
+<p id="as_time_moved_o_id2">As time moved on, this approach was no longer needed.  Operating systems were becoming more advanced and games were able to run quite happily within the boundaries of the operating system.  They were able to benefit from the additional help that the OS gave interfacing with hardware and so on.</p>
+<p id="these_days_we__id2">These days, we would never imagine running our games outside of the platform that the operating system provides, it’s just too much work and involvement for the developer. Why would a developer re-write a whole hardware interface or library of sound drivers when it can rely on those provided by the OS?</p>
+<p id="now_think_about_id2">Now think about this in the context of the web.  In the early days of deployment, everything was very much a home grown affair, developers and system administrators had to figure out  a lot of how things bolted together themselves, and worry about the things they had missed.  As time rolled on, more and more tools and software became available which made their lives significantly easier.</p>
+<p id="these_days_tho_id2">These days, though, we have platforms such as Heroku, which you could almost consider as one of the operating systems of the web.  As a developer, you can write your application in the way a games designer would — you don’t need to worry about the details of how your database server is setup and you don’t need to worry about how your servers are kept up to date.  Heroku is a platform that takes care of all of these things and allows you in integrate with it how you will.</p>
+<p id="now_we_are_in__id2">Now, we are in a position where the idea of a developer building a server to host an application on is becoming almost a bizarre route to take.  Each day, hundreds of developers deploy applications, and fewer and fewer are getting involved in the nitty gritty of infrastructure, instead choosing to use platforms such as Heroku.</p>
+</div>
+<div class="sect1" data-original-filename="1_what_is_heroku.asciidoc" id="_the_history_of_heroku_2">
+<div class="titlepage"><div><div><h2 class="title">The History of Heroku</h2></div></div></div>
+<p id="heroku_is_still_id2">Heroku is still a relatively young company, having only started in 2007 <a href="#ftn.id553411" class="footnote"><sup class="footnote" id="id553411">[9]</sup></a>.  The three founders; James Lindenbaum, Adam Wiggins, and Orion Henry were all working together as a small web development agency at the time and found that the amount of time spent deploying an application once having built it was not proportional.  For instance, they were commonly finding that an application may take a month to develop, but then they would need to spend a week deploying the application onto the web.</p>
+<p id="after_a_while_t_id2">After a while they starting developing applications using Ruby on Rails.  With this came a new found productivity, yet the time for deployment hadn’t changed. Therefore, the three of them had the idea of bringing the same sort of efficiencies to application hosting.</p>
+<p id="in_six_weeks_a_id2">In six weeks, an idea was developed and a prototype was built;  a simple platform that was easy to deploy to, and straight forward for a developer to figure out.</p>
+<div class="figure" id="FIG1_id2">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 480; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 480; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000000018/figs/what_is_heroku/herokugarden_thumb_1.png" alt="Heroku Garden"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-1. Heroku Garden</div>
+</div>
+<p id="interestingly__id2">Interestingly, the initial prototype was nothing like the Heroku you see today.  For instance, one major component was an application called <span class="emphasis"><em>Heroku Garden</em></span> <a href="#ftn.id553461" class="footnote"><sup class="footnote" id="id553461">[10]</sup></a>, a web-based code editor that users could log into and use to edit their code via a browser.  Once you hit <span class="emphasis"><em>Save</em></span>, the code was deployed and running on the web ready for users to see <a href="#ftn.id553471" class="footnote"><sup class="footnote" id="id553471">[11]</sup></a>.</p>
+<p id="over_time_howe_id2">Over time, however, Heroku found that more and more of their target users were interested in the application hosting aspect of the product instead of the web based editor.  Therefore, Heroku developed an API which developers could use alongside Git, the source control system, that professional developers could use to push their code to the Heroku platform.</p>
+<p id="the_usage_of_th_id2">The usage of this API grew, and Heroku took the decision to turn off the Heroku Garden completely.  In January 2009, Heroku relaunched and rebranded itself as a Ruby/Rack deployment platform and interest in the product was significant and adoption grew.</p>
+<p id="heroku_is_const_id2">Heroku is constantly developing the stack that is available for use, starting with the Aspen and Bamboo stacks, and moving to the current Cedar stack, which this book talks about.</p>
+<p id="cedar_is_a_big__id2">Cedar is a big move forward in that it allows Heroku to become a fully polyglot platform, i.e it can run many different types of application within the same stack.  Ruby is no longer the only option for use on Heroku with the platform now supporting Python, Java, Node.js, Clojure, Scala, and providing the potential for a vast amount more via the use of Heroku buildpacks, which we will talk about more later in the book.</p>
+</div>
+<div class="sect1" data-original-filename="1_what_is_heroku.asciidoc" id="_the_heroku_culture_2">
+<div class="titlepage"><div><div><h2 class="title">The Heroku Culture</h2></div></div></div>
+<p id="its_probably_w_id2">It’s probably worth mentioning the Heroku culture and how this affects their approach to software and how things are put together.</p>
+<p id="picture_the_mov_id2">Picture the movie industry just 70 years ago.  If you wanted to watch a film, it had to be what was on show at the local cinema at the time. Hundreds of people would congregate and watch that film together, and it would be fun.</p>
+<p id="by_the_time_the_id2">By the time the eighties came along, someone came up with the magical idea of the video cassette.  Now people could choose what film to watch, and when, assuming that they had the media to hand.  The technology was much smaller, and the media much more readily available.</p>
+<p id="come_the_nineti_id2">Come the nineties, DVD made it’s entrance.  Again, smaller devices, smaller media, but with another iteration in quality and capability.  Over the matter of a couple of iterations we had gone from a massive cinema, to a box no bigger than a large book.</p>
+<p id="these_days_how_id2">These days, however, we’re another step on.  We can no stream any film we like, whenever we want, regardless of the fact of us owning it or not.  What’s more, we don’t need any specific hardware or media in the house.  We just need a device connected to the web.</p>
+<p id="but_why_are_we__id2">But why are we talking about this?  Well, this history matches the ethos at work within Heroku.  Heroku strives to turn the age old and complex process of hosting an application on the web, into one that requires no hardware and no software - you push your code up and the job is done.  Heroku are striving to create the Netflix equivalent of application provisioning.  In the world of Heroku, if it’s a case of software, or service, service wins every time.</p>
+</div>
+<div class="sect1" data-original-filename="1_what_is_heroku.asciidoc" id="_why_would_i_want_to_learn_more_about_heroku">
+<div class="titlepage"><div><div><h2 class="title">Why would I want to learn more about Heroku?</h2></div></div></div>
+<p id="by_knowing_more">By knowing more about the inner workings of the Heroku stack you’ll be able to to make more educated guesses about how to architect your applications so they can work as efficiently as possible. You’ll be able to identify where you need to focus your own efforts when developing your code, and which parts of your code can be left to add-ons and so on that might be available to you. You’ll be able to know how to recover an application should it go down by knowing where and what to look for. What’s more, you’ll understand the benefits that the platform can give you and how to encourage those around you to use the platform.</p>
+<p id="for_more_of_the">For more of the technicalities of the nuts and bolts of Heroku, read on to the next chapter…</p>
+</div>
+<div class="footnotes">
+<br><hr style="width: 100; align: left;">
+<div id="ftn.id553288" class="footnote"><p><a href="#id553288" class="simpara"><sup class="simpara">[8] </sup></a><a class="ulink" href="http://news.ycombinator.com" target="_top">http://news.ycombinator.com</a></p></div>
+<div id="ftn.id553411" class="footnote"><p><a href="#id553411" class="simpara"><sup class="simpara">[9] </sup></a>Making Heroku younger than the Apple iPhone!</p></div>
+<div id="ftn.id553461" class="footnote"><p><a href="#id553461" class="simpara"><sup class="simpara">[10] </sup></a>Although, at the time it was not known by this name, but as part of the complete product</p></div>
+<div id="ftn.id553471" class="footnote"><p><a href="#id553471" class="simpara"><sup class="simpara">[11] </sup></a>Interestingly, there are more web based code editors popping up in 2013, which shows how far ahead of the curve it was</p></div>
+</div></section><section class="chapter" data-original-filename="2_how_heroku_works.asciidoc" id="chapid_2"><div class="titlepage"><div><div><h1 class="title">Chapter 2. How Heroku Works</h1></div></div></div>
+<p id="at_the_time_of_">At the time of writing, Heroku has had over three million separate applications deployed on their infrastructure and this number grows day by day.  Running a large number of applications day to day requires a substantially different approach to running just a handful, and this is one the reasons that the Heroku architecture is markedly different to what you or I might develop if we were setting up our own environment on our own hardware for a single application.  Heroku’s task is to support the running of all of these applications at the same time, managing the deployments that users are requesting, as well as scaling application’s needs.</p>
+<p id="in_order_to_ach">In order to achieve this, the Heroku platform is broken up into several key segments, most importantly:</p>
+<div class="itemizedlist" id="routers_which_e_id1"><ul class="itemizedlist">
+<li class="listitem">
+<span class="emphasis"><em>Routers</em></span> which ensure that your application receives the requests from users on the web.
+</li>
+<li class="listitem">
+<span class="emphasis"><em>Dynos</em></span> where your application code actually runs day to day.
+</li>
+</ul></div>
+<p id="aside_from_thes">Aside from these there are a number of extra components such as the <span class="emphasis"><em>Logplex</em></span> and the various add-ons and services available to your applications.</p>
+<div class="figure" id="FIG1_id3">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 480; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 480; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000000018/figs/how_heroku_works/overall_architecture.png" alt="Heroku Architecture"></td></tr></table></div></div>
+<div class="figure-title">Figure 2-1. Overall Architecture of the Heroku platform</div>
+</div>
+<p id="so_lets_walk_">So, let’s walk through all of these parts in turn.</p>
+<div class="sect1" data-original-filename="2_how_heroku_works.asciidoc" id="_what_is_a_emphasis_dyno_emphasis">
+<div class="titlepage"><div><div><h2 class="title">What is a <span class="emphasis"><em>Dyno</em></span>?</h2></div></div></div>
+<p id="when_you_deploy">When you deploy an application to Heroku, it is run in a container called a <span class="emphasis"><em>dyno</em></span>. The more dynos your app has, the more running instances of your application are available to take requests. Each <span class="emphasis"><em>dyno</em></span> is completely isolated from other dynos. Dynos can be added for additional capacity and for fault tolerance since one dyno going down will not affect other dynos. At the time of writing, each <span class="emphasis"><em>dyno</em></span> represents 512MB of physical RAM.</p>
+<p id="applications_ar">Applications are billed by the dyno/hour prorated to the second, and every application is credited with 750 dyno/hours per month. The caveat here is that Heroku idles any applications running a single dyno when not in use to free resources for other applications.</p>
+<p id="so_a_dyno_is_l">So, a <span class="emphasis"><em>dyno</em></span> is like a small virtual computer, but if your application is split up over multiple compute units, how does Heroku know which dynos to send requests to?</p>
+</div>
+<div class="sect1" data-original-filename="2_how_heroku_works.asciidoc" id="_http_routing">
+<div class="titlepage"><div><div><h2 class="title">HTTP Routing</h2></div></div></div>
+<p id="when_a_user_typ">When a user types your application’s URL into their browser, or tries to make a request to it via an API (and so on), there needs to be a way to connect the user with your application running somewhere deep down within the Heroku platform.  There are thousands of applications running on Heroku, and maintaining a persistent location for an application within the platform is an approach fraught with danger.</p>
+<p id="the_heroku_rout">The Heroku router is a piece of software (written using Erlang, called Hermes) which acts as a gateway between your users and the dynos that are running your code.  In its memory it is aware of every single application currently deployed to the platform and the external URLs that each of these applications should respond to (both the *.herokuapp.com URLs, legacy *.heroku.com URLs and any custom domains that you may have added).  Lastly, it stores the current location of your application on the platform at the current time.</p>
+<p id="therefore_the_">Therefore, the routers have a lot of keep track of. So what exactly does it look like when a request comes in from a user on a web browser?</p>
+<div class="sect2" id="_request_life_cycle">
+<div class="titlepage"><div><div><h3 class="title">Request Life-cycle</h3></div></div></div>
+<p id="so_when_a_user">So, when a user wants to visit your site, he types the address into the bar and hits enter. Then a DNS query is made to your provider. They see you’ve pointed your address at Heroku either using an A record, or a CNAME. With this information the request is sent to the Heroku routers.</p>
+<p id="every_time_a_ro">Every time a router receives a request, it carries out a look up on the URL being requested and determines the location of your application code.  Once found, it fires the request at your code and awaits a response.  This is where your application steps in and handles the request, doing whatever you programmed it to do.</p>
+<p id="once_your_code_">Once your code has completed processing the request and a response has been returned the router will pass the response back to the end user.  The best part about this is that the routers are completely transparent to the outside world.</p>
+<p id="now_that_you_kn_id1">Now that you know what happens when a request goes through, what happens if something hangs in your application? Does Heroku just keep thousands of dead requests alive?</p>
+</div>
+<div class="sect2" id="_long_running_requests">
+<div class="titlepage"><div><div><h3 class="title">Long-Running Requests</h3></div></div></div>
+<p id="as_a_way_of_pro">As a way of protecting the user from long running requests, the router processing the request will only wait for 30 seconds before returning a timeout error to the end user.  The error returned in these instances shows in your application logs as an H12.  Note though that this only counts the first byte returned. Once that first byte of response is returned, the router will then set a 55 second rolling window before an error is returned (in these instances the error code changes to an H15).  This, therefore, means that you are effectively able to stream responses back to the user without worrying about hitting this timeout error.</p>
+<p id="lets_say_were">Let’s say we’re sending a valid request that our server should be able to respond to, we know that our code lives on a dyno but where exactly does a dyno live?</p>
+</div>
+</div>
+<div class="sect1" data-original-filename="2_how_heroku_works.asciidoc" id="_the_dyno_manager_and_dynos">
+<div class="titlepage"><div><div><h2 class="title">The Dyno Manager and Dynos</h2></div></div></div>
+<p id="in_simple_terms">In simple terms, a dyno is an isolated, virtualized Unix container that provides the environment required to run an application.</p>
+<p id="each_dyno_runni">Each dyno running on the platform will be running different application code. For instance, if it were a Ruby on Rails application, one dyno could be running an instance of Unicorn (<a class="ulink" href="http://unicorn.bogomips.org/" target="_top">http://unicorn.bogomips.org/</a>), whereas if you were a Java application you might see Tomcat (<a class="ulink" href="http://tomcat.apache.org/" target="_top">http://tomcat.apache.org/</a>) or something similar.  Across this array of dynos you may have potentially thousands of applications, with each dyno running something different. Some applications running at a higher scale will be running on more than one of those dynos, some will be only running on one or two, but the key thing to remember here is that a single application could be represented <span class="strong"><strong>anywhere</strong></span> within this system.</p>
+<div class="figure" id="FIG2">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 480; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 480; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000000018/figs/how_heroku_works/dyno_manifold.png" alt="The Dyno Manager"></td></tr></table></div></div>
+<div class="figure-title">Figure 2-2. The Dyno Manger</div>
+</div>
+<p id="before_your_app">Before your application code is paired with a dyno, the dynos are all identical. This uniformity allows Heroku to easily manage the thousands of applications on the platform. When you send your code to Heroku it is compiled into a format known internally as a "slug" that can then be quickly run on any of the available dynos. Since Heroku manages such a staggering array of dynos it is inevitable that performance of an underlying server may slow to a halt or a hardware failure will occur. Luckily when this is detected dynos will be automatically stopped and restarted.</p>
+<p id="while__ho">While 10,000 hours of up-time on a hard-drive might sound like a long time, if you’re running 10,000 hard-drives thats one failure per hour.</p>
+<p id="because_of_this">Because of this Heroku advocates building stateless web apps. As an additional measure towards stability, each dyno is restarted once every 24 hours. All of this requires no interaction on your part leaving you to focus on developing your app code.</p>
+<div class="sect2" id="_configuration">
+<div class="titlepage"><div><div><h3 class="title">Configuration</h3></div></div></div>
+<p id="a_given_codebas">A given codebase may have numerous deployments: a production site, a staging site, and any number of local environments maintained by each developer. An open source app may have hundreds or thousands of deployments.</p>
+<p id="although_all_ru">Although all running the same code, each of these deploys have environment-specific configurations. One example would be credentials for an external service, such as Amazon S3. Developers may share one S3 account, while the staging site and production sites each have their own keys.</p>
+<p id="the_traditional">The traditional approach for handling such config vars is to put them under source - in a properties file of some sort. This is an error-prone process, and is especially complicated for open source apps, which often have to maintain separate (and private) branches with app-specific configurations.</p>
+<p id="a_better_soluti">A better solution is to use environment variables, and keep the keys out of the code. On a traditional host or working locally, you can set environment vars in your <code class="literal">bashrc</code>. On Heroku, you use config vars.</p>
+<pre class="screen" id="heroku_config">$ heroku config:set GITHUB_USERNAME=joesmith
+Adding config vars and restarting myapp... done, v12
+GITHUB_USERNAME: joesmith
+
+$ heroku config
+GITHUB_USERNAME: joesmith
+OTHER_VAR:       production
+
+$ heroku config:get GITHUB_USERNAME
+joesmith
+
+$ heroku config:unset GITHUB_USERNAME
+Unsetting GITHUB_USERNAME and restarting myapp... done, v13</pre>
+<p id="heroku_manifest">Heroku manifests these config vars as environment variables to the application. These environment variables are persistent – they will remain in place across deploys and app restarts – so unless you need to change values, you only need to set them once.</p>
+<p id="by_making_use_o">By making use of these configuration variables it is therefore possible to have two different dynos, containing the same application code to behave differently.  For instance, one may be a production grade application that sends emails to it’s users, whilst the other may be a development system that only emails the developers.</p>
+<p id="so_a_dyno_is_a_">So a dyno is a container that holds our code and our configuration, but how do we get our application code on to them? Heroku calls this process "slug compilation."</p>
+</div>
+<div class="sect2" id="_releases">
+<div class="titlepage"><div><div><h3 class="title">Releases</h3></div></div></div>
+<p id="before_we_talk_">Before we talk about the process of creating a release that is deployed onto Heroku, let’s quickly define what a release is.</p>
+<p id="as_far_as_herok">As far as Heroku is concerned, a release comprises a combination of your application code (or slug), and the configuration around it.  Therefore, any changes to either of these will generate a new "release" which can be seen via the <code class="literal">releases</code> commands in the CLI:</p>
+<pre class="screen" id="heroku_releas">$  heroku releases -a neilmiddleton
+=== neilmiddleton Releases
+v62  Deploy e5b55f5                 neil@heroku.com         2013/04/29 22:24:44
+v61  Deploy 5155279                 neil@heroku.com         2013/04/24 18:44:57
+v60  Add-on add newrelic:standard   neil@heroku.com         2013/04/19 00:04:06
+v59  Add papertrail:choklad add-on  neil@heroku.com         2013/04/19 00:03:00
+v58  Deploy 0685e10                 neil@heroku.com         2013/04/18 17:53:20
+v57  Deploy 823fbdf                 neil@heroku.com         2013/04/18 17:25:55
+v56  Remove librato:dev add-on      neil@heroku.com         2013/04/16 23:42:39</pre>
+<p id="by_using_this_d">By using this definition of releases it is therefore possible to rollback to previous versions of your code, and the configuration surrounding it.  This is very useful if a deploy goes bad or your configuration changes cause unforeseen issues.</p>
+</div>
+<div class="sect2" id="_slug_compilation">
+<div class="titlepage"><div><div><h3 class="title">Slug Compilation</h3></div></div></div>
+<p id="from_the_moment">From the moment Heroku detects you are pushing code it will fire up a runtime instance to <span class="emphasis"><em>compile</em></span> your app. In the very early days of Heroku, this wasn’t needed as the only web framework that was supported was Rails. Additionally, external dependencies, such as gems, could simply be pre-installed on every <span class="emphasis"><em>dyno.</em></span>  While that was a neat idea, the list of external dependencies your code might rely on grows exponentially. Instead of trying to pre-install all of that software Heroku relies on tools adopted by the community for dependency management.</p>
+<p id="before_any_code">Before any code is coupled to your dyno or any dependencies are installed the <span class="emphasis"><em>dyno</em></span> has a base image of pre-existing software. This is known internally as the <span class="emphasis"><em>runtime</em></span> since the image will need to have enough functionality to run your code or at least install dependencies needed to run your code. This image is kept fairly lightweight to minimize overhead. All software on the base image, for example cURL, is available as Open Source. This is an intentional choice to maximize code portability and to increase compatibility with a user’s development machine. This includes the base operating system which is and always has been a flavor of Linux. By keeping all the base images of dynos the same, security updates of components are completed by Heroku engineers quickly and with little or no impact to running applications.</p>
+<p id="while_some_crit">While some criticisms over Platforms as a Service (PaaS) circle around the so-called "Vendor lock-in," such incompatibilities in the ecosystem would mean there would be a cost associated to adopting the platform. It is Heroku’s goal to provide as seamless and transparent of a deploy process as possible while maintaining reliability and consistency. Heroku supports open source software and so should you.</p>
+<p id="so_now_that_he">So, now that Heroku has a secure base image with suitable tools, and they have your application code, they run a buildpack to determine exactly what needs to be done to set up your code to run. The buildpacks are all open source and can be forked and customized. For more information see the section on how buildpacks work <a class="xref" href="">???</a>.</p>
+<p id="once_the_buildp">Once the buildpack is done executing successfully, a snapshot of the finished product (minus runtime image) is placed in storage for easy access at later time. This product is referred to as a <span class="emphasis"><em>slug</em></span> and you may have noticed while deploying that Heroku will tell you your slug size. One reason to pay attention is that larger slugs take longer to transfer over the network, and therefore take longer to spin up on new dynos.</p>
+<p id="now_that_your_s">Now that your slug is saved, dynos carrying old application code are sent commands to begin killing off their processes. While this is being done your code is copied over to other dynos. Once the old application quits running, the new dynos are brought online and made available to the routers ready to serve requests.</p>
+<p id="since_heroku_ke">Since Heroku keeps a copy of your application in storage, if you need to scale out to more dynos they can easily copy the slug to a new dyno and spin it up. This type of quick turnaround means that we can do things like run a scheduler in it’s own dyno, and every time a command is executed on one of your apps via the <code class="literal">run</code> command like <code class="literal">$ heroku run bash</code>, you are actually running it inside of a completely fresh and isolated dyno. This protects you from accidentally <code class="literal">rm -rf</code>-ing your production web server.</p>
+<p id="now_that_you_kn_id2">Now that you know a bit more about what actually goes on in the process of building a <span class="emphasis"><em>slug</em></span> and spinning it up as a running process, let’s take a look at how we can use this to our advantage.</p>
+</div>
+<div class="sect2" id="_scale_out_not_up">
+<div class="titlepage"><div><div><h3 class="title">Scale Out, Not Up</h3></div></div></div>
+<p id="traditionally_">Traditionally, when servers run out of capacity they are scaled up. That is, developers turn off the machine and add RAM, a bigger hard drive, more cores, a better networking card, etc., and then turn it back on. This might buy some time but eventually as an application grows in user-base, a server will max out on upgrades and engineers will have no choice but to scale out. Scaling out is when you add extra servers for capacity rather than extra capacity to your server. This is a great practice since you can scale out in an unlimited way, where as scaling up is very limited. Typically scaling up is easy, and scaling out is hard. It requires provisioning new hardware, networking it, installing software, patching and updating that software, building out a load balancing infrastructure and then buying a bunch of pagers since more hardware means more failures.</p>
+<p id="when_you_run_on">When you run on Heroku your application is already primed to scale out, all without the pagers. By storing <span class="emphasis"><em>compiled</em></span> application code into <span class="emphasis"><em>slugs</em></span> and keeping this separate from your running instances means you are given a massive amount of <span class="emphasis"><em>elasticity.</em></span>  When you give Heroku the command they pair your compiled slug with a dyno to give your more capacity. This means you could take your app from two dynos to one-hundred-and-two dynos with one command (that’s 51 gigs of RAM if you’re doing the math at home). So if your big V2 product launch is coming up in a few days, you can sleep sound knowing that extra capacity is available if you need it, but you’re not obligated to use it.</p>
+<p id="this_ability_to">This ability to scale out is not by accident, and it comes with a host of side benefits. As we mentioned earlier, it makes your application more fault tolerant of hardware errors. For instance a single server could be running several dynos when the memory fails.  Normally this would be a significant issue in traditional environments, but the dyno manager is able to spot the dead instance and migrate the dynos somewhere else in a heartbeat.</p>
+<div class="figure" id="FIG3">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 480; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 480; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000000018/figs/how_heroku_works/dyno_failure.png" alt="The Dyno Manager"></td></tr></table></div></div>
+<div class="figure-title">Figure 2-3. The dyno manager recovering from a node failure</div>
+</div>
+<p id="another_benefit">Another benefit of the dyno architecture is that of isolation. Each dyno is a completely separate container from all others so there is no possibility of another application  accessing your application code, or suffering because a rogue dyno is spinning out of control and using up all the CPU on the host instance.  As far as you as the developer are concerned, these are all separate entities.</p>
+</div>
+<div class="sect2" id="_erosion_resistance">
+<div class="titlepage"><div><div><h3 class="title">Erosion Resistance</h3></div></div></div>
+<p id="a_nontechnical">A non-technical benefit to the dyno architecture is that of "Erosion Resistance."  Software erosion is what happens to your app without your knowledge or consent over time: it was working at one point, but doesn’t work anymore. Imagine a security vulnerability is discovered in the operating system your app is running. If you don’t patch the vulnerability quickly then attackers may take advantage of the exploit and gain access to your code, or worse. While you didn’t intentionally put the vulnerability in your app, doing nothing erodes the ability of your app to perform it’s job safely and securely.</p>
+<p id="when_your_appli">When your application experiences an error due to an erosion of software, you have to invest energy diagnosing and resolving the problem. Erosion is a problem which all applications suffer from regardless of size, and one which many applications have problems dealing with if left for too long.</p>
+<p id="software_erosio">Software erosion can be thought of principally as your application getting "out of date."  Your application consists of many moving parts, some of which are being constantly updated by the communities around the world.  For instance, you have operating system upgrades, kernel patches, and infrastructure software (e.g., Apache, MySQL, ssh, OpenSSL) updates to fix security vulnerabilities or add features. All of these need keeping up to date and are often left by the wayside by some due to the effort required to keep them up to date.</p>
+<p id="because_all_dyn">Because all dynos are derived from the same image, it is guaranteed to be the latest and greatest image that the Heroku operations team has put together at the time the <span class="emphasis"><em>dyno</em></span> is created.  These images are put through lengthy test processes and evaluation before being placed into production.</p>
+<p id="once_your_appli_id1">Once your application is up and running its dynos are silently <span class="emphasis"><em>cycled</em></span> automatically once a day to ensure that the dyno image version they are running is the latest available runtime (your slug will stay the same) You can see this in your application logs as <span class="emphasis"><em>Cycling</em></span> against a particular dyno.  Therefore, if you were to deploy an application to Heroku and leave it for several months, it would be no more out of date than one deployed a day ago.</p>
+</div>
+<div class="sect2" id="_workers_and_background_processing">
+<div class="titlepage"><div><div><h3 class="title">Workers and Background processing</h3></div></div></div>
+<p id="not_all_dynos_n">Not all dynos need be ones that respond to HTTP requests.  A dyno can be thought of like a container for UNIX processes. Dynos can therefore handle a variety of different types of tasks. While your web dynos will handle all your web requests, other dynos may also be tasked with carrying out some sort of background processing, be it working a job queue, sending emails or managing event triggers based on a calendar.  The list of possibilities here is endless.  However, note that these dynos still have an attached cost and will therefore need consideration when planning your application architecture and projecting costs.</p>
+<p id="a_very_common_u">A very common use case of a worker dyno is to process outgoing email. When a user signs up on a website, they will typically get a confirmation or welcome email. If you are sending this message during your web request, your user must wait for the email transaction to complete before they get to go to the next page. This makes your site seem slow and can actually lead to timeouts. By putting that information into a lightweight queue, and sending that email off from a background worker, you can improve speed of your web server while increasing its capacity.</p>
+<p id="you_can_also_sc">You can also schedule one-off background tasks with Heroku’s scheduler. This is like a worker, but only runs a specific command for a given interval. This is very similar to how you might schedule a task to be run with Cron. Tasks run by scheduler are only charged for the time they use, so if a task only takes 12 minutes to complete your account will only be debited 12 dyno/minutes.</p>
+<p id="now_that_weve_">Now that we’ve got our web stack and our worker infrastructure under wraps, what other features does Heroku provide to help developers?</p>
+</div>
+</div>
+<div class="sect1" data-original-filename="2_how_heroku_works.asciidoc" id="_other_services">
+<div class="titlepage"><div><div><h2 class="title">Other Services</h2></div></div></div>
+<p id="weve_discussed">We’ve discussed the main components of the Heroku platform that keep your application code up and running, now let’s talk about some of the supporting services that comprise the parts of the platform the user doesn’t see; these include the "Logplex," deployment systems and the various add-ons that you are able to attach to your application to provide ancillary services.</p>
+<div class="sect2" id="LOGPLEX">
+<div class="titlepage"><div><div><h3 class="title">The Logplex</h3></div></div></div>
+<p id="every_applicati">Every application generates output, be it content via generated web pages, or data via an external API.  Another form of output that applications create are log files on the server. If you’ve run a production web server, you’ll know there is no substitute for easy access to logs.</p>
+<p id="in_a_traditiona">In a traditional web server configuration many various log files are created.  First, you have the regular system log files that are generated by the operating system itself.  Then you have the log files created by the services running on the server, such as Apache (web server) logs, or PostgreSQL (database server) logs.  Lastly, you have your own application log files.</p>
+<p id="typically_all_">Typically, all of these files are written to the local disk on their respective servers before processes such as UNIX’s logrotate come along and archive the files to another location, usually compressing them down.  A respectable system administrator at this point will then periodically archive these log files out to a different location for later interrogation or reference.</p>
+<p id="one_of_the_down">One of the downsides of log files is they affect the way we look at the data within a system.  Application and system logs contain a time-ordered stream of information about what is happening in your application at any given time.  This stream is constant and ongoing, which is not how they are typically represented in log files which tend to infer that there is a beginning and an end. Therefore, Heroku developed the Logplex.</p>
+<p id="the_logplex_is_">The Logplex is an open source tool that replaces the log file concept by providing a constant stream of information flowing from your application with no beginning and no end.  What’s more, this stream contains a single canonical source of information from every part of the stack, be it the routers, one of your dynos, and so on. This means that as a developer you are able to tap into this feed at any time and see all of your application’s activity in one place at the same time. Therefore, Heroku does not provide log files per se, but offer this stream.  Should you wish to capture this information, Heroku allow you to <span class="emphasis"><em>drain</em></span> this information into an external store.</p>
+<p id="a_sample_of_a_s">A sample of a simple web applications logplex output:</p>
+<pre class="screen" id="jul__">Jul 19 19:37:30 MyApplication_Production heroku/router:  GET
+  www.myapplication.com/admin/applicants dyno=web.1 queue=0 wait=0ms
+  service=381ms status=200 bytes=22849
+Jul 19 19:37:30 MyApplication_Production app/web.1:  Completed 200
+  OK in 370ms (Views: 213.0ms | ActiveRecord: 131.6ms)
+Jul 19 19:38:27 MyApplication_Production app/postgres:  [5-1] postgres
+  [www] LOG:  duration: 61.517 ms  statement: SELECT count(*) FROM
+  pg_stat_activity;
+Jul 19 19:41:17 MyApplication_Production heroku/router:  GET
+  www.myapplication.com/ dyno=web.2 queue=0 wait=0ms service=14ms
+  status=302 bytes=115
+Jul 19 19:41:17 MyApplication_Production app/web.2:  Started GET
+  "/" for 180.76.5.168 at 2012-07-19 16:41:17 +0000
+Jul 19 19:41:17 MyApplication_Production app/web.2:  Processing by
+  User::SessionsController#index as HTML
+Jul 19 19:41:17 MyApplication_Production app/web.2:  Completed  in 6ms
+Jul 19 19:41:57 MyApplication_Production app/postgres:  [19753-1]
+  [www] LOG:  checkpoint starting: time
+Jul 19 19:41:58 MyApplication_Production app/postgres:  [19754-1]
+  [www] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0
+  transaction log file(s) added, 0 removed, 1 recycled; write=0.000 s,
+  sync=0.000 s, total=0.014 s; sync files=0, longest=0.000 s,
+  average=0.000 s
+Jul 19 19:45:38 MyApplication_Production app/postgres:  [5-1] postgres
+  [www] LOG:  duration: 61.340 ms  statement: SELECT oid, typname
+  FROM pg_type where typtype = 'b' AND typname IN ('hstore')
+Jul 19 19:46:58 MyApplication_Production app/postgres:  [19755-1]
+  [www] LOG:  checkpoint starting: time</pre>
+</div>
+<div class="sect2" id="_databases_and_other_add_ons">
+<div class="titlepage"><div><div><h3 class="title">Databases and Other Add-ons</h3></div></div></div>
+<p id="so_far_we_have_">So far we have talked about how Heroku can take your application code and run it in the cloud, allowing you to scale to meet your application needs.  However, we haven’t talked about how Heroku provide all the other services that a modern web application needs.</p>
+<p id="it_is_not_uncom">It is not uncommon these days for an application to require more than just code.  Databases are an extremely common requirement, as are external services such as Email SMTP or caching services such as Memcached.  Lots of other services are becoming more common as well: Redis, AMQP, Full text search, image and video processing, NoSQL databases and SMS are all growing in usage on a daily basis.</p>
+<p id="so_how_does_her">So how does Heroku provide these services?  Well, in short, Heroku doesn’t.  From a very early stage, Heroku put together the Add-on program (<a class="ulink" href="https://addons.heroku.com/provider" target="_top">https://addons.heroku.com/provider</a>) which is a process whereby an external vendor can develop a service and then make it available to the platform via the add-ons API.</p>
+<p id="by_using_this_a">By using this approach it has been possible for a library of add-ons to build up over time that can provide almost all the ancillary services that an application might ever need to consume.  As most of these services are attached to via simple configuration the effort required to use these services with their own application is very low.</p>
+<div class="tip" id="more_informatio_id1"><p id="more_informatio_id2">More information on the add-ons library can be found at <a class="ulink" href="https://addons.heroku.com/" target="_top">https://addons.heroku.com/</a></p></div>
+<p id="one_of_the_most_id1">One of the most popular add-ons is one that is provided by Heroku themselves.  This add-on is Heroku Postgres, which provides PostgreSQL services to all applications.</p>
+<p id="on_initial_depl">On initial deployment, Heroku will detect the language and type of your application. If you are deploying using a popular database backed web framework, such as Ruby on Rails, then Heroku will provision and configure the PostgreSQL add-on for your application. This means that deploying a database-driven application is as simple pushing your code to Heroku and running a migration.</p>
+<p id="the_heroku_post">The Heroku Postgres service comes in a variety of shapes and forms, so there is a dedicated chapter to this topic later on in the book.</p>
+<p id="however_not_ev">However, not everyone requires PostgreSQL, but might want to use MySQL or some other form of database with their application code.  Whilst Heroku recommends PostgreSQL, most of the alternatives can be found in the add-ons library (for example Amazon’s RDS service or the ClearDB MySQL service).  For more information on these alternative database services please see the relevant sections in the add-ons library.</p>
+</div>
+<div class="sect2" id="_deployment_systems">
+<div class="titlepage"><div><div><h3 class="title">Deployment Systems</h3></div></div></div>
+<p id="one_of_the_most_id2">One of the most commonly overlooked parts of the Heroku platform is that of the deployment system.  This incredibly complex part of Heroku is what takes your code, and transforms it into a platform friendly version that can be scaled up and down instantly and at will.  What’s more, the deployment system also alters your application to suit the platform, injecting in various components and configuration to make your life, as the developer, much easier and simpler.</p>
+<p id="all_heroku_depl">All Heroku deployments are carried out via the use of the Git source control system.  By <span class="emphasis"><em>pushing</em></span> your code to Heroku you are asking the platform to deploy your code.  But how does this work?</p>
+<p id="well_for_start">Well, for starters, Heroku holds a copy of the Git repository for every single application on the platform.  When you push into the <code class="literal">master</code> branch, you initiate a deploy and Heroku will start processing your repository ready for deployment. You can push into other branches if you wish, but these will only be stored on Heroku and not deployed as the platform will only every deploy the master branch.  However, it is possible to push from a remote feature branch such as <code class="literal">staging</code> into the Heroku <code class="literal">master</code>.  More on this later in the chapter where we talk about application management.</p>
+<p id="when_heroku_rec">When Heroku receives your code via push several things then occur.  Heroku takes your code and identifies it (for instance, as a Rails application, Django, Java and so on).  Once identified it runs the code through a buildpack.  Buildpacks are special programs which understand the structure of your application and its appropriate conventions.  By understanding your application structure these buildpacks are able to make the changes required for your application to function correctly on the platform.  This can include a variety of changes such as ensuring configuration settings are correct, to injecting application framework plugins, or overwriting configuration files such as database configurations.</p>
+<p id="buildpacks_are_">Buildpacks are provided by the Heroku operations team, but also by other open source developers.  Anyone can write their own buildpack for their own means.  For more information on Buildpacks in general please see <a class="xref" href="">???</a>.</p>
+<p id="once_your_appli_id2">Once your application has been prepared, it is stored in a`slug`.  This slug is stored in a filestore waiting for a deployment request as mentioned earlier.  In most cases the slug is immediately deployed to new dynos, replacing the ones that you already have running.</p>
+<p id="most_use_cases_">Most use cases already have a buildpack pre-built by the Heroku operations team.  For instance, if you were to push a Django application to Heroku, the hard work of slug compilation is done for you and there is nothing more required for you to do.  Should you wish to push something a little off the beaten track, or need to customize the way that your application deployments are handled, you are now able to write your own custom buildpacks and ask the platform to use these instead of the default.  More information on this can be found in the later in the book on buildpacks.</p>
+<div class="tip" id="all_of_the_defa_id1"><p id="all_of_the_defa_id2">All of the default buildpacks can be seen on GitHub here:  <a class="ulink" href="https://github.com/heroku" target="_top">https://github.com/heroku</a></p></div>
+</div>
+</div></section>

@@ -1,0 +1,2210 @@
+<section class="preface" data-original-filename="ch00.xml" id="id_d1e13"><div class="titlepage"><div><div><h1 class="title">Getting Started</h1></div></div></div>
+<div class="note" id="unless_youre_w_id1"><p id="unless_youre_w_id2">Unless you're working on one of the few books that will
+    continue to use the old Subversion toolchain, please see the
+    <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/pr01.html" target="_top">new
+    guidelines</a> geared toward the <a class="ulink" href="http://atlas.labs.oreilly.com" target="_top">Atlas platform</a>. If you are using
+    Atlas, you should consider the guidelines you are reading to be
+    deprecated.</p></div>
+<p id="docbook_is_an_o"><a class="ulink" href="http://docbook.org" target="_top">DocBook</a> is an OASIS standard
+  for XML that is ideal for writing long, technical documents that have
+  complex structure and cross-references. With its semantic tagging, DocBook
+  can be rendered as PDF for printing, HTML, <code class="literal">man</code> pages, audio, or even Braille. This
+  versatility and <span class="keep-together">reusability</span> make
+  DocBook 4.5 XML the preferred format for <span class="keep-together">O’Reilly</span> books.</p>
+<p id="getting_started">Not only does this document explain how to start
+  writing in DocBook, but it was created using the same markup and toolchain
+  used for a typical O’Reilly book, so you can treat it as a model for your
+  own manuscript. <a class="xref" href="ch03.html" title="Chapter 3. DocBook XML Markup Guidelines">Chapter 3</a> contains
+  information about markup.</p>
+<p id="weve_got_nothi">We’ve got nothing against LaTeX, troff, or any other formatting markup
+  system. But typesetting markup like LaTeX is inherently focused on
+  formatting—font size, margins, alignment, etc. We’d rather you spend your
+  time focused on the semantic structure of your book (how sections are
+  divided, which information goes in a sidebar versus a note, and so on), and
+  that’s where DocBook shines. In the same way most well-designed websites
+  separate content from formatting using XHTML and CSS (XHTML for the content,
+  and CSS for the formatting), DocBook lets us abstract formatting decisions
+  away from content decisions.</p>
+<p id="particularly_as">Particularly as O’Reilly expands its efforts to provide content in
+  multiple formats and at multiple stages of the content’s life cycle,
+  cost-effectively generating multiple, distinct output formats from the same
+  source document becomes critical, even though it means losing some degree of
+  granular control over the output.</p>
+<p id="what_does_that_">What does that mean for your book? It means that you’ll be able to
+  view drafts of your book throughout the authoring process that are formatted
+  much as they will be for print, and it means once your book is finished, it
+  will go live almost immediately on <a class="ulink" href="http://my.safaribooksonline.com/?portal=oreilly" target="_top">Safari Books
+  Online</a> and other digital and ebook retail channels, rather than
+  first needing to be converted into DocBook from another format, which can
+  take a week or longer.</p>
+<div class="sect1" data-original-filename="ch00.xml" id="will_what_i_see_in_the_xml_editor_mirror_the_pdf_other_electronic_formats">
+<div class="titlepage"><div><div><h2 class="title">Will What I See in the XML Editor Mirror the PDF? Other Electronic
+    <span class="keep-together">Formats</span>?</h2></div></div></div>
+<p id="docbook_markup_">DocBook markup specifies the structure and semantics of your
+    document, but not the appearance. DocBook isn’t a WYSIWYG format, so it
+    will display differently in your XML editor than it will after rendering
+    to PDF and other formats downstream. This not only means that fonts and
+    formatting will display differently, but line breaks may differ as
+    well.</p>
+<p id="the_oreilly_to">The O’Reilly toolchains that transform your DocBook into its final
+    form (both print and downstream electronic formats) rely on semantic XML
+    tags that you apply to the elements of your text. For PDFs, those tags are
+    processed in combination with customized XSL-FO stylesheets and a
+    commercial FO to PDF processor to render your content into a PDF. See
+    <a class="xref" href="ch02.html#triggering_pdf_builds" title="Triggering PDF Builds of Your Book">“Triggering PDF Builds of Your Book”</a> for more information. Downstream
+    digital channels (such as <a class="ulink" href="http://my.safaribooksonline.com/?portal=oreilly" target="_top">Safari Books
+    Online</a> and <a class="ulink" href="http://oreilly.com" target="_top">oreilly.com</a>) use the XML tags analogously
+    (but via different toolchains) to transform or render your content for
+    their own presentation formats.</p>
+</div>
+<div class="sect1" data-original-filename="ch00.xml" id="for_more_on_docbook">
+<div class="titlepage"><div><div><h2 class="title">For More on DocBook</h2></div></div></div>
+<p id="this_guide_is_t">This guide is tailored to help authors get the most out of
+    O’Reilly’s DocBook authoring toolchain. For more general information on
+    DocBook XML, see Norm Walsh’s excellent <a class="ulink" href="http://www.docbook.org/tdg/en/html/docbook.html" target="_top">DocBook: The
+    Definitive Guide</a>. You’ll find <a class="ulink" href="http://www.docbook.org/tdg/en/html/part2.html" target="_top">reference
+    pages</a> for each DocBook element, including a content model, a
+    description of purpose, a list of parents that can contain it and children
+    that can be nested in it, and allowed attributes. Other resources that may
+    be helpful include:</p>
+<div class="itemizedlist" id="docbookorgthe_"><ul class="itemizedlist">
+<li class="listitem"><p id="docbookorg"><a class="ulink" href="http://www.docbook.org/" target="_top">DocBook.org</a></p></li>
+<li class="listitem"><p id="the_docbook_dtd"><a class="ulink" href="http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" target="_top">The
+        DocBook DTD</a></p></li>
+<li class="listitem"><p id="bob_staytons_d"><a class="ulink" href="http://www.sagehill.net/docbookxsl/index.html" target="_top">Bob
+        Stayton’s <span class="emphasis"><em>DocBook XSL: The Complete
+        Guide</em></span></a></p></li>
+</ul></div>
+</div></section><section class="chapter" data-original-filename="ch01.xml" id="picking_an_xml_editor"><div class="titlepage"><div><div><h1 class="title">Chapter 1. Picking an XML Editor</h1></div></div></div>
+<div class="sect1" data-original-filename="ch01.xml" id="which_xml_editor_should_i_use">
+<div class="titlepage"><div><div><h2 class="title">Which XML Editor Should I Use?</h2></div></div></div>
+<p id="to_get_right_to">To get right to the point: you can use whatever tool you’d like to
+    write DocBook, but we recommend you use some kind of XML editor. A
+    short-but-sweet list of authoring tools is available on the <a class="ulink" href="http://wiki.docbook.org/DocBookTools" target="_top">DocBook wiki</a>. The
+    editor best suited to you depends on your background and personal
+    preferences. Some authors prefer the word processing–type of experience
+    found in an editor like XMLmind, while others are more comfortable working
+    directly in the markup using a text editor like vi or Emacs. The O’Reilly
+    Tools and Production staff work with some combination of the
+    following:</p>
+<div class="variablelist" id="oxygen_xml_auth"><dl class="variablelist">
+<dt><span class="term"><a class="ulink" href="http://www.oxygenxml.com/download_oxygenxml_author.html" target="_top">oXygen
+        XML Author</a></span></dt>
+<dd>
+<p id="a_free_trial_ve">A free trial version of oXygen is available to authors. If you
+          decide you’d like to use oXygen, please write to
+          <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code> and we will provide you with a
+          floating license. oXygen has several features that make it an
+          attractive choice:</p>
+<div class="itemizedlist" id="validation_on_t_id1"><ul class="itemizedlist">
+<li class="listitem"><p id="validation_on_t_id2">Validation on the fly</p></li>
+<li class="listitem"><p id="builtin_svn_cl">Built-in SVN client</p></li>
+<li class="listitem"><p id="text_editor_and">Text editor and word processing–type views</p></li>
+<li class="listitem"><p id="now_supports_xi">Now supports <a class="ulink" href="http://www.oxygenxml.com/xinclude_support.html" target="_top"><code class="literal">XInclude</code>s</a>
+              by default</p></li>
+</ul></div>
+</dd>
+<dt><span class="term"><a class="ulink" href="http://www.xmlmind.com/archive/xmleditor/3.5.2/" target="_top">XMLmind XML
+        Editor (XXE)</a></span></dt>
+<dd>
+<p id="the_production_">The production editors at O’Reilly continue to favor XXE for
+          its word processor–like interface and ease of use. Some of the
+          advantages of using XXE include:</p>
+<div class="itemizedlist" id="validation_on_t_id3"><ul class="itemizedlist">
+<li class="listitem"><p id="validation_on_t_id4">Validation on the fly</p></li>
+<li class="listitem"><p id="gui_interface_i">GUI interface is similar to popular word-processing
+              programs</p></li>
+<li class="listitem"><p id="oreillycustom">O’Reilly-customized CSS and keyboard shortcuts, which may
+              enhance the manuscript writing process</p></li>
+</ul></div>
+<p id="more_details_on">More details on using XXE can be found in O’Reilly’s <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000001577/" target="_top">XMLmind Editor
+          Tutorial</a>. Please note that we ask that you use a slightly
+          older version of XMLmind Professional (<a class="ulink" href="http://www.xmlmind.com/archive/xmleditor/3.5.2/" target="_top">version
+          3.5.2</a>), which is free and permits commercial use, unlike
+          newer versions that require a license.</p>
+</dd>
+<dt><span class="term"><a class="ulink" href="http://www.pinkjuice.com/howto/vimxml/" target="_top">Vim with key
+        bindings</a></span></dt>
+<dd><p id="the_vim_as_xml">The <a class="ulink" href="http://www.pinkjuice.com/howto/vimxml/" target="_top">“Vim
+          as XML Editor” tutorial</a> helps you customize <a class="ulink" href="http://www.vim.org/" target="_top">Vim</a> so it can function as an XML
+          editor. Vim lets you map keys to execute frequently used key
+          sequences or to invoke functions and commands, which means you can
+          map DocBook element entries to key bindings. The advantages of using
+          Vim with key bindings are that you don’t have to learn a new editor
+          if you already know Vim; it’s fast and available for many platforms;
+          and it offers a vast range of functionality for text editing. The
+          disadvantages are that it offers no validation on the fly, no
+          WYSIWYG view, and no tree view. More resources <a class="ulink" href="http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_%28Part_1%29" target="_top">here</a>
+          and <a class="ulink" href="http://vimdoc.sourceforge.net/htmldoc/map.html" target="_top">here</a>.</p></dd>
+<dt><span class="term"><a class="ulink" href="http://www.thaiopensource.com/nxml-mode/" target="_top">Emacs nXML
+        mode</a></span></dt>
+<dd><p id="nxml_mode_is_an">nXML mode is an XML editing module for the Emacs text editor.
+          Like Vim with key bindings, the big advantage is that all your
+          favorite Emacs text editing commands can be used with nXML mode
+          without restriction, saving you from having to learn a new editor.
+          It shares some downsides with Vim: no WYSIWYG view and no tree view.
+          However, nXML does provide a mechanism for <a class="ulink" href="http://www.xmlhack.com/read.php?item=2061#id5374822" target="_top">identifying
+          validity errors</a> (though if you’re using
+          <code class="literal">XInclude</code>s, enabling validation on the fly
+          requires some <a class="ulink" href="http://www.xmlhack.com/read.php?item=2061#id5374990" target="_top">extra
+          config</a>) as well as customizable <a class="ulink" href="http://www.xmlhack.com/read.php?item=2061#id5374990" target="_top">syntax
+          highlighting</a>. Get more information on nXML mode <a class="ulink" href="http://www.emacswiki.org/cgi-bin/wiki?UsingNxmlModeWithDocBook" target="_top">here</a>.</p></dd>
+</dl></div>
+<p id="the_choice_of_e">The choice of editor is yours, but we urge you to use an XML editor
+    that will help you maintain valid DocBook 4.5 as you go. <a class="ulink" href="http://www.sagehill.net/docbookxsl/ToolsSetup.html#Validation" target="_top">Validation</a>
+    is not difficult (see <a class="xref" href="ch01.html#validating_your_xml" title="Validating Your XML">“Validating Your XML”</a>). Please keep
+    in mind that invalid documents will not be accepted into
+    Production.</p>
+</div>
+<div class="sect1" data-original-filename="ch01.xml" id="validating_your_xml">
+<div class="titlepage"><div><div><h2 class="title">Validating Your XML</h2></div></div></div>
+<p id="the_xml_files_y">The XML files you submit to Production should be valid DocBook 4.5.
+    Many XML editors (like XXE or oXygen) will validate your XML for you on
+    the fly. If you’d prefer to validate via the command line, you can use
+    <code class="literal">xmllint</code>. This tool is preinstalled on
+    Mac OS X and is available for a wide range of operating systems as part of
+    the <code class="filename">libxml2</code> package from <a class="ulink" href="http://xmlsoft.org/downloads.html" target="_top">xmlsoft</a>.</p>
+<p id="to_validate_a_b">To validate a <code class="filename">book.xml</code> file using <code class="literal">xmllint</code>, run the following command:</p>
+<pre class="programlisting" id="xmllint_pos_id1">$ <strong class="userinput"><code>xmllint --postvalid --xinclude --noout book.xml</code></strong></pre>
+<p id="any_validity_er">Any validity errors will be printed to standard output. If the files
+    are valid, no output will be printed.</p>
+<div class="sect2" id="validating_locally">
+<div class="titlepage"><div><div><h3 class="title">Validating Locally</h3></div></div></div>
+<p id="by_default_xml">By default, <code class="literal">xmllint</code> validates over the Internet
+      against the DTD located at the URL listed in the XML file’s DOCTYPE
+      declaration. If validating over the Internet is undesirable, you can set
+      up a local copy of the DocBook 4.5 DTD and a local XML catalog for
+      validation purposes.</p>
+<p id="the_easiest_way">The easiest way to install a copy of the <a class="ulink" href="http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" target="_top">DocBook 4.5
+      DTD</a> is via your favorite package manager. It is available via
+      <a class="ulink" href="http://trac.macports.org/browser/trunk/dports/textproc/docbook-xml-4.4/Portfile" target="_top">MacPorts</a>
+      and <a class="ulink" href="http://cygwin.com/packages/docbook-xml44/docbook-xml44-4.4-2" target="_top">Cygwin</a>,
+      among other packaging systems.</p>
+<p id="many_packaging_">Many packaging systems will create the necessary <code class="filename">catalog</code> file for you, but if you need to
+      write one yourself, you can find more details on doing so at <a class="ulink" href="http://www.sagehill.net/docbookxsl/WriteCatalog.html" target="_top">http://www.sagehill.net/docbookxsl/WriteCatalog.html</a> and
+      a sample catalog file at <a class="ulink" href="http://www.sagehill.net/docbookxsl/ExampleCatalog.html" target="_top">http://www.sagehill.net/docbookxsl/ExampleCatalog.html</a>.</p>
+<p id="the_default_loc">The default location where <code class="literal">xmllint</code> will look for the catalog file is
+      <code class="filename">/etc/xml/catalog</code>. Alternatively,
+      you can set the environment variable <code class="literal">XML_CATALOG_FILES</code> to define another default
+      location for catalog files. Once you’ve got the DTD and catalog set up
+      locally, you can validate as before:</p>
+<pre class="programlisting" id="xmllint_pos_id2">$ <strong class="userinput"><code>xmllint --postvalid --xinclude --noout book.xml</code></strong></pre>
+</div>
+</div></section><section class="chapter" data-original-filename="ch02.xml" id="docbook_and_subversion"><div class="titlepage"><div><div><h1 class="title">Chapter 2. DocBook and Subversion</h1></div></div></div>
+<p id="subversion_is_a"><a class="ulink" href="http://subversion.apache.org/" target="_top">Subversion</a> is an
+  open source version control system that keeps track of the changes you make
+  to your book files.<a href="#ftn.id590956" class="footnote"><sup class="footnote" id="id590956">[1]</sup></a> Throughout the writing process, you can commit revised
+  versions of the files to the repository with a log message, which will be
+  associated with a revision number. Among other features, Subversion allows
+  you to revert back to any older version of your files, as well as run diffs
+  to easily compare versions. Subversion also supports multiple working copies
+  of the same project, which means you can have many people collaborating on
+  the same set of files simultaneously.</p>
+<div class="sect1" data-original-filename="ch02.xml" id="using_an_oreilly_svn_repo">
+<div class="titlepage"><div><div><h2 class="title">Using an O’Reilly Subversion Repository</h2></div></div></div>
+<p id="once_you_have_s">Once you have spoken with your editor and decided that you are
+    working on a book that needs to use the Subversion toolchain rather than
+    Atlas, email the Tools group at <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>. We
+    will create an SVN repository for you on an O’Reilly server that contains
+    <code class="filename">book.xml</code> and other files to use as a
+    template for getting started. We will also set you up with a username and
+    password. Here are some nice features of using an O’Reilly SVN
+    repository:</p>
+<div class="itemizedlist" id="it_is_easy_to_e_id1"><ul class="itemizedlist">
+<li class="listitem"><p id="it_is_easy_to_e_id2">It is easy to exchange files with your editor and coauthors for
+        review.</p></li>
+<li class="listitem"><p id="it_is_easy_for_">It is easy for the O’Reilly Tools team to help you with any
+        DocBook questions you may have along the way.</p></li>
+<li class="listitem"><p id="you_can_create__id1">You can create PDF builds of your book each time you commit
+        changes.</p></li>
+<li class="listitem"><p id="the_files_are_s">The files are stored in a safe and secure location that is
+        backed up regularly.</p></li>
+<li class="listitem"><p id="you_have_the_ab">You have the ability to view and merge changes from earlier
+        versions of your book.</p></li>
+</ul></div>
+<div class="note" id="the_repository__id1">
+<p id="the_repository__id2">The repository URL for a standard O’Reilly book follows this
+      structure:</p>
+<p id="httpsprodor"><span class="emphasis"><em>https://prod.oreilly.com/internal/books/<em class="replaceable"><code>ISBN13</code></em>/current/</em></span></p>
+</div>
+<div class="sect2" id="gui_svn_clients">
+<div class="titlepage"><div><div><h3 class="title">Subversion Clients</h3></div></div></div>
+<p id="you_can_choose_">You can choose your preferred SVN client, whether command-line or GUI. Here
+      are some excellent free GUI clients:</p>
+<div class="itemizedlist" id="tortoisesvn_wi_id1"><ul class="itemizedlist">
+<li class="listitem"><p id="tortoisesvn_wi_id2"><a class="ulink" href="http://tortoisesvn.tigris.org/" target="_top">TortoiseSVN
+          (Windows)</a></p></li>
+<li class="listitem"><p id="scplugin_mac"><a class="ulink" href="http://scplugin.tigris.org/" target="_top">SCPlugin
+          (Mac)</a></p></li>
+<li class="listitem"><p id="svnx_mac"><a class="ulink" href="http://www.lachoseinteractive.net/en/community/subversion/svnx/features/" target="_top">svnX
+          (Mac)</a></p></li>
+<li class="listitem"><p id="rapidsvn_multi"><a class="ulink" href="http://rapidsvn.tigris.org/" target="_top">RapidSVN
+          (multiplatform)</a></p></li>
+<li class="listitem"><p id="subcommander_m"><a class="ulink" href="http://subcommander.tigris.org/" target="_top">Subcommander
+          (multiplatform)</a></p></li>
+</ul></div>
+<p id="a_more_comprehe">A more comprehensive list can be found <a class="ulink" href="http://en.wikipedia.org/wiki/Comparison_of_Subversion_clients" target="_top">here</a>.
+      O’Reilly’s documentation generally refers to the <a class="ulink" href="http://subversion.apache.org/" target="_top">command-line client</a>, but the
+      concepts and much of the vocabulary are the same across GUIs. For
+      example, running <code class="literal">svn update</code> on the command line is
+      analogous to right-clicking in an <span class="keep-together">SCPlugin</span> project directory and selecting
+      <code class="filename">Subversion Update</code>.</p>
+<p id="although_youre">Although you’re welcome to use any GUI client you like, please
+      keep in mind that O’Reilly may not be able to provide support for all of
+      them. You may need to rely on the program’s online documentation.</p>
+</div>
+<div class="sect2" id="subversion_primer">
+<div class="titlepage"><div><div><h3 class="title">Subversion Primer</h3></div></div></div>
+<p id="for_indepth_in">For in-depth information on the Subversion workflow and a command
+      reference, see O’Reilly’s <a class="ulink" href="http://svnbook.red-bean.com" target="_top"><em class="citetitle">Version Control with
+      Subversion</em></a> (free to read online).</p>
+<p id="first_set_up_a">First, set up a directory on your local machine to serve as your
+      local workspace for the project. You can name it anything you want. For
+      example: <code class="filename">~/projects/my_book</code>. Your working copy (or
+      checkout) is your own private work area: Subversion will never
+      incorporate other people’s changes, nor make your own changes available
+      to others, until you explicitly tell it to do so.</p>
+<p id="the_following_s_id1">The following steps outline a typical SVN workflow. Again, the
+      examples refer to the command line, but you can run equivalent commands
+      using any of the GUI clients.</p>
+<div class="sect3" id="checkout_svn_co">
+<div class="titlepage"><div><div><h4 class="title">Checkout (<a class="ulink" href="http://svnbook.red-bean.com/en/1.0/re04.html" target="_top">svn
+        co</a>)</h4></div></div></div>
+<p id="check_out_the_f">Check out the files from the repository as follows (substituting
+        the <em class="replaceable"><code>ISBN13</code></em> and your workspace
+        filepath):</p>
+<pre class="programlisting" id="svn_co_https">$ <strong class="userinput"><code>svn co https://prod.oreilly.com/internal/books/<em class="replaceable"><code>ISBN13</code></em>/current 
+<em class="replaceable"><code>~/projects/my_book</code></em></code></strong></pre>
+<p id="you_need_to_run">You need to run this command only once, when you first start a
+        project. It will copy the <code class="filename">book.xml</code> and template
+        files from the repo into your checkout. See <a class="xref" href="ch03.html#organizing_files" title="Organizing Your Files">“Organizing Your Files”</a> for more information about the files you
+        receive when you make your initial checkout.</p>
+</div>
+<div class="sect3" id="commit_svn_commit_mlog_message">
+<div class="titlepage"><div><div><h4 class="title">Commit (<a class="ulink" href="http://svnbook.red-bean.com/en/1.0/re06.html" target="_top">svn commit -m'log
+        message'</a>)</h4></div></div></div>
+<p id="after_you_do_so">After you do some amount of work that you want to preserve or
+        share with <span class="keep-together">others—</span>say, you
+        finish a chapter—commit those changes along with a short, descriptive
+        log message. For example:</p>
+<pre class="programlisting" id="svn_commit_m_id1">$ <strong class="userinput"><code>svn commit -m'<em class="replaceable"><code>finished draft of Chapter 1</code></em>' ch01.xml</code></strong></pre>
+<p id="you_dont_have_">You don’t have to include the filename
+        (<code class="filename">ch01.xml</code> here). If you leave it off, running
+        <code class="literal">svn commit</code> will commit <span class="emphasis"><em>all</em></span> the
+        local modifications in your checkout—so make sure you really want to
+        publish those changes. (If you make a mistake, previous versions can
+        of course be recovered.) To find out which local files have
+        modifications compared to the repo, run <code class="literal">svn status
+        -u</code>. Here’s an example of the output:</p>
+<pre class="programlisting" id="svn_status_u">$ <strong class="userinput"><code>svn status -u</code></strong>
+M          245835   ch01.xml
+     *     232767   ch04.xml
+?                   images</pre>
+<p id="the_m_means_c">The “M” means <code class="filename">ch01.xml</code> has local
+        modifications; the “*” means a newer revision of
+        <code class="filename">ch04.xml</code> exists on the server; and the “?” means
+        <code class="filename">images</code> is not under version control. These are
+        just a few of the possible indicators; <a class="ulink" href="http://svnbook.red-bean.com/en/1.0/re26.html" target="_top">http://svnbook.red-bean.com/en/1.0/re26.html</a>
+        has a complete list.</p>
+<div class="note" id="you_can_decide__id1"><p id="you_can_decide__id2">You can decide how frequently you want to commit. The more
+          often you do, the easier it is to roll back to or recover specific
+          previous <span class="keep-together">versions</span>.</p></div>
+</div>
+<div class="sect3" id="update_svn_up">
+<div class="titlepage"><div><div><h4 class="title">Update (<a class="ulink" href="http://svnbook.red-bean.com/en/1.0/re28.html" target="_top">svn
+        up</a>)</h4></div></div></div>
+<p id="running_svn_up_">Running <code class="literal">svn up</code> (aka <code class="literal">svn
+        update</code>) brings changes from the repository into your working
+        copy. You may first want to run <code class="literal">svn status -u</code> to
+        see what kinds of changes will be incorporated (rather than blindly
+        merging in changes), and then run <code class="literal">svn up</code> before
+        starting to work on the files. This will ensure that your copies of
+        the files reflect the most recent version in the repo.</p>
+<p id="its_good_pract">It’s good practice to run <code class="literal">svn up</code> again before
+        you commit. This should prevent any conflicts that could occur if
+        other files have been added to the repo since you last updated.</p>
+<p id="and_provide_a_v"><a class="xref" href="ch02.html#svn_workflow_setup" title="Figure 2-1. Setting up your workspace for a new project: checkout">Figure 2-1</a> and <a class="xref" href="ch02.html#svn_workflow_ongoing" title="Figure 2-2. Ongoing SVN workflow: update and commit">Figure 2-2</a> provide a visual overview of the
+        workflow just described (where “me” is you, the author).</p>
+<div class="figure-float"><div class="figure" id="svn_workflow_setup">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001574/images/svn_workflow_setup.png" alt="Setting up your workspace for a new project: checkout"></td></tr></table></div></div>
+<div class="figure-title">Figure 2-1. Setting up your workspace for a new project: checkout</div>
+</div></div>
+<div class="figure" id="svn_workflow_ongoing">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001574/images/svn_workflow_ongoing.png" alt="Ongoing SVN workflow: update and commit"></td></tr></table></div></div>
+<div class="figure-title">Figure 2-2. Ongoing SVN workflow: update and commit</div>
+</div>
+</div>
+<div class="sect3" id="adddeletemovecopy_svn_addsvn_rmsvn_mvsvn_cp">
+<div class="titlepage"><div><div><h4 class="title">Add/delete/move/copy (<a class="ulink" href="http://svnbook.red-bean.com/en/1.0/re01.html" target="_top">svn
+        add</a>/<a class="ulink" href="http://svnbook.red-bean.com/en/1.0/re08.html" target="_top">svn
+        rm</a>/<a class="ulink" href="http://svnbook.red-bean.com/en/1.0/re18.html" target="_top">svn
+        mv</a>/<a class="ulink" href="http://svnbook.red-bean.com/en/1.1/re07.html" target="_top">svn
+        cp</a>)</h4></div></div></div>
+<p id="these_commands_">These commands are useful for organizing files and directories
+        in the repo. If you run them locally, they take effect only after you
+        commit. For example:</p>
+<pre class="programlisting" id="svn_add_ch">$ <strong class="userinput"><code>svn add ch01.xml ch02.xml</code></strong>
+A         ch01.xml
+A         ch02.xml</pre>
+<p id="the_a_output_">The “A” output on the left indicates that the files have been
+        scheduled for addition. If you’ve deleted files, you’ll see a “D”
+        there; if you’ve modified files, you’ll see an “M”. (These letters are
+        the same ones shown when you run <code class="literal">svn status
+        -u</code>.)</p>
+<div class="note" id="if_you_decide__id1"><p id="if_you_decide__id2">If you decide, for example, that you don’t want to add
+          <code class="filename">ch01.xml</code> after all, don’t commit—run
+          <strong class="userinput"><code>svn revert ch01.xml</code></strong> to discard the scheduled
+          <span class="keep-together">addition</span>.</p></div>
+<p id="heres_an_examp_id1">Here’s an example of what happens when you commit after adding
+        files:</p>
+<pre class="programlisting" id="svn_commit_m_id2">$ <strong class="userinput"><code>svn commit -m'Adding Chapters 1 and 2 to the repo'</code></strong>
+Adding         ch01.xml
+Adding         ch02.xml
+Committed revision 245451.</pre>
+<p id="where__">where “245451” is the revision number. You can find out the
+        current revision number at any time using <code class="literal">svn
+        info</code>.</p>
+<p id="many_svn_comman">Many SVN commands can be run server-side if you include
+        repository URLs. Doing so results in an immediate commit (rather than
+        scheduling an action for a later commit) and requires a commit
+        message. Here’s an example of using a server-side <code class="literal">svn
+        mv</code> to rename a chapter file:</p>
+<pre class="programlisting" id="svn_mv_mren">$ <strong class="userinput"><code>svn mv -m'Renaming chapter2.xml to chapter3.xml' </code></strong>
+<strong class="userinput"><code>https://prod.oreilly.com/external/authors/books/ISBN13/current/chapter2.xml </code></strong>
+<strong class="userinput"><code>https://prod.oreilly.com/external/authors/books/ISBN13/current/chapter3.xml</code></strong>
+Committed revision 245458.</pre>
+<p id="then_svn_up_to_">Then <code class="literal">svn up</code> to see the change in your working
+        copy. This command is equivalent to an <code class="literal">svn cp</code>
+        followed by an <code class="literal">svn rm</code>.</p>
+<div class="note" id="if_you_try_to_s_id1"><p id="if_you_try_to_s_id2">If you try to <code class="literal">svn rm</code>, <code class="literal">svn
+          mv</code>, or <code class="literal">svn cp</code> a file that exists in
+          your checkout but was never added to the repo, you’ll get an error
+          message like “svn: 'file' is not under version control”.</p></div>
+</div>
+<div class="sect3" id="other_useful_commands">
+<div class="titlepage"><div><div><h4 class="title">Other useful commands</h4></div></div></div>
+<div class="variablelist" id="svn_infoprint_i"><dl class="variablelist">
+<dt><span class="term"><code class="literal"><a class="ulink" href="http://svnbook.red-bean.com/en/1.1/re13.html" target="_top">svn
+            info</a></code></span></dt>
+<dd><p id="print_informati">Print information about your working copy, including the
+              repo URL.</p></dd>
+<dt><span class="term"><code class="literal"><a class="ulink" href="http://svnbook.red-bean.com/en/1.0/re15.html" target="_top">svn
+            log</a></code></span></dt>
+<dd><p id="see_all_commit_">See all commit log messages. Use with <code class="literal">--limit
+              </code><em class="replaceable"><code>#</code></em> to limit the number of
+              results.</p></dd>
+<dt><span class="term"><code class="literal"><a class="ulink" href="http://svnbook.red-bean.com/en/1.0/re09.html" target="_top">svn
+            diff</a></code></span></dt>
+<dd><p id="view_changes_in">View changes in a file.</p></dd>
+<dt><span class="term"><code class="literal"><a class="ulink" href="http://svnbook.red-bean.com/en/1.0/re25.html" target="_top">svn
+            revert</a></code></span></dt>
+<dd><p id="undo_local_edit">Undo local edits.</p></dd>
+</dl></div>
+<p id="the_complete_li">The complete list of SVN commands is available <a class="ulink" href="http://svnbook.red-bean.com/en/1.2/svn.ref.html" target="_top">here</a>.</p>
+</div>
+<div class="sect3" id="conflicts">
+<div class="titlepage"><div><div><h4 class="title">Conflicts</h4></div></div></div>
+<p id="because_subvers">Because Subversion does not use a “locking” model of version
+        control by default, it is possible for many people (such as coauthors
+        and other collaborators) to have checkouts of the same repo and to
+        work on them in parallel—which means is possible to have conflicts.
+        For this reason, communicating with your collaborators is extremely
+        important, as is remembering to commit and update your files.
+        Conflicts can be resolved, but dealing with them can take time away
+        from the writing of your book. It’s better to avoid them.</p>
+<p id="see_version_con">See <a class="ulink" href="http://svnbook.red-bean.com/en/1.2/svn.tour.cycle.html#svn.tour.cycle.resolve" target="_top"><em class="citetitle">Version
+        Control with Subversion</em></a> for more on resolving
+        conflicts. If you run into trouble, contact
+        <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1" data-original-filename="ch02.xml" id="triggering_pdf_builds">
+<div class="titlepage"><div><div><h2 class="title">Triggering PDF Builds of Your Book</h2></div></div></div>
+<p id="the_pdf_builds_">The PDF builds are created with the same XSL-FO stylesheets that we
+    use to typeset the final product that we send to the printer and sell as
+    an online PDF. The build process for DocBook books creates PDFs from a
+    valid <code class="filename">book.xml</code> file when commit messages include the
+    right string (<code class="literal">orm:commitpdf</code>).</p>
+<p id="you_can_generat">You can generate a fresh PDF of your book every time you commit
+    changes to the SVN repository. To do so, run the following command
+    (substituting your own message <span class="keep-together">before</span> the semicolon):</p>
+<pre class="programlisting" id="svn_commit_m_id3">$ <strong class="userinput"><code>svn commit -m'<em class="replaceable"><code>Made some really important changes to Chapter 3</code></em>; orm:commitpdf'</code></strong></pre>
+<p id="to_get_the_pdf">To get the PDF, just run <code class="literal">svn up</code>
+    on your working copy about 5–10 minutes after committing your files. The
+    PDF will be downloaded as <code class="filename">pdf/book.xml.pdf</code> in your working copy. If there
+    are any problems in generating the PDF, you’ll instead get a <code class="filename">.buildlog</code> file in the <code class="filename">pdf/</code> directory that lists the errors.</p>
+<p id="for_pdf_builds_">For PDF builds to work, the <code class="filename">book.xml</code> must be
+    valid. If it is not valid, the PDF will fail to build. See <a class="xref" href="ch01.html#validating_your_xml" title="Validating Your XML">“Validating Your XML”</a>.</p>
+<div class="note" id="some_users_have_id1"><p id="some_users_have_id2">Some users have reported that the <code class="literal">svn up</code> will
+      fail if the old <code class="filename">book.xml.pdf</code> is still open. Close
+      the file and then <code class="literal">svn up</code>. Please contact
+      <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code> with problems.</p></div>
+<p id="if_youre_using">If you’re using a GUI client (see <a class="xref" href="ch02.html#gui_svn_clients" title="Subversion Clients">“Subversion Clients”</a>), the process is the same as on the command
+    line. You just need to add <code class="literal">orm:commitpdf</code> somewhere in
+    your log message.</p>
+<p id="the_text_ormco">The text <code class="literal">orm:commitpdf</code> triggers
+    the PDF build, and it can be used with any commit from your working copy,
+    not just the <code class="filename">book.xml</code> file or a
+    chapter file. So if you would like to generate a fresh PDF without making
+    any changes to your book files, you can add a separate scratch file to the
+    <code class="filename">current</code> directory (or a subdirectory)
+    and just make modifications and commit the changes to it with the <code class="literal">orm:commitpdf</code> string.</p>
+<div class="sect2" id="triggering_pdf_builds_of_a_single_chapter">
+<div class="titlepage"><div><div><h3 class="title">Triggering PDF Builds of a Single Chapter</h3></div></div></div>
+<p id="if_instead_of_g">If instead of generating a PDF of the whole book when you commit
+      changes, you’d prefer to generate a PDF of a single chapter, you can use
+      the following command:</p>
+<pre class="programlisting" id="svn_commit_m_id4">$ <strong class="userinput"><code>svn commit -m'<em class="replaceable"><code>Committing changes to Chapter 4</code></em>; orm:chapterpdf <em class="replaceable"><code>id_for_chapter</code></em>'</code></strong></pre>
+<p id="here_the_magic">Here, the magic commit hook is <code class="literal">orm:chapterpdf</code> instead of <code class="literal">orm:commitpdf</code>. You’ll also need to include
+      <em class="replaceable"><code>id_for_chapter</code></em>, which is the value of the
+      <code class="literal">id</code> attribute of the <code class="literal">chapter</code> in the XML file you want to create a
+      PDF of.</p>
+<div class="note" id="a_quick_way_to__id1">
+<p id="a_quick_way_to__id2">A quick way to retrieve the <code class="literal">id</code> via the command line is:</p>
+<pre class="programlisting" id="grep_chapte">$ <strong class="userinput"><code>grep "&lt;chapter" ch04.xml</code></strong>
+&lt;chapter id="practice_1_automated_testing"&gt;
+  &lt;chapterinfo&gt;</pre>
+</div>
+<p id="the_string_orm">The string “<code class="literal">orm:chapterpdf</code>
+      <em class="replaceable"><code>id_for_chapter</code></em>” must appear at the
+      <span class="emphasis"><em>end</em></span> of your commit message for the commit hook to
+      work.</p>
+</div>
+<div class="sect2" id="receiving_email_notifications_when_committing">
+<div class="titlepage"><div><div><h3 class="title">Receiving Email Notifications When Committing</h3></div></div></div>
+<p id="you_can_set_up_">You can set up your O’Reilly SVN repository to send a notification
+      anytime you or someone else (another author, your editor, the O’Reilly
+      Tools team, etc.) commits. Email notifications are activated with an SVN
+      property. You can request that the <span class="keep-together">notification</span> property be added by writing
+      to <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>, or you can just add it
+      yourself:</p>
+<div class="orderedlist" id="navigate_to_the_id1"><ol class="orderedlist" type="1">
+<li class="listitem">
+<p id="navigate_to_the_id2">Navigate to the directory in your working copy that you want
+          to add email <span class="keep-together">notifications</span>
+          to:</p>
+<pre class="programlisting" id="cd_projects">$ <strong class="userinput"><code>cd <em class="replaceable"><code>~/projects/my_book</code></em></code></strong></pre>
+</li>
+<li class="listitem">
+<p id="add_the_ormcom">Add the <code class="literal">orm:commitemails</code> property,
+          specifying the email addresses to which you’d like notifications to
+          be sent (substitute in your email addresses for
+          <em class="replaceable"><code>email_1@domain.com</code></em>, etc.):</p>
+<pre class="programlisting" id="svn_pset_orm_id1">$ <strong class="userinput"><code>svn pset orm:commitemails </code></strong>
+  <strong class="userinput"><code>'<em class="replaceable"><code>email_1@domain.com</code></em>,<em class="replaceable"><code>email_2@domain.com</code></em>,<em class="replaceable"><code>email_3@domain.com</code></em>' .</code></strong></pre>
+</li>
+<li class="listitem">
+<p id="do_an_svn_up_to">Do an <code class="literal">svn up</code> to make sure you’re in sync
+          with the repo, and then commit the change to enable
+          notifications:</p>
+<pre class="programlisting" id="svn_up__svn_">$ <strong class="userinput"><code>svn up</code></strong>
+$ <strong class="userinput"><code>svn commit -m'<em class="replaceable"><code>Adding email notifications for current/ directory.</code></em>'</code></strong></pre>
+</li>
+</ol></div>
+<p id="thats_it_noti">That’s it. Notifications will now be sent to the addresses set in
+      the <code class="literal">orm:commitemails</code> property every time a change is
+      committed to the specified directory.</p>
+<div class="note" id="the_ormcommite_id1"><p id="the_ormcommite_id2">The <code class="literal">orm:commitemails</code> property is not
+        recursive—i.e., it will apply only to the directory to which it’s
+        applied, and not any subdirectories. So if you want email
+        notifications on subdirectories (e.g., the <code class="filename">pdf/</code>
+        directory in <code class="filename">current/</code>), you’ll need to add the
+        <code class="literal">orm:commitemails</code> property to those directories as
+        well, using the steps above.</p></div>
+<p id="to_turn_off_not">To turn off notifications, you can remove the
+      <code class="literal">orm:commitemails</code> property as follows, and then
+      commit:</p>
+<pre class="programlisting" id="svn_pdel_orm_id1">$ <strong class="userinput"><code>svn pdel orm:commitemails</code></strong></pre>
+</div>
+<div class="sect2" id="web_pdfs">
+<div class="titlepage"><div><div><h3 class="title">Web PDFs (Parallel PDF Builds)</h3></div></div></div>
+<p id="by_default_whe">By default, when you trigger a PDF build on your SVN repo with the
+      <code class="literal">orm:commitpdf</code> string, our toolchain
+      applies the XSL-FO stylesheets that we use for the print PDF. We use a
+      separate set of stylesheets for the PDFs that we sell online (as part of
+      the ebook bundles on <a class="ulink" href="http://www.oreilly.com/" target="_top">oreilly.com</a> and elsewhere), but
+      you can trigger a build of that web PDF too. Some features of web PDFs
+      include:</p>
+<div class="itemizedlist" id="page_size_is_th_id1"><ul class="itemizedlist">
+<li class="listitem"><p id="page_size_is_th_id2">Page size is the trim size; no crop marks</p></li>
+<li class="listitem"><p id="different_hyper">Different hyperlink handling (see <a class="xref" href="ch03.html#inserting_hyperlinks" title="Hyperlinks">“Hyperlinks”</a>)</p></li>
+<li class="listitem"><p id="colorized_and_c">Colorized and clickable cross-references (see <a class="xref" href="ch03.html#creating_xrefs" title="Cross-References">“Cross-References”</a>)</p></li>
+</ul></div>
+<div class="warning" id="by_enabling_web_id1"><p id="by_enabling_web_id2">By enabling web-friendly PDF builds, you will be triggering the
+        creation of two PDFs each time you use the <code class="literal">orm:commitpdf</code> string. Double the PDFs means
+        double the time it will take for you to see your new PDFs. But even if
+        you have a lot of content, you usually won’t have to wait longer than
+        15 minutes to receive both PDFs.</p></div>
+<p id="adding_the_web_">Adding the web PDF build is just a matter of adding an SVN
+      property (similar to enabling email notifications). You can request that
+      the property be added by writing to <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>,
+      or you can add it on your book directory yourself, as follows:</p>
+<pre class="programlisting" id="svn_pset_orm_id2">$ <strong class="userinput"><code>svn pset orm:parallel true .</code></strong></pre>
+<p id="then_commit_on_id1">Then commit. Once the SVN property is in place, you will receive a
+      second PDF in your <code class="filename">pdf/</code> directory (named
+      <code class="filename">book.xml.web.pdf</code>) when you trigger a build using
+      the <code class="literal">orm:commitpdf</code> string.</p>
+<p id="to_turn_off_par">To turn off parallel PDF builds, you can remove the
+      <code class="literal">orm:parallel</code> property as follows, and then
+      commit:</p>
+<pre class="programlisting" id="svn_pdel_orm_id2">$ <strong class="userinput"><code>svn pdel orm:parallel</code></strong></pre>
+</div>
+<div class="sect2" id="displaying_comments_in_pdfs">
+<div class="titlepage"><div><div><h3 class="title">Displaying Comments in Your PDF Builds</h3></div></div></div>
+<p id="by_default_tex">By default, text contained within XML comments
+      (<code class="literal">&lt;!--</code> <code class="literal">--&gt;</code>) or
+      <code class="literal">remark</code> elements (see <a class="xref" href="ch03.html#adding_comments" title="Comments and Remarks">“Comments and Remarks”</a>) will not be rendered in PDF builds.
+      However, if you’d like to have this text displayed in your PDFs—for
+      example, if you have comments for reviewers that you’d like to display
+      in your PDFs during tech review—you can do so by setting the
+      <code class="literal">orm:draft</code> SVN property on your book directory, as
+      follows:</p>
+<pre class="programlisting" id="svn_pset_orm_id3">$ <strong class="userinput"><code>svn pset orm:draft remarks .</code></strong></pre>
+<p id="then_commit_on_id2">Then commit. Once the SVN property is in place, comments and
+      remarks will be displayed in red for easy visibility.</p>
+<p id="to_turn_off_thi">To turn off this feature in PDF builds, you can remove the
+      <code class="literal">orm:draft</code> property as follows, and then
+      commit:</p>
+<pre class="programlisting" id="svn_pdel_orm_id3">$ <strong class="userinput"><code>svn pdel orm:draft</code></strong></pre>
+</div>
+<div class="sect2" id="generating_timestamps_in_your_pdf_builds">
+<div class="titlepage"><div><div><h3 class="title">Generating Timestamps in Your PDF Builds</h3></div></div></div>
+<p id="to_display_a_pe">To display a per-page, user-friendly timestamp on your PDFs, you
+      can set the <code class="literal">orm:timestamp</code> SVN property on your book
+      directory, as follows:</p>
+<pre class="programlisting" id="svn_pset_orm_id4">$ <strong class="userinput"><code>svn pset orm:timestamp true .</code></strong></pre>
+<p id="then_commit_on_id3">Then commit. Once the SVN property is in place, a timestamp will
+      appear in the top-left corner of the PDFs you create. It looks something
+      like this:</p>
+<pre class="screen" id="screen">--------------
+| 2010—03-05 |
+|  11:05:43  |
+--------------</pre>
+<p id="to_turn_off_the">To turn off the timestamp in PDF builds, just remove the
+      <code class="literal">orm:timestamp</code> property, and then commit:</p>
+<pre class="programlisting" id="svn_pdel_orm_id4">$ <strong class="userinput"><code>svn pdel orm:timestamp</code></strong></pre>
+</div>
+</div>
+<div class="footnotes">
+<br><hr style="width: 100; align: left;">
+<div id="ftn.id590956" class="footnote"><p><a href="#id590956" class="para"><sup class="para">[1] </sup></a>As mentioned in the previous chapter, we are transitioning most books over to Atlas (which works with git, not SVN).
+      But the Subversion toolchain still exists for certain books that rely on the older stylesheets.</p></div>
+</div></section><section class="chapter" data-original-filename="ch03.xml" id="docbook_xml_markup_guidelines"><div class="titlepage"><div><div><h1 class="title">Chapter 3. DocBook XML Markup Guidelines</h1></div></div></div>
+<p id="here_are_some_g">Here are some guidelines that you may find helpful for writing in
+  DocBook. If you have questions about what markup to use for a particular
+  element, or whether our toolchain supports a specific type of markup, please
+  contact <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>.</p>
+<div class="sect1" data-original-filename="ch03.xml" id="keep_it_simple">
+<div class="titlepage"><div><div><h2 class="title">Keep It Simple</h2></div></div></div>
+<p id="id_d1e1024">“Keep it Simple” sounds a bit silly when referring to something as
+    complex as DocBook, but the point is that even though DocBook offers over
+    400 elements, you’ll need only a fraction of them. DocBook is meant to be
+    comprehensive across a universe of technical documentation, but we’re
+    dealing with a very specific subset: content in an O’Reilly title.
+    Practically speaking, you’ll use elements similar to standard HTML
+    elements, such as <code class="literal">itemizedlist</code> and
+    <code class="literal">table</code>. You can safely stay away from
+    more exotic elements such as <code class="literal">confsponsor</code>, <code class="literal">msgsub</code>, and <code class="literal">seriesvolnums</code>.</p>
+<p id="covers_some_of_"><a class="xref" href="ch03.html#common_elements" title="Common Elements">“Common Elements”</a> covers some of the commonly used
+    elements in O’Reilly books.</p>
+<div class="sidebar" id="can_i_change_the_appearance_of_elements_in_my_book">
+<div class="titlepage"><div><div><div class="sidebar-title">Can I Change the Appearance of Elements in My Book?</div></div></div></div>
+<p id="we_have_develop">We have developed our series stylesheets according to O’Reilly
+      house style and the design standards for each series. If something isn’t
+      showing up as you’d expect in your PDF, or if you want to know whether
+      it’s possible to make a customization (after consulting with your editor
+      on house style), please contact
+      <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>.</p>
+</div>
+<div class="sect2" id="using_elements_correctly">
+<div class="titlepage"><div><div><h3 class="title">Using Elements Correctly</h3></div></div></div>
+<p id="for_xml_to_be_v">For XML to be valid, it must not only be well-formed (i.e., all
+      the start and end tags match), it must also have all the tags in the
+      proper hierarchy according to the associated DTD (in our case, the
+      DocBook 4.5 DTD). The tag at the top of the hierarchy is called the root
+      element (e.g., <code class="literal">&lt;book&gt;</code>) and
+      contains various child elements (e.g., <code class="literal">&lt;chapter&gt;</code>s or <code class="literal">&lt;part&gt;</code>s). Logical rules apply, such as
+      the fact that a <code class="literal">&lt;sect3&gt;</code> cannot
+      be directly nested within a <code class="literal">&lt;sect1&gt;</code>; it must be within a <code class="literal">&lt;sect2&gt;</code>. Improper nesting will result in
+      invalid DocBook.</p>
+<div class="note" id="one_very_good_r_id1"><p id="one_very_good_r_id2">One very good reason to use an XML editor is that it will
+        safeguard you from moving, adding, or deleting elements in ways that
+        don’t follow the DTD hierarchy.</p></div>
+<p id="the_terms_tag_a">The terms <span class="emphasis"><em>tag</em></span> and
+      <span class="emphasis"><em>element</em></span> are sometimes used interchangeably, but
+      there is a distinction. For example, <code class="literal">&lt;chapter&gt;</code>
+      is a tag that indicates the start of a <code class="literal">chapter</code>
+      element. For the XML document to be well-formed, it must contain an end
+      tag, <code class="literal">&lt;/chapter&gt;</code>. Some tags are self-contained
+      and stand alone as complete elements, without the need for separate end
+      tags. For example, <code class="literal">&lt;xref linkend="foo"/&gt;</code> is
+      self-contained. If you’re familiar with HTML, the rules are pretty much
+      the same.</p>
+</div>
+<div class="sect2" id="sample_markup_and_pdfs">
+<div class="titlepage"><div><div><h3 class="title">Sample Markup and PDFs</h3></div></div></div>
+<p id="this_document_i">This document is made up of the same DocBook markup as our books,
+      so you can use it as a model for your own manuscript. In addition to the
+      section <a class="xref" href="ch03.html#common_elements" title="Common Elements">“Common Elements”</a>, please check out some
+      samples we have posted at the URL below. Generally it’s best to look at the PDF version, if available, for additional commentary before delving into the XML.</p>
+<table style="border: 0; " class="simplelist"><tr><td><a class="ulink" href="https://github.com/oreillymedia/docbook_samples" target="_top">https://github.com/oreillymedia/docbook_samples</a></td></tr></table>
+<p id="the_samples_dir">The samples directory contains the following skeleton files, if
+      you need them:</p>
+<div class="itemizedlist" id="afterwordxmlap"><ul class="itemizedlist">
+<li class="listitem"><p id="afterwordxml"><code class="filename">afterword.xml</code></p></li>
+<li class="listitem"><p id="appaxml"><code class="filename">appa.xml</code></p></li>
+<li class="listitem"><p id="bookxml"><code class="filename">book.xml</code></p></li>
+<li class="listitem"><p id="chxml_prefa"><code class="filename">ch00.xml</code> (Preface—includes standard
+          boilerplate language)</p></li>
+<li class="listitem"><p id="chxml"><code class="filename">ch01.xml</code></p></li>
+<li class="listitem"><p id="dedicationxml"><code class="filename">dedication.xml</code></p></li>
+<li class="listitem"><p id="forewordxml"><code class="filename">foreword.xml</code></p></li>
+<li class="listitem"><p id="partxml"><code class="filename">part1.xml</code></p></li>
+</ul></div>
+<p id="please_contact_">Please contact <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code> if you have any
+      questions about using these files.</p>
+<div class="sidebar" id="the_elements_in_my_pdfs_dont_look_like_the_ones_in_this_document">
+<div class="titlepage"><div><div><div class="sidebar-title">The Elements in My PDFs Don’t Look Like the Ones in this
+        Document</div></div></div></div>
+<p id="the_rendered_ve">The rendered version of this document is an example of
+        O’Reilly’s Animal Guide series stylesheet. You may be working in a
+        different series, such as Nutshell or Pocket Reference. That’s fine.
+        You’ll use the same XML markup; it’s the underlying series stylesheet
+        that determines how the elements appear in the PDF.</p>
+</div>
+</div>
+</div>
+<div class="sect1" data-original-filename="ch03.xml" id="organizing_files">
+<div class="titlepage"><div><div><h2 class="title">Organizing Your Files</h2></div></div></div>
+<p id="as_you_will_see">As you will see in the <code class="filename">book.xml</code>
+    file that O’Reilly provides for you, the book file contains just the book
+    metadata and no actual content. Each chapter is its own full DocBook
+    document with its own <code class="literal">DOCTYPE</code>
+    declaration, which makes validation easier. Once you check out the
+    template files from your SVN repository (see <a class="xref" href="ch02.html" title="Chapter 2. DocBook and Subversion">Chapter 2</a>), you can open the <code class="filename">ch01.xml</code> file and begin writing.</p>
+<div class="note" id="this_section_di_id1"><p id="this_section_di_id2">This section discusses the files as we structure and name them
+      once they are submitted to Production, but when you are working on them,
+      you can structure and name them in any way that’s convenient for you.
+      All that really matters is that you have a valid
+      <code class="filename">book.xml</code>—whether it’s a monolithic file you edit
+      directly, generate from a custom Makefile, etc.</p></div>
+<div class="sect2" id="adding_chapters_to_the_book">
+<div class="titlepage"><div><div><h3 class="title">Chapters</h3></div></div></div>
+<p id="the_bookxml_in">The <code class="filename">book.xml</code> indicates which files comprise
+      the book and the order in which they appear. Here’s an example:</p>
+<pre class="programlisting" id="xml_version_id1">&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"&gt;
+&lt;book&gt;
+&lt;title&gt;Some Fantastic Book&lt;/title&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dedication.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="bookinfo.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch00.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch01.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch02.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch03.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch04.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch05.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="appa.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="appb.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="appc.xml"/&gt;
+&lt;/book&gt;</pre>
+<p id="you_can_name_yo">You can name your chapter files whatever you’d like,<a href="#ftn.id592972" class="footnote"><sup class="footnote" id="id592972">[2]</sup></a> and then reference and include them in the
+      <code class="filename">book.xml</code> as shown above.</p>
+<div class="sect3" id="chapter_contributors">
+<div class="titlepage"><div><div><h4 class="title">Chapter contributors</h4></div></div></div>
+<p id="for_books_with_">For books with multiple contributors, you may want an author
+        name to appear with each chapter. Simply add the following markup
+        above each chapter title:</p>
+<pre class="programlisting" id="chapterinfo_">&lt;chapterinfo&gt;
+  &lt;author&gt;
+    &lt;firstname&gt;Author&lt;/firstname&gt;
+
+    &lt;surname&gt;Name&lt;/surname&gt;
+  &lt;/author&gt;
+&lt;/chapterinfo&gt;</pre>
+<p id="you_can_also_us">You can also use this markup for forewords and prefaces (just
+        use <code class="literal">prefaceinfo</code> instead of
+        <code class="literal">chapterinfo</code>). Please note that contributor names in
+        a foreword or preface will render <span class="emphasis"><em>after</em></span> the rest
+        of the content, right-aligned, and preceded by an em dash.</p>
+</div>
+</div>
+<div class="sect2" id="id_d1e1221">
+<div class="titlepage"><div><div><h3 class="title">Parts</h3></div></div></div>
+<p id="if_you_want_to__id1">If you want to group your chapters into parts, grab a skeleton
+      part file here:</p>
+<table style="border: 0; " class="simplelist"><tr><td><a class="ulink" href="https://github.com/oreillymedia/docbook_samples/blob/master/part1.xml" target="_top">https://github.com/oreillymedia/docbook_samples/blob/master/part1.xml</a></td></tr></table>
+<p id="then_add_your_c">Then add your chapter files to the appropriate
+      <code class="filename">part<em class="replaceable"><code>N</code></em>.xml</code> file instead
+      of the <code class="filename">book.xml</code> file.</p>
+</div>
+<div class="sect2" id="using_sect1s_etc">
+<div class="titlepage"><div><div><h3 class="title">Sections</h3></div></div></div>
+<p id="each_chapter_is">Each chapter is made up of sections. Please use
+      <code class="literal">sect1</code>, <code class="literal">sect2</code>, and
+      <code class="literal">sect3</code> elements—<span class="emphasis"><em>not</em></span> generic
+      <code class="literal">section</code> elements—to structure your chapter. By
+      default only <code class="literal">sect1</code> and <code class="literal">sect2</code>
+      titles will appear in the TOC.</p>
+<p id="the_barebones_s">The barebones structure of a chapter is something like
+      this:</p>
+<pre class="programlisting" id="xml_version_id2">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"&gt;
+&lt;chapter id="chapter_id"&gt;
+  &lt;title&gt;Chapter Title Here&lt;/title&gt;
+  &lt;sect1&gt;
+    &lt;title&gt;Sect1 Title Here&lt;/title&gt;
+    &lt;para&gt;Text goes here...&lt;/para&gt;
+    &lt;sect2&gt;
+      &lt;title&gt;Sect2 Title Here&lt;/title&gt;
+      &lt;para&gt;Text goes here...&lt;/para&gt;
+      &lt;sect3&gt;
+        &lt;title&gt;Sect3 title here&lt;/title&gt;
+        &lt;para&gt;Text goes here...&lt;/para&gt;
+      &lt;/sect3&gt;
+    &lt;/sect2&gt;
+  &lt;/sect1&gt;
+&lt;/chapter&gt;</pre>
+<p id="note_the_paras_">Note the <code class="literal">para</code>s between sections. We ask that
+      you don’t add a section directly after the previous section’s title with
+      no <code class="literal">para</code> or other element in between (though doing so
+      is valid). For example, don’t do this:</p>
+<pre class="programlisting" id="sect_title">&lt;sect1&gt;
+  &lt;title&gt;Sect1 Title Here&lt;/title&gt;
+  &lt;sect2&gt;
+    &lt;title&gt;Sect2 Title Here&lt;/title&gt;
+    &lt;para&gt;Text goes here...&lt;/para&gt;
+  &lt;/sect2&gt;
+&lt;/sect1&gt;</pre>
+<div class="note" id="for_a_complete__id1"><p id="for_a_complete__id2">For a complete list of O’Reilly’s style conventions, including
+        proper heading and title capitalization, consult the <a class="ulink" href="http://oreilly.com/oreilly/author/stylesheet.html" target="_top">O’Reilly
+        Stylesheet and Word List</a>. Also keep in mind that, other than
+        inside code listings, you should not put blank lines or paras in your
+        XML documents.</p></div>
+<p id="you_may_also_us">You may also use <code class="literal">sect4</code> elements, although they
+      are not very common in O’Reilly books. A <code class="literal">sect4</code> title
+      renders inline, with an autogenerated period following it, rather than
+      as a separate heading.</p>
+</div>
+</div>
+<div class="sect1" data-original-filename="ch03.xml" id="common_elements">
+<div class="titlepage"><div><div><h2 class="title">Common Elements</h2></div></div></div>
+<p id="the_following_s_id2">The following sections describe common DocBook elements in O’Reilly
+    books.</p>
+<div class="sect2" id="block_versus_inline">
+<div class="titlepage"><div><div><h3 class="title">Block Versus Inline</h3></div></div></div>
+<p id="there_are_two_k_id1">There are two kinds of elements:</p>
+<div class="variablelist" id="blockusually_pr"><dl class="variablelist">
+<dt><span class="term">Block</span></dt>
+<dd><p id="usually_present">Usually presented with a paragraph break before and after
+            them, block elements may contain character data, inline elements,
+            and possibly other block elements. Examples include paras, lists,
+            sidebars, tables, and block quotes.</p></dd>
+<dt><span class="term">Inline</span></dt>
+<dd><p id="usually_disting">Usually distinguished by a font change rather than obvious
+            breaks, inline elements may contain character data and possibly
+            other inline elements, but never block elements. Examples include
+            cross-references, filenames, commands, and URLs.</p></dd>
+</dl></div>
+<div class="sidebar" id="avoid_putting_block_elements_in_paras">
+<div class="titlepage"><div><div><div class="sidebar-title">Avoid Putting Block Elements in paras</div></div></div></div>
+<p id="to_prevent_spac">To prevent spacing problems in rendered versions, please do not
+        nest block elements within <code class="literal">para</code>s.
+        In other words, block elements should come <span class="emphasis"><em>after</em></span>
+        the closing <code class="literal">&lt;/para&gt;</code> tag, not be nested within
+        <code class="literal">&lt;para&gt;</code> tags. Some of the block elements that
+        should never be nested in <code class="literal">para</code>s are
+        the <span class="keep-together">following</span>:</p>
+<table style="border: 0; " class="simplelist">
+<tr><td><code class="literal">blockquote</code></td></tr>
+<tr><td><code class="literal">calloutlist</code></td></tr>
+<tr><td><code class="literal">example</code></td></tr>
+<tr><td><code class="literal">figure</code></td></tr>
+<tr><td><code class="literal">informalfigure</code></td></tr>
+<tr><td><code class="literal">informaltable</code></td></tr>
+<tr><td><code class="literal">itemizedlist</code></td></tr>
+<tr><td><code class="literal">literallayout</code></td></tr>
+<tr><td><code class="literal">note</code></td></tr>
+<tr><td><code class="literal">orderedlist</code></td></tr>
+<tr><td><code class="literal">programlisting</code></td></tr>
+<tr><td><code class="literal">sidebar</code></td></tr>
+<tr><td><code class="literal">simplelist</code></td></tr>
+<tr><td><code class="literal">table</code></td></tr>
+<tr><td><code class="literal">variablelist</code></td></tr>
+<tr><td><code class="literal">warning</code></td></tr>
+</table>
+</div>
+</div>
+<div class="sect2" id="inline_font_markup">
+<div class="titlepage"><div><div><h3 class="title">Inline Font Markup</h3></div></div></div>
+<p id="here_are_some_c">Here are some commonly used inline elements:</p>
+<div class="variablelist" id="citationused_"><dl class="variablelist">
+<dt><span class="term">[<span class="citation">&lt;citation&gt;</span>]</span></dt>
+<dd><p id="used_in_crossr">Used in cross-reference syntax. Authors can also use this
+            for hardcoded <span class="keep-together">cross-</span><span class="keep-together">references</span> to other, non-O’Reilly
+            books. As in, “See [<span class="citation">TITLE</span>], published by
+            <em class="replaceable"><code>publisher</code></em>”.</p></dd>
+<dt><span class="term"><span class="command"><strong>&lt;command&gt;</strong></span></span></dt>
+<dd><p id="an_executable_p">An executable program, or the entry a user makes to execute
+            a command. As in, “Compare the two documents with the
+            <span class="command"><strong>diff</strong></span> command.”</p></dd>
+<dt><span class="term"><span class="emphasis"><em>&lt;email&gt;</em></span></span></dt>
+<dd><p id="an_email_addres">An email address, such as
+            <code class="email">&lt;<a class="email" href="mailto:example@oreilly.com">example@oreilly.com</a>&gt;</code>. (Note that these will become
+            hyperlinks in online versions, so for fake or example addresses,
+            use <code class="literal">&lt;emphasis&gt;</code> <span class="keep-together">instead</span>.)</p></dd>
+<dt><span class="term"><span class="emphasis"><em>&lt;emphasis&gt;</em></span></span></dt>
+<dd><p id="provided_for_us_id1">Provided for use where you would traditionally use
+            <span class="emphasis"><em>italics</em></span> to emphasize a word or phrase.</p></dd>
+<dt><span class="term"><span class="bold"><strong>&lt;emphasis
+          role="bold"&gt;</strong></span></span></dt>
+<dd><p id="a_generalpurpo">A general-purpose tag provided for where you would use
+            <span class="bold"><strong>bold</strong></span> type to emphasize a word or
+            phrase. (Note that <a class="ulink" href="http://oreilly.com/oreilly/author/stylesheet.html" target="_top">O’Reilly
+            house style</a> prefers italics for emphasis.)</p></dd>
+<dt><span class="term"><span class="roman">&lt;phrase
+          role="roman"&gt;</span></span></dt>
+<dd><p id="provided_for_us_id2">Provided for use within italicized text where you would
+            ordinarily use <span class="roman">italics</span> to emphasize
+            a word or phrase.</p></dd>
+<dt><span class="term"><code class="filename">&lt;filename&gt;</code></span></dt>
+<dd><p id="used_for_the_na">Used for the name of a file, directory, or path (e.g.,
+            <code class="filename">/usr/bin</code>).</p></dd>
+<dt><span class="term"><span class="keycap"><strong>&lt;keycap&gt;</strong></span></span></dt>
+<dd><p id="the_text_printe">The text printed on a physical key on a computer keyboard
+            (e.g., <span class="keycap"><strong>Return</strong></span>).</p></dd>
+<dt><span class="term"><code class="literal">&lt;literal&gt;</code></span></dt>
+<dd><p id="any_stretch_of_">Any stretch of text that must appear in <code class="literal">constant
+            width</code> font.</p></dd>
+<dt><span class="term"><em class="replaceable"><code>&lt;replaceable&gt;</code></em></span></dt>
+<dd><p id="text_that_shoul">Text that should be replaced with user-supplied values or by
+            values determined by context. Appears in <em class="replaceable"><code>constant
+            width italic</code></em>.</p></dd>
+<dt><span class="term"><sub>&lt;subscript&gt;</sub></span></dt>
+<dd><p id="a_subscript_cha">A subscript character.</p></dd>
+<dt><span class="term"><sup>&lt;superscript&gt;</sup></span></dt>
+<dd><p id="a_superscript_c">A superscript character.</p></dd>
+<dt><span class="term"><span class="emphasis"><em>&lt;ulink
+          url="ulink.org"/&gt;</em></span></span></dt>
+<dd><p id="several_styles_">Several styles of <code class="literal">ulink</code>s and various URL
+            markup/rendering options are supported. See <a class="xref" href="ch03.html#inserting_hyperlinks" title="Hyperlinks">“Hyperlinks”</a> for more details. (Note that
+            these will become hyperlinks in online versions, so for fake or
+            example URLs, use <code class="literal">&lt;emphasis&gt;</code> or
+            <code class="literal">&lt;uri&gt;</code> instead.)</p></dd>
+<dt><span class="term"><strong class="userinput"><code>&lt;userinput&gt;</code></strong></span></dt>
+<dd><p id="data_entered_by"><strong class="userinput"><code>Data entered by the user</code></strong>, typically
+            at a prompt line. Use with
+            <em class="replaceable"><code>&lt;replaceable&gt;</code></em> if needed:
+            <strong class="userinput"><code>&lt;userinput&gt;&lt;<em class="replaceable"><code>replaceable</code></em>&gt;&lt;userinput&gt;</code></strong></p></dd>
+</dl></div>
+</div>
+<div class="sect2" id="creating_xrefs">
+<div class="titlepage"><div><div><h3 class="title">Cross-References</h3></div></div></div>
+<p id="all_crossrefer">All cross-references to titled elements—figures, tables, <span class="keep-together">examples</span>, sections, chapters, parts,
+      etc.—should be marked up using <code class="literal">xref</code>s, not written in
+      plain text. <code class="literal">xref</code> elements will become live hyperlinks
+      in online versions, and they will automatically update if you move the
+      referenced elements around while editing. There is never any need to
+      hardcode labels (e.g., “Chapter 1”, “Figure 1”) or page numbers, as
+      these aspects of the rendered <code class="literal">xref</code> are autogenerated
+      by the stylesheets.</p>
+<p id="to_insert_an_xr">To insert an <code class="literal">xref</code>, follow these steps:</p>
+<div class="orderedlist" id="note_the_id_of__id1"><ol class="orderedlist" type="1">
+<li class="listitem">
+<p id="note_the_id_of__id2">Note the <code class="literal">id</code> of the element you are
+          referencing. If the element does not have an <code class="literal">id</code>,
+          you will need to add one. For the book to be valid,
+          <code class="literal">id</code> attributes must be unique across the entire
+          book, have no spaces, not contain a colon, and not start with a
+          number. Here’s an example of a figure <code class="literal">id</code>:</p>
+<pre class="programlisting" id="figure_idfig_id1">&lt;figure id="figure_titles_written_with_underscores_make_nice_ids"&gt;</pre>
+</li>
+<li class="listitem">
+<p id="once_you_have_t">Once you have the <code class="literal">id</code>, you can insert an
+          <code class="literal">xref</code> element that references it via a
+          <code class="literal">linkend</code> attribute, like so:</p>
+<pre class="programlisting" id="xref_linkend">&lt;xref linkend="figure_titles_written_with_underscores_make_nice_ids" /&gt;</pre>
+</li>
+</ol></div>
+<div class="warning" id="you_cannot_use__id1"><p id="you_cannot_use__id2">You cannot use the word “inherit” as an <code class="literal">id</code>.
+        It won’t render properly.</p></div>
+<p id="the_following_t">The following table shows examples of <code class="literal">xref</code>
+      markup and rendering for various <span class="keep-together">elements</span>.</p>
+<div class="informaltable" id="element_to_be_r"><table style="border-collapse: collapse;">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; "><span class="keep-together">Element to be
+              referenced</span></td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">xref markup</td>
+<td style="border-bottom: 0.5pt solid ; "><span class="keep-together">xref
+              rendering</span></td>
+</tr></thead>
+<tbody>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; "><code class="literal">&lt;sect1
+              id="keep_it_simple"&gt;</code></td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; "><code class="literal">&lt;xref
+              linkend="keep_it_simple"/&gt;</code></td>
+<td style="border-bottom: 0.5pt solid ; "><a class="xref" href="ch03.html#keep_it_simple" title="Keep It Simple">“Keep It Simple”</a></td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; "><code class="literal">&lt;chapter
+              id="picking_an_xml_editor"&gt;</code></td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; "><code class="literal">&lt;xref
+              linkend="picking_an_xml_editor"/&gt;</code></td>
+<td style="border-bottom: 0.5pt solid ; "><a class="xref" href="ch01.html" title="Chapter 1. Picking an XML Editor">Chapter 1</a></td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; "><code class="literal">&lt;figure
+              id="docbook_duck_fig"&gt;</code></td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; "><code class="literal">&lt;xref
+              linkend="docbook_duck_fig"/&gt;</code></td>
+<td style="border-bottom: 0.5pt solid ; "><a class="xref" href="ch03.html#docbook_duck_fig" title="Figure 3-1. The DocBook duck">Figure 3-1</a></td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; "><code class="literal">&lt;example
+              id="sample_example"&gt;</code></td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; "><code class="literal">&lt;xref
+              linkend="sample_example"/&gt;</code></td>
+<td style="border-bottom: 0.5pt solid ; "><a class="xref" href="ch03.html#sample_example" title="Example 3-3. Sample example">Example 3-3</a></td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; "><code class="literal">&lt;table
+              id="maximum_widths"&gt;</code></td>
+<td style="border-right: 0.5pt solid ; "><code class="literal">&lt;xref
+              linkend="maximum_widths"/&gt;</code></td>
+<td><a class="xref" href="ch03.html#maximum_widths" title="Table 3-1. Maximum widths for figures in different series">Table 3-1</a></td>
+</tr>
+</tbody>
+</table></div>
+<p id="note_that_cross">Note that cross-references to terms in a Glossary use special
+      markup, not <code class="literal">xref</code>. See the <a class="ulink" href="https://github.com/oreillymedia/docbook_samples/tree/master/glossary" target="_top">glossary directory on GitHub</a> for details.</p>
+</div>
+<div class="sect2" id="figures">
+<div class="titlepage"><div><div><h3 class="title">Figures</h3></div></div></div>
+<p id="figures_have_a_">Figures have a title (aka caption), an autogenerated number, and
+      (per O’Reilly house style) an explicit cross-reference. You do not need
+      to number the figure in the XML; the O’Reilly stylesheets autogenerate
+      the number in the figure label and in all <code class="literal">xref</code>s to
+      it. Unless you have a special reason for using an informal figure (e.g.,
+      if it’s impractical for the image to have a title), you should use a
+      formal figure. See <a class="xref" href="ch03.html#accessibility" title="Alt text for images">“Alt text for images”</a> for an example of
+      informal figure markup. It’s essentially the same as a
+      <code class="literal">figure</code>, but without the <code class="literal">id</code>
+      attribute or <code class="literal">title</code> element.</p>
+<p id="for_more_inform_id1">For more information on how to prepare the image files themselves,
+      see the <a class="ulink" href="http://oreillynet.com/oreilly/authors/welcome/illustrations.csp" target="_top">O’Reilly
+      Media Illustration Guidelines</a>.</p>
+<p id="heres_an_examp_id2">Here’s an example of proper <code class="literal">figure</code>
+      markup:</p>
+<pre class="programlisting" id="figure_iddoc_id1">&lt;figure id="docbook_duck_fig"&gt;
+&lt;title&gt;The DocBook duck&lt;/title&gt;
+&lt;mediaobject&gt;
+  &lt;imageobject&gt;
+    &lt;imagedata fileref="figs/docbook_duck.png" format="PNG" 
+               width="4.8in"/&gt;
+  &lt;/imageobject&gt;
+&lt;/mediaobject&gt;
+&lt;/figure&gt;</pre>
+<div class="note" id="if_you_are_work_id1"><p id="if_you_are_work_id2">If you are working on files from an earlier edition of a book,
+        you may see the more complex figure markup we formerly used in
+        Production (it includes a second <code class="literal">imageobject</code>, among
+        other things). For any new figures you add, you can stick with the
+        simpler markup shown here.</p></div>
+<p id="shows_how_the_a"><a class="xref" href="ch03.html#docbook_duck_fig" title="Figure 3-1. The DocBook duck">Figure 3-1</a> shows how the above markup
+      renders.</p>
+<div class="figure" id="docbook_duck_fig">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001574/images/docbook_duck.png" alt="The DocBook duck"></td></tr></table></div></div>
+<div class="figure-title">Figure 3-1. The DocBook duck</div>
+</div>
+<p id="the_width_attri">The <code class="literal">width</code> attribute value in the
+      <code class="literal">imagedata</code> is a quick way to make large images “fit”
+      within the PDF page while you’re writing your manuscript. (Note that
+      this is strictly optional, and for your own convenience;
+      <code class="literal">width</code> attributes will be stripped out during
+      Production.) See <a class="xref" href="ch03.html#image_sizing" title="Image sizing"></a> below and <a class="xref" href="ch03.html#inline_graphics" title="Inline graphics">“Inline graphics”</a> for more about image sizing.</p>
+<p id="make_sure_to_ad">Make sure to add your image files to the repo (typically in a
+      <code class="filename">figs/</code> directory). Then set the
+      <code class="literal">fileref</code> and <code class="literal">format</code> attributes in
+      the XML markup so that they match the image file names and types
+      exactly. For example, if an image is named
+      <code class="filename">battery.png</code> in the <code class="filename">figs/</code>
+      directory, it should be referenced in the XML as
+      <code class="filename">figs/battery.png</code>, not
+      <code class="filename">figs/Battery.png</code>, and the <code class="literal">format</code>
+      should be <code class="literal">PNG</code>.</p>
+<div class="sect3" id="figure_floating">
+<div class="titlepage"><div><div><h4 class="title">Figure floating</h4></div></div></div>
+<div class="blockquote"><blockquote class="blockquote"><p id="why_are_my_imag"><span class="emphasis"><em>Why are my images floating to the tops of pages in
+          the PDF, and not appearing where they are
+          referenced?</em></span></p></blockquote></div>
+<p id="this_is_one_of_">This is one of the most common questions we get at
+        <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>. The answer is that the
+        stylesheets used in our Subversion toolchain set figures to float by default.<a href="#ftn.id594213" class="footnote"><sup class="footnote" id="id594213">[3]</sup></a>The Production Editor will then either leave the float
+        on or turn it off for each figure when doing the layout work toward
+        the end of Production. We generally advise authors not to worry about
+        the layout during the manuscript stage for this reason.</p>
+<p id="that_said_if_y">That said, if you’re concerned about figure placement in your
+        drafts, you do have a couple of options. The best option is to insert
+        a <code class="literal">&lt;remark&gt;</code> element near a figure that says
+        something like:</p>
+<div class="blockquote"><blockquote class="blockquote"><p id="production_ple">PRODUCTION: Please make sure Figure X-X appears below its text
+          reference.—<span class="keep-together">AUTHOR</span></p></blockquote></div>
+<p id="the_other_optio">The other option is to add a <code class="literal">float="none"</code>
+        attribute to the figure element, like so:</p>
+<pre class="programlisting" id="figure_iddoc_id2">&lt;figure id="docbook_duck_fig" float="none"&gt;</pre>
+<p id="this_will_overr">This will override the float and force the image to render in
+        the PDF wherever it is referenced. The downside of this option is that
+        any <code class="literal">float</code> attributes you add will be stripped out
+        by our cleanup scripts after you submit the book to Production. So
+        you’re free to add them, but keep in mind that they will only be for
+        your benefit while you’re writing the manuscript.</p>
+</div>
+<div class="sect3" id="image_sizing">
+<div class="titlepage"><div><div><h4 class="title">Image sizing</h4></div></div></div>
+<p id="when_your_book_">When your book goes into Production, O’Reilly Illustration staff
+        will handle processing the images you submit, including scaling them
+        to the appropriate size. However, for the purposes of generating draft
+        PDF documents, you can scale your images using the <code class="literal">width</code> attribute of the <code class="literal">imagedata</code> element, which scales the image
+        proportionally to the width value supplied. For example, to set a
+        width of 4.8 inches (the maximum width for Animal Guide books), you’d
+        add a <code class="literal">width</code> attribute value of
+        <code class="literal">4.8in</code>.</p>
+<p id="contains_a_list"><a class="xref" href="ch03.html#maximum_widths" title="Table 3-1. Maximum widths for figures in different series">Table 3-1</a> contains a list of maximum
+        widths you can use to scale images to fit your book’s design.</p>
+<div class="table" id="maximum_widths">
+<div class="table-title">Table 3-1. Maximum widths for figures in different series</div>
+<div class="table-contents"><table style="border-collapse: collapse;">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Book series</td>
+<td style="border-bottom: 0.5pt solid ; ">Maximum width value (in inches)</td>
+</tr></thead>
+<tbody>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Animal Guide, Cookbook, Theory in Practice</td>
+<td style="border-bottom: 0.5pt solid ; "><code class="literal">4.8in</code></td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Nutshell (and other books with a 6×9 inch trim
+                size)</td>
+<td style="border-bottom: 0.5pt solid ; "><code class="literal">4.3in</code></td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; ">Pocket Reference</td>
+<td><code class="literal">2.8in</code></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p id="for_more_comple">For more complete under-the-hood info, see <a class="ulink" href="http://www.sagehill.net/docbookxsl/ImageSizing.html" target="_top">http://www.sagehill.net/docbookxsl/ImageSizing.html</a>.
+        (Note that not everything described there will work with O’Reilly’s
+        <span class="keep-together">toolchain</span>.)</p>
+</div>
+<div class="sect3" id="inline_graphics">
+<div class="titlepage"><div><div><h4 class="title">Inline graphics</h4></div></div></div>
+<p id="if_you_need_to_">If you need to add an inline graphic (e.g., a small icon that is
+        part of the text), use an <code class="literal">inlinemediaobject</code>:</p>
+<pre class="programlisting" id="inlinemediaobj_id1">&lt;inlinemediaobject&gt;
+   &lt;imageobject&gt;
+      &lt;imagedata fileref="figs/icons_0501.png" width="0.12in"/&gt;
+   &lt;/imageobject&gt;
+&lt;/inlinemediaobject&gt;</pre>
+<p id="a_width_is_requ">A <code class="literal">width</code> is required for an
+        <code class="literal">inlinemediaobject</code> so that the processor knows how
+        much space to allocate for it. The value <code class="literal">0.12in</code>
+        works well. You can also find the width of the graphic using a web
+        browser, Adobe Acrobat, or any other program that shows you an image’s
+        dimensions.</p>
+</div>
+<div class="sect3" id="ascii_art">
+<div class="titlepage"><div><div><h4 class="title">ASCII art</h4></div></div></div>
+<p id="ascii_art_may_b">ASCII art may be usable, but it does create ambiguities for
+        Tools staff who perform an “intake” on your files when they come into
+        Production, as well as the illustrators. Please see detailed
+        guidelines and examples at <a class="ulink" href="https://github.com/oreillymedia/docbook_samples/tree/master/ascii_art" target="_top">https://github.com/oreillymedia/docbook_samples/tree/master/ascii_art</a>.</p>
+</div>
+<div class="sect3" id="accessibility">
+<div class="titlepage"><div><div><h4 class="title">Alt text for images</h4></div></div></div>
+<p id="oreilly_is_com">O’Reilly is committed to making electronic formats of its books
+        accessible to visually impaired readers. EPUB versions of our titles
+        contain alternative text descriptions for images (in the
+        <code class="literal">alt</code> attribute of <code class="literal">img</code> elements)
+        whenever possible.</p>
+<p id="by_default_for">By default, for formal <code class="literal">figure</code> elements, we
+        use the contents of the <code class="literal">title</code> element as the
+        <code class="literal">alt</code> text. However, you can supply your own custom
+        alt text for a <code class="literal">figure</code> by adding a
+        <code class="literal">textobject</code> element as a child of the figure’s
+        <code class="literal">mediaobject</code>, and enclosing the
+        <code class="literal">alt</code> text in a <code class="literal">phrase</code> element.
+        Here’s an example of the markup to use (<a class="xref" href="ch03.html#figure_with_custom_alt_text" title="Figure 3-2. Figure image with custom alt text">Figure 3-2</a> shows how it renders):</p>
+<pre class="programlisting" id="figure_idfig_id2">&lt;figure id="figure_with_custom_alt_text"&gt;
+   &lt;title&gt;Figure image with custom alt text&lt;/title&gt;
+
+   &lt;mediaobject&gt;
+      &lt;imageobject&gt;
+         &lt;imagedata fileref="figs/universal_design_for_web_applications_cover.png"
+                    width="2.4in"/&gt;
+      &lt;/imageobject&gt;
+
+      &lt;textobject&gt;
+         &lt;phrase&gt;Universal Design for Web Applications Cover&lt;/phrase&gt;
+      &lt;/textobject&gt;
+   &lt;/mediaobject&gt;
+&lt;/figure&gt;</pre>
+<div class="figure" id="figure_with_custom_alt_text">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 216; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 216; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001574/images/universal_design_for_web_applications_cover.png" alt="Universal Design for Web Applications Cover"></td></tr></table></div></div>
+<div class="figure-title">Figure 3-2. Figure image with custom alt text</div>
+</div>
+<p id="for_images_you_">For images you include in your book that do not have
+        <code class="literal">title</code> elements (e.g.,
+        <code class="literal">informalfigure</code>s and
+        <code class="literal">inlinemediaobject</code>s), we highly encourage you to
+        supply your own custom <code class="literal">alt</code> text in
+        <code class="literal">textobject</code>s. (By default, we use the text “image
+        with no caption” as the <code class="literal">alt</code> text for
+        <code class="literal">informalfigure</code>s and leave <code class="literal">alt</code>
+        attributes empty for <code class="literal">inlinemediaobject</code>s.) <a class="xref" href="ch03.html#informalfigure_with_textobject" title="Example 3-1. informalfigure with textobject">Example 3-1</a> and <a class="xref" href="ch03.html#inlinemediaobject_with_textobject" title="Example 3-2. inlinemediaobject with textobject">Example 3-2</a> show examples of the
+        markup for an <code class="literal">informalfigure</code> and
+        <code class="literal">inlinemediaobject</code> with custom
+        <code class="literal">alt</code> text.</p>
+<div class="example" id="informalfigure_with_textobject">
+<div class="example-title">Example 3-1. informalfigure with textobject</div>
+<div class="example-contents"><pre class="programlisting" id="informalfigure_id2">&lt;informalfigure id="informalfigure_with_custom_alt_text"&gt;
+   &lt;mediaobject&gt;
+      &lt;imageobject&gt;
+         &lt;imagedata fileref="figs/universal_design_for_web_applications_cover.png"
+                    width="2.4in"/&gt;
+      &lt;/imageobject&gt;
+
+      &lt;textobject&gt;
+         &lt;phrase&gt;Universal Design for Web Applications Cover&lt;/phrase&gt;
+      &lt;/textobject&gt;
+   &lt;/mediaobject&gt;
+&lt;/informalfigure&gt;</pre></div>
+</div>
+<div class="example" id="inlinemediaobject_with_textobject">
+<div class="example-title">Example 3-2. inlinemediaobject with textobject</div>
+<div class="example-contents"><pre class="programlisting" id="inlinemediaobj_id2">&lt;inlinemediaobject&gt;
+   &lt;imageobject&gt;
+      &lt;imagedata fileref="figs/oreilly_logo.png" width="0.12in"/&gt;
+   &lt;/imageobject&gt;
+   &lt;textobject&gt;
+      &lt;phrase&gt;O’Reilly Media, Inc. logo&lt;/phrase&gt;
+   &lt;/textobject&gt;
+&lt;/inlinemediaobject&gt;</pre></div>
+</div>
+<div class="tip" id="for_some_tips_o_id1"><p id="for_some_tips_o_id2">For some tips on writing good <code class="literal">alt</code> text,
+          O’Reilly’s <a class="ulink" href="http://oreilly.com/catalog/9780596518745/" target="_top"><span class="emphasis"><em>Universal
+          Design for Web Applications</em></span></a> is a great resource.
+          In particular, see the section, “Keys to Writing Good Text
+          Alternatives,” which <a class="ulink" href="http://my.safaribooksonline.com/9780596155681/keys_to_writing_good_text_alternatives" target="_top">is
+          available on Safari</a>. We’d also be happy to supply you with a
+          PDF or EPUB of the book on request.</p></div>
+</div>
+</div>
+<div class="sect2" id="tables">
+<div class="titlepage"><div><div><h3 class="title">Tables</h3></div></div></div>
+<p id="if_your_table_r">If your table requires a description, you expect to refer to it
+      later elsewhere in the text, or it’s especially complex, you probably
+      want to use a <code class="literal">table</code> element. Otherwise, consider
+      using an <code class="literal">informaltable</code>.</p>
+<div class="sect3" id="formal_tables">
+<div class="titlepage"><div><div><h4 class="title">Formal tables</h4></div></div></div>
+<p id="heres_the_mark">Here’s the markup for a <code class="literal">table</code> with a
+        header:</p>
+<pre class="programlisting" id="table_idexam">&lt;table id="example_table"&gt;
+&lt;title&gt;Example formal table&lt;/title&gt;
+  &lt;tgroup cols="2"&gt;
+    &lt;thead&gt;
+      &lt;row&gt;
+        &lt;entry&gt;Heading1&lt;/entry&gt;
+        &lt;entry&gt;Heading2&lt;/entry&gt;
+      &lt;/row&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;row&gt;
+        &lt;entry&gt;Text1&lt;/entry&gt;
+        &lt;entry&gt;Text2&lt;/entry&gt;
+      &lt;/row&gt;
+      &lt;row&gt;
+        &lt;entry&gt;Text3&lt;/entry&gt;
+        &lt;entry&gt;Text4&lt;/entry&gt;
+      &lt;/row&gt;
+    &lt;/tbody&gt;
+  &lt;/tgroup&gt;
+&lt;/table&gt;</pre>
+<p id="shows_how_it_re"><a class="xref" href="ch03.html#example_table" title="Table 3-2. Example formal table">Table 3-2</a> shows how it renders.</p>
+<div class="table" id="example_table">
+<div class="table-title">Table 3-2. Example formal table</div>
+<div class="table-contents"><table style="border-collapse: collapse;">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Heading1</td>
+<td style="border-bottom: 0.5pt solid ; ">Heading2</td>
+</tr></thead>
+<tbody>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Text1</td>
+<td style="border-bottom: 0.5pt solid ; ">Text2</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; ">Text3</td>
+<td>Text4</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p id="note_that_the_t">Note that the title describes the entire table, while the header
+        contains information about each column. A formal table does not always
+        need to have to have a header.</p>
+<p id="tables_can_get_">Tables can get <span class="emphasis"><em>much</em></span> more complex than this
+        example. See <a class="ulink" href="http://www.docbook.org/tdg/en/html/table.html" target="_top">http://www.docbook.org/tdg/en/html/table.html</a>
+        for details, though please note that not everything discussed there
+        will work with our toolchain or conform to O’Reilly’s style (check
+        with your editor about the latter).</p>
+</div>
+<div class="sect3" id="informal_tables">
+<div class="titlepage"><div><div><h4 class="title">Informal tables</h4></div></div></div>
+<p id="the_markup_of_a">The markup of an <code class="literal">informaltable</code> is similar to
+        that of a <code class="literal">table</code>, but it does not have a
+        <code class="literal">title</code> or need an <code class="literal">id</code>. Here’s an
+        example.</p>
+<div class="informaltable" id="texttexttext"><table style="border: none;">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Text1</td>
+<td style="border-bottom: 0.5pt solid ; ">Text2</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; ">Text3</td>
+<td>Text4</td>
+</tr>
+</tbody>
+</table></div>
+<p id="this_particular">This particular informal table doesn’t have a header (no
+        <code class="literal">thead</code>), but it would be valid to add one. Also, the
+        bottom rule has been suppressed with the use of a
+        <code class="literal">frame="none"</code> attribute; see the next section for
+        details on table borders.</p>
+<div class="note" id="please_check_wi_id1"><p id="please_check_wi_id2">Please check with your editor about O’Reilly house style
+          before overriding table defaults, as table markup can be quite
+          labor-intensive for you or Production staff to change later
+          on.</p></div>
+</div>
+<div class="sect3" id="frames_and_borders">
+<div class="titlepage"><div><div><h4 class="title">Frames and borders</h4></div></div></div>
+<p id="you_can_adjust_">You can adjust the appearance of the frames and borders in table
+        elements. To control the lines surrounding the
+        <code class="literal">&lt;table&gt;</code> element itself, you can set the
+        <code class="literal">frame</code> attribute:</p>
+<div class="variablelist" id="framea_value_of"><dl class="variablelist">
+<dt><span class="term"><code class="literal">frame</code></span></dt>
+<dd><p id="a_value_of_all_">A value of <code class="literal">all</code> means all sides will be
+              black. A value of <code class="literal">none</code> means the bottom rule
+              will be suppressed.</p></dd>
+</dl></div>
+<p id="to_control_the_">To control the interior cell borders, you can set
+        <code class="literal">colsep</code> and <code class="literal">rowsep</code> attributes on
+        various elements inside the table:</p>
+<div class="variablelist" id="colsepa_value_o"><dl class="variablelist">
+<dt><span class="term"><code class="literal">colsep</code></span></dt>
+<dd><p id="a_value_of__dr_id1">A value of <code class="literal">1</code> draws a rule to the right
+              of the element. A value of <code class="literal">0</code> suppresses the
+              rule.</p></dd>
+<dt><span class="term"><code class="literal">rowsep</code></span></dt>
+<dd><p id="a_value_of__dr_id2">A value of <code class="literal">1</code> draws a rule below the
+              element. A value of <code class="literal">0</code> suppresses the
+              rule.</p></dd>
+</dl></div>
+</div>
+</div>
+<div class="sect2" id="lists">
+<div class="titlepage"><div><div><h3 class="title">Lists</h3></div></div></div>
+<p id="there_are_four_">There are four common types of lists. The <a class="ulink" href="http://oreilly.com/oreilly/author/stylesheet.html#lists" target="_top">O’Reilly
+      Stylesheet and Word List</a> has more details about when to use
+      them, but here’s the markup and an example of each.</p>
+<div class="sect3" id="simple_list">
+<div class="titlepage"><div><div><h4 class="title">Simple list</h4></div></div></div>
+<p id="markup_id1">Markup:</p>
+<pre class="programlisting" id="simplelist_m">&lt;simplelist&gt;
+  &lt;member&gt;This is a list of several short items.&lt;/member&gt;
+  &lt;member&gt;Usually one or a few words each.&lt;/member&gt;
+&lt;/simplelist&gt;</pre>
+<p id="rendering_id1">Rendering:</p>
+<table style="border: 0; " class="simplelist">
+<tr><td>This is a list of several short items.</td></tr>
+<tr><td>Usually one or a few words each.</td></tr>
+</table>
+</div>
+<div class="sect3" id="itemized_list">
+<div class="titlepage"><div><div><h4 class="title">Itemized list</h4></div></div></div>
+<p id="markup_id2">Markup:</p>
+<pre class="programlisting" id="itemizedlist_">&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;This is a list.&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;With bullets.&lt;/para&gt;&lt;/listitem&gt;
+&lt;itemizedlist&gt;</pre>
+<p id="rendering_id2">Rendering:</p>
+<div class="itemizedlist" id="this_is_a_list_id1"><ul class="itemizedlist">
+<li class="listitem"><p id="this_is_a_list_id2">This is a list.</p></li>
+<li class="listitem"><p id="with_bullets">With bullets.</p></li>
+</ul></div>
+<p id="in_the_case_of_">In the case of an <code class="literal">itemizedlist</code> nested in an
+        <code class="literal">itemizedlist</code>, the child list will use em dashes in
+        place of bullets. If you want to use symbols other than em dashes or
+        bullets, you can set the symbol for an entire
+        <code class="literal">itemizedlist</code> by using the <code class="literal">mark</code>
+        attribute, or for a single <code class="literal">listitem</code> by using the
+        <code class="literal">override</code> attribute. For instance,
+        <code class="literal">&lt;itemizedlist mark="emdash"&gt;</code> causes an entire
+        list to render with the mark “—" instead of standard bullets. Other
+        options include <code class="literal">endash</code> (–),
+        <code class="literal">square</code> (■), <code class="literal">circle</code> (○), and
+        <code class="literal">whitesquare</code> (□).</p>
+<p id="again_check_wi">Again, check with your editor about O’Reilly house style before
+        changing the defaults.</p>
+</div>
+<div class="sect3" id="numbered_aka_ordered_lists">
+<div class="titlepage"><div><div><h4 class="title">Numbered (aka ordered) lists</h4></div></div></div>
+<p id="markup_id3">Markup:</p>
+<pre class="programlisting" id="orderedlist_">&lt;orderedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;This list uses numbers.&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Instead of bullets.&lt;/para&gt;&lt;/listitem&gt;
+&lt;orderedlist&gt;</pre>
+<p id="rendering_id3">Rendering:</p>
+<div class="orderedlist" id="this_list_uses__id1"><ol class="orderedlist" type="1">
+<li class="listitem"><p id="this_list_uses__id2">This list uses numbers.</p></li>
+<li class="listitem"><p id="instead_of_bull">Instead of bullets.</p></li>
+</ol></div>
+<p id="to_continue_the">To continue the numbering of an <code class="literal">orderedlist</code>
+        from a previous list, use a <code class="literal">continuation</code> attribute with a value of
+        <code class="literal">continues</code>:</p>
+<pre class="programlisting" id="orderedlist_co">&lt;orderedlist continuation="continues"&gt;</pre>
+<p id="the_default_is_">The default is <code class="literal">continuation="restarts"</code>. This
+        causes the numbering to begin at 1.</p>
+<p id="if_an_orderedli">If an <code class="literal">orderedlist</code> has other lists nested
+        within it, <code class="literal">&lt;orderedlist
+        contin⁠uation="continues"&gt;</code> may cause them to start at the
+        wrong number. In these cases you can add an
+        <code class="literal">override</code> attribute with the number at which you’d
+        like the incorrectly numbered <code class="literal">listitem</code> to start.
+        Your continued <code class="literal">orderedlist</code> will then begin at that
+        number.</p>
+</div>
+<div class="sect3" id="labeled_aka_variable_or_termdefinition_lists">
+<div class="titlepage"><div><div><h4 class="title">Labeled (aka variable or term-definition) lists</h4></div></div></div>
+<p id="a_variable_list">A variable list is made up of pairs of items.</p>
+<p id="markup_id4">Markup:</p>
+<pre class="programlisting" id="variablelist_">&lt;variablelist&gt;
+  &lt;varlistentry&gt;
+    &lt;term&gt;The first part could be a term&lt;/term&gt;
+    &lt;listitem&gt;&lt;para&gt;Followed by a definition.&lt;/para&gt;&lt;/listitem&gt;
+  &lt;/varlistentry&gt;
+  &lt;varlistentry&gt;
+    &lt;term&gt;Or a name&lt;/term&gt;
+    &lt;listitem&gt;&lt;para&gt;Followed by a description. Etc.&lt;/para&gt;&lt;/listitem&gt;
+  &lt;/varlistentry&gt;
+&lt;/variablelist&gt;</pre>
+<p id="rendering_id4">Rendering:</p>
+<div class="variablelist" id="the_first_part_"><dl class="variablelist">
+<dt><span class="term">The first part could be a term</span></dt>
+<dd><p id="followed_by_a_d_id1">Followed by a definition.</p></dd>
+<dt><span class="term">Or a name</span></dt>
+<dd><p id="followed_by_a_d_id2">Followed by a description. Etc.</p></dd>
+</dl></div>
+<p id="by_default_the">By default, the variable list <code class="literal">term</code> will
+        render in italics. To remove the italics, add a
+        <code class="literal">role</code> attribute of <code class="literal">plain</code>:</p>
+<pre class="programlisting" id="term_rolepla">&lt;term role="plain"&gt;Variable list term&lt;/term&gt;</pre>
+</div>
+</div>
+<div class="sect2" id="notes_warnings_and_sidebars">
+<div class="titlepage"><div><div><h3 class="title">Notes, Warnings, and Sidebars</h3></div></div></div>
+<p id="you_may_use_the">You may use these block elements for adding supplemental
+      information or warnings to the reader.</p>
+<div class="note" id="the_tip_element_id1"><p id="the_tip_element_id2">The <code class="literal">tip</code> element will render the same as a
+        <code class="literal">note</code>.</p></div>
+<div class="warning" id="the_caution_ele_id1"><p id="the_caution_ele_id2">The <code class="literal">caution</code> element will render the same as a
+        <code class="literal">warning</code>.</p></div>
+<p id="notes_and_warni">Notes and warnings may contain paras, code blocks, and lists. They
+      should <span class="emphasis"><em>not</em></span> contain figures, tables, or
+      examples.</p>
+<div class="sidebar" id="when_to_use_a_sidebar">
+<div class="titlepage"><div><div><div class="sidebar-title">When to Use a Sidebar?</div></div></div></div>
+<p id="if_a_note_or_a_">If a note or a warning covers a lot of information or includes
+        complex elements, consider using a sidebar instead. A sidebar can be
+        much longer—even spanning several <span class="keep-together">pages—</span>and must have a title. It may
+        contain tables and examples, but per house style it should not contain
+        figures.</p>
+</div>
+</div>
+<div class="sect2" id="inserting_hyperlinks">
+<div class="titlepage"><div><div><h3 class="title">Hyperlinks</h3></div></div></div>
+<p id="the_element_for">The element for URLs is <code class="literal">ulink</code>. Here are the
+      traditional markup options:</p>
+<div class="variablelist" id="no_cdataulink_"><dl class="variablelist">
+<dt><span class="term">No CDATA</span></dt>
+<dd>
+<pre class="programlisting" id="ulink_urlhtt_id1">&lt;ulink url="http://www.oreilly.com"/&gt;</pre>
+<p id="looks_like">Looks like: <a class="ulink" href="http://www.oreilly.com" target="_top">http://www.oreilly.com</a></p>
+</dd>
+<dt><span class="term">With CDATA different from <code class="literal">url</code></span></dt>
+<dd>
+<pre class="programlisting" id="ulink_urlhtt_id2">&lt;ulink url="http://www.oreilly.com"&gt;O'Reilly&lt;/ulink&gt;</pre>
+<p id="looks_like_or">Looks like: <a class="ulink" href="http://www.oreilly.com" target="_top">O’Reilly</a></p>
+</dd>
+</dl></div>
+<p id="we_ask_that_you">We ask that you anchor your links to text wherever possible.
+      Here’s an example:</p>
+<pre class="programlisting" id="paraulink_ur">&lt;para&gt;&lt;ulink url="http://www.macports.org"&gt;MacPorts&lt;/ulink&gt; is a great tool for 
+installing open source software on OS X.&lt;/para&gt;</pre>
+<p id="in_the_print_ve">In the print version of the book (see <a class="xref" href="ch02.html#web_pdfs" title="Web PDFs (Parallel PDF Builds)">“Web PDFs (Parallel PDF Builds)”</a>), the URL will render in parentheses following the
+      text, like so:</p>
+<div class="informalfigure" id="informalfigure_id3"><div class="mediaobject"><img style="width: 297; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001574/images/hyperlink_print.png"></div></div>
+<p id="in_the_web_pdf_">In the web PDF (which reflects the version we’ll publish on <a class="ulink" href="http://oreilly.com" target="_top">http://oreilly.com</a> and other digital channels), the
+      hyperlink will be clickable and display in blue, like so:</p>
+<div class="informalfigure" id="informalfigure_id4"><div class="mediaobject"><img style="width: 297; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001574/images/hyperlink_web.png"></div></div>
+<p id="heres_an_examp_id3">Here’s an example of what <span class="emphasis"><em>not</em></span> to do:</p>
+<pre class="programlisting" id="paramacports_">&lt;para&gt;Macports (&lt;ulink url="http://www.macports.org"/&gt;) is a great tool for 
+installing open source software on OS X.&lt;/para&gt;</pre>
+<p id="we_also_recomme">We also recommend using <a class="ulink" href="https://bitly.com/" target="_top">bit.ly</a> links instead of long URLs. This
+      will improve the reading experience in print versions of the
+      book.</p>
+<p id="when_you_create">When you create <code class="literal">ulink</code>s, make sure the
+      <code class="literal">url</code> attribute contains a full URL, including the
+      protocol—e.g., use <span class="emphasis"><em>http://www.macports.org</em></span> instead
+      of <span class="emphasis"><em>www.macports.org</em></span>. The <code class="literal">ulink</code>
+      is not valid without the protocol.</p>
+<div class="note" id="dont_use_ulink_id1"><p id="dont_use_ulink_id2">Don’t use <code class="literal">ulink</code> markup for fake or example
+        URLs, as the hyperlinks may confuse readers (and link-harvesting tools
+        that may be used on your content downstream). Instead, use
+        <code class="literal">emphasis</code> or <code class="literal">uri</code> as semantically
+        appropriate.</p></div>
+<div class="sect3" id="additional_ulink_rendering">
+<div class="titlepage"><div><div><h4 class="title">Additional ulink rendering</h4></div></div></div>
+<p id="two_other_rende">Two other rendering options—the option to hide URLs globally or
+        to have them appear in footnotes—are available. To make use of these,
+        send a request to <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code> and we’ll set up
+        the stylesheet parameter for you. Note that if we do that, all URLs
+        throughout the book will be <span class="keep-together">affected</span>; we can’t set up URL footnote
+        rendering for a single chapter or section.</p>
+</div>
+</div>
+<div class="sect2" id="footnotes">
+<div class="titlepage"><div><div><h3 class="title">Footnotes</h3></div></div></div>
+<p id="a_footnote_gene">A <code class="literal">footnote</code> generates a superscript number
+      wherever it is placed in the text, and the body of the footnote appears
+      at the bottom of the page.<a href="#ftn.id595656" class="footnote"><sup class="footnote" id="id595656">[4]</sup></a> Table footnotes are lettered and appear directly after the
+      table (not at the bottom of the page). For example:</p>
+<div class="informaltable" id="here_is_some_te"><table style="border: none;">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Here is some text.<a href="#ftn.id595674" class="footnote"><sup class="footnote" id="id595674">[a]</sup></a>
+</td>
+<td style="border-bottom: 0.5pt solid ; ">A bit more text.</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; ">This is text.</td>
+<td>You get the idea.<a href="#ftn.id595685" class="footnote"><sup class="footnote" id="id595685">[b]</sup></a>
+</td>
+</tr>
+</tbody>
+<tbody class="footnotes"><tr><td colspan="2">
+<div id="ftn.id595674" class="footnote"><p><a href="#id595674" class="para"><sup class="para">[a] </sup></a>Here’s a table footnote.</p></div>
+<div id="ftn.id595685" class="footnote"><p><a href="#id595685" class="para"><sup class="para">[b] </sup></a>Here’s another.</p></div>
+</td></tr></tbody>
+</table></div>
+<p id="footnotes_shoul">Footnotes should generally be inserted <span class="emphasis"><em>after</em></span>
+      punctuation, whether a period, comma, or colon. See the <a class="ulink" href="http://oreilly.com/oreilly/author/stylesheet.html#footnotes" target="_top">O’Reilly
+      Stylesheet and Word List</a> for guidelines.</p>
+<p id="we_may_be_able_">We may be able to support the use of symbols instead of numbers
+      for non-table footnotes via a stylesheet customization; please check
+      with your editor whether this is appropriate for your book.</p>
+</div>
+<div class="sect2" id="indexing">
+<div class="titlepage"><div><div><h3 class="title">Indexing</h3></div></div></div>
+<p id="oreilly_provid">O’Reilly provides professional indexing as a standard part of book
+      production, but if for some reason you’d like to add index markers in
+      your book, this section covers the proper markup. See <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000001578/index.html" target="_top">O'Reilly
+      Indexing Guidelines</a> for complete details.</p>
+<p id="to_include_an_i">To include an index in your PDF, add a line that says
+      <code class="literal">&lt;index/&gt;</code> to your <code class="filename">book.xml</code>
+      file before the closing <code class="literal">&lt;/book&gt;</code> tag, like
+      so:</p>
+<pre class="programlisting" id="xml_version_id3">&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"&gt;
+&lt;book&gt;
+&lt;title&gt;Some Fantastic Book&lt;/title&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dedication.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="bookinfo.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch00.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch01.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch02.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch03.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch04.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch05.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="appa.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="appb.xml"/&gt;
+&lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="appc.xml"/&gt;
+&lt;index/&gt;
+&lt;/book&gt;</pre>
+<p id="its_also_helpf">It’s also helpful if you add a <code class="literal">remark</code> element
+      somewhere explaining to Production whether you’re merely adding a few
+      terms that you’d like a professional indexer to incorporate, or whether
+      you’re creating a complete index. Discuss these options with your editor
+      first.</p>
+<p id="heres_the_basi">Here’s the basic index entry markup:</p>
+<pre class="programlisting" id="indextermpri">&lt;indexterm&gt;&lt;primary&gt;index entry syntax, level 1&lt;/primary&gt;&lt;/indexterm&gt;</pre>
+<p id="secondary_entry">Secondary entry (subentry) markup:</p>
+<pre class="programlisting" id="indexterm_pr_id1">&lt;indexterm&gt;
+    &lt;primary&gt;index entry syntax&lt;/primary&gt;
+    &lt;secondary&gt;for a subentry&lt;/secondary&gt;
+&lt;/indexterm&gt;</pre>
+<p id="tertiary_entry_">Tertiary entry (sub-subentry) markup:</p>
+<pre class="programlisting" id="indexterm_pr_id2">&lt;indexterm&gt;
+    &lt;primary&gt;index entry syntax&lt;/primary&gt;
+    &lt;secondary&gt;for a subentry&lt;/secondary&gt;
+    &lt;tertiary&gt;with a subentry&lt;/tertiary&gt;
+&lt;/indexterm&gt;</pre>
+<p id="index_entry_wit">Index entry with a range markup:</p>
+<pre class="programlisting" id="this_book_is_fu">This book is full of geeky text with DocBook XML markup, which starts here:
+&lt;indexterm class="startofrange" id="geekytext"&gt;
+&lt;primary&gt;geeky DocBook XML text&lt;/primary&gt;&lt;/indexterm&gt;blah blah blah Ajax
+blah blah blah Ruby on Rails
+...
+and ends here&lt;indexterm class="endofrange" startref="geekytext"&gt;.</pre>
+<div class="note" id="the_closing_ind_id1"><p id="the_closing_ind_id2">The closing <code class="literal">indexterm</code> tag does not contain a
+        <code class="literal">primary</code> or <code class="literal">secondary</code> entry, just
+        a <code class="literal">startref</code> attribute that references the starting
+        <code class="literal">indexterm</code> entry. Do not place the closing tag on
+        its own line.</p></div>
+</div>
+</div>
+<div class="sect1" data-original-filename="ch03.xml" id="code">
+<div class="titlepage"><div><div><h2 class="title">Code</h2></div></div></div>
+<p id="in_general_put">In general, put your code snippets in <code class="literal">programlisting</code> or <code class="literal">screen</code>
+    elements. These render exactly the same—the choice is yours. Here’s a very
+    simple one:</p>
+<pre class="programlisting" id="hello_world_id1">Hello World</pre>
+<p id="if_you_have_lar">If you have larger blocks of code that you want to have a title, a
+    number, and a cross-reference, use an <code class="literal">example</code> element.
+    <a class="xref" href="ch03.html#sample_example" title="Example 3-3. Sample example">Example 3-3</a> shows a basic one.</p>
+<div class="example" id="sample_example">
+<div class="example-title">Example 3-3. Sample example</div>
+<div class="example-contents"><pre class="programlisting" id="hello_world_id2">Hello World</pre></div>
+</div>
+<p id="these_elements_">These elements are verbatim environments, which means whitespace is
+    preserved in rendered versions. You must either escape all characters that
+    have special meaning in XML (such as <code class="literal">&lt;</code> and <code class="literal">&gt;</code>—these characters obviously come up quite a
+    bit in code) or use a <code class="literal">CDATA</code> block.<a href="#ftn.id595942" class="footnote"><sup class="footnote" id="id595942">[5]</sup></a></p>
+<div class="sect2" id="external_code_files">
+<div class="titlepage"><div><div><h3 class="title">External code files</h3></div></div></div>
+<p id="if_you_want_to__id2">If you want to manage your code in separate files from the
+      manuscript, you can use <code class="literal">&lt;xi:include&gt;</code> tags to point to your code
+      (more on <code class="literal">XInclude</code>s in <a class="xref" href="ch03.html#organizing_files" title="Organizing Your Files">“Organizing Your Files”</a>). If you do this, the parser doesn’t try
+      to interpret them as XML, but you must include a
+      <code class="literal">parse="text"</code> attribute:</p>
+<pre class="programlisting" id="programlisting_id2">&lt;programlisting&gt;
+&lt;xi:include 
+  xmlns:xi="http://www.w3.org/2001/XInclude" 
+  parse="text" href="hello.c" /&gt;
+&lt;/programlisting&gt;</pre>
+<p id="please_be_aware">Please be aware that once the book is in Production, we will run a
+      script that pulls all included code into the chapter files, and the
+      <code class="literal">XInclude</code> links will be gone.</p>
+</div>
+<div class="sect2" id="caveats">
+<div class="titlepage"><div><div><h3 class="title">Caveats</h3></div></div></div>
+<p id="although_inline">Although inline markup and newlines within verbatim
+      environments<a href="#ftn.id596045" class="footnote"><sup class="footnote" id="id596045">[6]</sup></a> are valid DocBook, we ask that you follow these guidelines
+      to prevent rendering problems downstream.</p>
+<div class="sect3" id="long_code_lines">
+<div class="titlepage"><div><div><h4 class="title">Long Code Lines</h4></div></div></div>
+<p id="the_allowed_num">The allowed number of characters per line of code varies
+        depending on the book series and where the code is positioned in the
+        markup. The following table lists some common cases.<a href="#ftn.id596073" class="footnote"><sup class="footnote" id="id596073">[7]</sup></a></p>
+<div class="note" id="please_keep_in__id1"><p id="please_keep_in__id2">Please keep in mind that these are just the
+          <span class="emphasis"><em>maximum</em></span> characters <span class="keep-together">allowed</span>. You should review your PDFs
+          and make your own judgments about the best way to present code to
+          the reader.</p></div>
+<div class="informaltable" id="seriesbody_top"><table style="border-collapse: collapse;">
+<colgroup>
+<col class="col1">
+<col class="col2">
+<col class="col3">
+<col class="col4">
+<col class="col5">
+</colgroup>
+<thead><tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Series</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Body (top-level code)</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Examples</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Lists</td>
+<td style="border-bottom: 0.5pt solid ; ">Sidebars/notes/warnings</td>
+</tr></thead>
+<tbody>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Animal or Cookbook</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">85</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">90</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">80</td>
+<td style="border-bottom: 0.5pt solid ; ">80</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Small Animal (6x9)</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">76</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">80</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">72</td>
+<td style="border-bottom: 0.5pt solid ; ">70</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Theory in Practice</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">85</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">90</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">80</td>
+<td style="border-bottom: 0.5pt solid ; ">72</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Nutshell</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">76</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">80</td>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">72</td>
+<td style="border-bottom: 0.5pt solid ; ">66</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; ">Pocket Reference</td>
+<td style="border-right: 0.5pt solid ; ">58</td>
+<td style="border-right: 0.5pt solid ; ">62</td>
+<td style="border-right: 0.5pt solid ; ">53</td>
+<td>48</td>
+</tr>
+</tbody>
+</table></div>
+<p id="please_rebreak_">Please rebreak any code lines that exceed the max number of
+        characters; otherwise, the code will run into the margin in your PDFs,
+        which is unacceptable for print. It’s best to fix long code lines in
+        the manuscript stage, while you still have access to the source.
+        Making such edits during Production is much more cumbersome for
+        everyone involved.</p>
+</div>
+<div class="sect3" id="tabs">
+<div class="titlepage"><div><div><h4 class="title">Tabs</h4></div></div></div>
+<p id="please_dont_us">Please don’t use tabs in code blocks, as tabs don’t necessarily
+        translate to the same amount of space on different systems. To align
+        or indent within your code, use spaces.</p>
+</div>
+<div class="sect3" id="inline_markup_on_multiple_lines">
+<div class="titlepage"><div><div><h4 class="title">Inline markup on multiple lines</h4></div></div></div>
+<p id="when_using_inli">When using inline markup on multiple lines of code (e.g.,
+        <code class="literal">&lt;emphasis role="bold"&gt;</code>), <span class="emphasis"><em>please
+        close the tag at the end of each line and open a new one on the next
+        line</em></span>. For example, instead of this:</p>
+<pre class="programlisting" id="programlisting_id3">&lt;programlisting&gt;&lt;emphasis role="bold"&gt;GLuint m_gridTexture;
+IResourceManager* m_resourceManager;
+&lt;/emphasis&gt;};&lt;/programlisting&gt;</pre>
+<p id="do_this">do this:</p>
+<pre class="programlisting" id="programlisting_id4">&lt;programlisting&gt;&lt;emphasis role="bold"&gt;GLuint m_gridTexture;&lt;/emphasis&gt;
+&lt;emphasis role="bold"&gt;IResourceManager* m_resourceManager;&lt;/emphasis&gt;
+};&lt;/programlisting&gt;</pre>
+<p id="failing_to_do_t">Failing to do this can cause headaches and delays in
+        Production.</p>
+</div>
+<div class="sect3" id="newlines">
+<div class="titlepage"><div><div><h4 class="title">Newlines</h4></div></div></div>
+<p id="be_careful_not_">Be careful not to add newlines to the beginning or end of code
+        blocks. Because all line breaks are preserved in verbatim blocks,
+        newlines can result in excess whitespace. For example, the following
+        listing will render with unwanted blank lines at the top and bottom
+        due to the line breaks after the opening
+        <code class="literal">&lt;programlisting&gt;</code> tag and before the closing
+        <code class="literal">&lt;/programlisting&gt;</code> tag:</p>
+<pre class="programlisting" id="programlisting_id5">&lt;programlisting&gt;
+CLLocationManager *locationManager = [[CLLocationManager alloc] init];
+locationManager.delegate = self;
+    [locationManager startUpdatingLocation];
+} else {
+    NSLog(@"Location services not enabled.");
+}
+&lt;/programlisting&gt;</pre>
+<p id="although_we_hav">Although we have tools to remove the extraneous whitespace once
+        the files are in Production, we prefer not to run global changes on
+        code content, so it’s best if you avoid adding it in the first place.
+        Do this instead:</p>
+<pre class="programlisting" id="programlisting_id6">&lt;programlisting&gt;CLLocationManager *locationManager = [[CLLocationManager alloc] init];
+locationManager.delegate = self;
+    [locationManager startUpdatingLocation];
+} else {
+    NSLog(@"Location services not enabled.");
+}&lt;/programlisting&gt;</pre>
+</div>
+</div>
+<div class="sect2" id="callouts">
+<div class="titlepage"><div><div><h3 class="title">Callouts</h3></div></div></div>
+<p id="if_you_want_to__id3">If you want to have cross-references to specific lines of code,
+      you can use callouts. Just put a <code class="literal">co</code>
+      element at the end of each line you want to reference—these will
+      generate callout markers. Then create a <code class="literal">calloutlist</code> element after the code block. This
+      list contains <code class="literal">callout</code> items that
+      discuss or explain each referenced line. Here is an example:</p>
+<pre class="screen" id="programlisting_id7">&lt;programlisting&gt; <a class="co" id="opening_tag_co" href="ch03.html#opening_tag"><span><img style="border: 0; " src="http://orm-chimera-prod.s3.amazonaws.com/assets/callouts/1.png" alt="1"></span></a>
+&lt;xi:include <a class="co" id="xinclude_co" href="ch03.html#xinclude"><span><img style="border: 0; " src="http://orm-chimera-prod.s3.amazonaws.com/assets/callouts/2.png" alt="2"></span></a> 
+  xmlns:xi="http://www.w3.org/2001/XInclude" 
+  parse="text" href="hello.c" /&gt;
+&lt;/programlisting&gt; <a class="co" id="closing_tag_co" href="ch03.html#closing_tag"><span><img style="border: 0; " src="http://orm-chimera-prod.s3.amazonaws.com/assets/callouts/3.png" alt="3"></span></a></pre>
+<div class="calloutlist"><table style="border: 0; ">
+<tr>
+<td style="width: 5%; vertical-align: top; text-align: left; " id="opening_tag"><p><a href="#opening_tag_co"><span><img style="border: 0; " src="http://orm-chimera-prod.s3.amazonaws.com/assets/callouts/1.png" alt="1"></span></a> </p></td>
+<td style="vertical-align: top; text-align: left; "><p id="the_opening_tag">The opening tag for a <code class="literal">programlisting</code>
+          element.</p></td>
+</tr>
+<tr>
+<td style="width: 5%; vertical-align: top; text-align: left; " id="xinclude"><p><a href="#xinclude_co"><span><img style="border: 0; " src="http://orm-chimera-prod.s3.amazonaws.com/assets/callouts/2.png" alt="2"></span></a> </p></td>
+<td style="vertical-align: top; text-align: left; "><p id="an_xinclude">An <code class="literal">XInclude</code>.</p></td>
+</tr>
+<tr>
+<td style="width: 5%; vertical-align: top; text-align: left; " id="closing_tag"><p><a href="#closing_tag_co"><span><img style="border: 0; " src="http://orm-chimera-prod.s3.amazonaws.com/assets/callouts/3.png" alt="3"></span></a> </p></td>
+<td style="vertical-align: top; text-align: left; "><p id="the_closing_tag">The closing tag for a <code class="literal">programlisting</code>
+          element.</p></td>
+</tr>
+</table></div>
+<p id="each_co_element">Each <code class="literal">co</code> element in the code
+      block includes an optional <code class="literal">linkends</code>
+      attribute that points to the <code class="literal">callout</code>
+      elements that refer to it, forming a link between the marker and the
+      callout. Conversely, each <code class="literal">callout</code>
+      element requires an <code class="literal">arearefs</code>
+      attribute that points to <code class="literal">co</code> elements,
+      forming a link between the callout and the marker. The markers will be
+      rendered as clickable bidirectional cross-references if you use this
+      markup.</p>
+<p id="the_markup_for_">The markup for the above looks like this:</p>
+<pre class="programlisting" id="screenltpro">&lt;screen&gt;&amp;lt;programlisting&amp;gt; &lt;co id="opening_tag_co" 
+  linkends="opening_tag"/&gt;
+&amp;lt;xi:include &lt;co id="xinclude_co" linkends="xinclude"/&gt; 
+  xmlns:xi="http://www.w3.org/2001/XInclude" 
+  parse="text" href="hello.c" /&amp;gt;
+&amp;lt;/programlisting&amp;gt; &lt;co id="closing_tag_co" linkends="closing_tag"/&gt;
+&lt;/screen&gt;
+
+&lt;calloutlist&gt;
+&lt;callout arearefs="opening_tag_co" id="opening_tag"&gt;
+&lt;para&gt;The opening tag for a &lt;literal&gt;programlisting&lt;/literal&gt;
+element.&lt;/para&gt;
+&lt;/callout&gt;
+
+&lt;callout arearefs="xinclude_co" id="xinclude"&gt;
+&lt;para&gt;An &lt;literal&gt;XInclude&lt;/literal&gt;.&lt;/para&gt;
+&lt;/callout&gt;
+
+&lt;callout arearefs="closing_tag_co" id="closing_tag"&gt;
+&lt;para&gt;The closing tag for a &lt;literal&gt;programlisting&lt;/literal&gt;
+element.&lt;/para&gt;
+&lt;/callout&gt;
+&lt;/calloutlist&gt;</pre>
+<p id="for_more_inform_id2">For more information on DocBook callout markup, see <a class="ulink" href="http://www.sagehill.net/docbookxsl/AnnotateListing.html#Callouts" target="_top">http://www.sagehill.net/docbookxsl/AnnotateListing.html#Callouts</a>.
+      Please note that our toolchain does not support <code class="literal">areaspec</code>/<code class="literal">area</code>/<code class="literal">areaset</code> elements to specify callout
+      regions.</p>
+<div class="note" id="although_docboo_id1"><p id="although_docboo_id2">Although DocBook has markup for adding line numbers and
+        annotations directly to code, O’Reilly’s toolchain doesn’t support
+        these options. Line numbers don’t allow for good cross-referencing and
+        can potentially cause problems if code is revised and line numbers
+        change. If you want to cross-reference code blocks by number, we
+        recommend using <span class="keep-together">callouts</span>
+        instead; they are autonumbered and will adjust automatically if you
+        shift code around.</p></div>
+</div>
+<div class="sect2" id="syntax_highlighting">
+<div class="titlepage"><div><div><h3 class="title">Syntax Highlighting</h3></div></div></div>
+<p id="oreillys_epub">O’Reilly’s EPUB toolchain now supports syntax highlighting via
+      <a class="ulink" href="http://pygments.org/" target="_top">Pygments</a>. All you need to do
+      is add a <code class="literal">language</code> attribute to each code block that
+      you want to be syntax-highlighted. Here’s the markup:</p>
+<pre class="programlisting" id="programlisting_id8">&lt;programlisting language="java"&gt;[code goes here]&lt;/programlisting&gt;</pre>
+<p id="for_example_he">For example, here’s a code block with a
+      <code class="literal">language="java"</code> attribute added to it:</p>
+<pre class="programlisting" data-language="java" id="int_radius__"><code class="kt">int</code> <code class="n">radius</code> <code class="o">=</code> <code class="mi">40</code><code class="o">;</code>
+<code class="kt">float</code> <code class="n">x</code> <code class="o">=</code> <code class="mi">110</code><code class="o">;</code>
+<code class="kt">float</code> <code class="n">speed</code> <code class="o">=</code> <code class="mf">0.5</code><code class="o">;</code>
+<code class="kt">int</code> <code class="n">direction</code> <code class="o">=</code> <code class="mi">1</code><code class="o">;</code></pre>
+<p id="if_youre_looki">If you’re looking at the print version of these guidelines, here’s
+      a screenshot that shows how the above code will render in the EPUB and
+      ebook PDF:</p>
+<div class="informalfigure-float"><div class="informalfigure" id="informalfigure_id5"><div class="mediaobject"><table style="border: 0; width: 180; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 180; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001574/images/syntax_highlighting.png"></td></tr></table></div></div></div>
+<p id="pygments_suppor">Pygments supports a wide variety of languages that can be used in
+      the <code class="literal">language</code> attribute; see the full list at <a class="ulink" href="http://pygments.org/docs/lexers/" target="_top">http://pygments.org/docs/lexers/</a>. Ebook readers that do
+      not have color screens will still display the highlighting, but in more
+      subtle shades of gray.</p>
+<p id="please_note_the">Please note the following caveats:</p>
+<div class="itemizedlist" id="the_color_schem_id1"><ul class="itemizedlist">
+<li class="listitem"><p id="the_color_schem_id2">The color scheme is consistent across books and cannot be
+          changed at this time.</p></li>
+<li class="listitem"><p id="this_feature_is">This feature is supported in EPUB, ebook PDFs, and KF8 for the
+          Kindle Fire. Syntax highlighting is not supported in print books
+          unless it’s printing in color.</p></li>
+</ul></div>
+<p id="if_you_would_li">If you would like to do something that’s not currently supported,
+      please write to us at <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code> and we’ll do
+      our best to work with you on incorporating it.</p>
+</div>
+</div>
+<div class="sect1" data-original-filename="ch03.xml" id="unicode">
+<div class="titlepage"><div><div><h2 class="title">Unicode for Special Characters</h2></div></div></div>
+<p id="for_nonstandard">For nonstandard characters, use Unicode. The following table
+    provides the values for some common characters; for all others, use the
+    <a class="ulink" href="http://www.fileformat.info/info/unicode/char/search.htm" target="_top">Unicode
+    Char⁠acter Search</a> (but keep in mind that our default fonts don’t
+    have glyphs for every exotic character; send email to
+    <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code> if you have questions about this). If
+    you’re using XXE with the ORM customizations file, most of the characters
+    below have keyboard shortcuts.</p>
+<p id="to_add_a_unicod">To add a Unicode character directly to XML in a text editor, use the
+    entity <code class="literal">&amp;#x<em class="replaceable"><code>CODEPOINT</code></em>;</code>,
+    where <em class="replaceable"><code>CODEPOINT</code></em> is the four-digit hexadecimal
+    number after U+ (e.g., for <span class="keep-together">U+20A0</span>,
+    enter <code class="literal">&amp;#x20A0;</code>). Letters that are part of the
+    codepoint may be entered as either upper- or lowercase (i.e.,
+    <code class="literal">&amp;#x03bb;</code> is the same as
+    <code class="literal">&amp;#x03BB;</code>), but the <code class="literal">x</code> between the
+    <code class="literal">#</code> symbol and the codepoint must be lowercase.</p>
+<div class="informaltable" id="characterunicod"><table style="border-collapse: collapse;">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">Character</td>
+<td style="border-bottom: 0.5pt solid ; ">Unicode value (hexadecimal codepoint)</td>
+</tr></thead>
+<tbody>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">— (Em Dash)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+2014</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">- (En Dash)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+2013</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">“ (Curly Left Double Quotation Mark)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+201C</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">” (Curly Right Double Quotation Mark)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+201D</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">‘ (Curly Left Single Quotation Mark)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+2018</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">’ (Curly Right Single Quotation Mark)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+2019</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">× (MathMultiplier)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+00D7</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">→ (CharMenuDelim)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+2192</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">€ (Euro Currency Symbol)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+20A0</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">✓ (Check Mark)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+2713</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">✗ (Ballot X)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+2717</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; ">⌘ (Place Of Interest Sign)</td>
+<td style="border-bottom: 0.5pt solid ; ">U+2318</td>
+</tr>
+<tr>
+<td style="border-right: 0.5pt solid ; ">↵ (Carriage Return Arrow)</td>
+<td>U+21B5</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="sect1" data-original-filename="ch03.xml" id="adding_comments">
+<div class="titlepage"><div><div><h2 class="title">Comments and Remarks</h2></div></div></div>
+<p id="you_have_two_op">You have two options for adding comments to your manuscript:
+    standard XML comments
+    (<code class="literal">&lt;!--</code><code class="literal">foo--&gt;</code>) and
+    <code class="literal">remark</code> elements.</p>
+<p id="xml_comments_ar">XML comments are useful for commenting out large blocks of text—for
+    example, text that is under review, or text that you don’t currently want
+    to include in your manuscript. In the following example, the entire
+    paragraph is commented out:</p>
+<pre class="programlisting" id="oreillys">&lt;!-- O’Reilly’s mission statement. 
+&lt;para&gt;O’Reilly Media spreads the knowledge of innovators through its books, 
+online services, magazines, research, and conferences. Since 1978, O’Reilly 
+has been a chronicler and catalyst of leading-edge development, homing in 
+on the technology trends that really matter and galvanizing their adoption 
+by amplifying “faint signals” from the alpha geeks who are creating the future. 
+An active participant in the technology community, the company has a long 
+history of advocacy, meme-making, and evangelism.&lt;/para&gt; --&gt;</pre>
+<p id="remark_elements"><code class="literal">remark</code> elements are better for directing specific
+    comments to the editor or Production. For example:</p>
+<pre class="programlisting" id="remarkproduct">&lt;remark&gt;PRODUCTION: Please stet grammatical errors in the following&lt;/remark&gt;
+
+&lt;para&gt;I can haz cheezburger, plz?&lt;/para&gt;</pre>
+<p id="if_you_have_com">If you have comments for Production staff, we would appreciate you
+    formatting them as <code class="literal">remark</code> elements and starting them
+    with “PRODUCTION,” as shown above. This is helpful for distinguishing
+    comments that need to be addressed during Production from comments
+    directed toward editorial staff or coauthors.</p>
+<p id="by_default_com">By default, comments are not displayed in your PDF builds. <a class="xref" href="ch02.html#displaying_comments_in_pdfs" title="Displaying Comments in Your PDF Builds">“Displaying Comments in Your PDF Builds”</a> describes how to enable
+    them.</p>
+</div>
+<div class="sect1" data-original-filename="ch03.xml" id="quotes_and_epigraphs">
+<div class="titlepage"><div><div><h2 class="title">Quotes and Epigraphs</h2></div></div></div>
+<p id="to_add_a_quote_">To add a quote anywhere in your book, use the
+    <code class="literal">blockquote</code> element. Since it’ll be set apart from the
+    text, there’s no need to put quotation marks around it. Here’s some
+    example markup—a quote attributed to Benjamin Disraeli (by Wilfred
+    Meynell, according to Frank Muir):</p>
+<pre class="programlisting" id="blockquote_a">&lt;blockquote&gt;
+  &lt;attribution&gt;Wilfred Meynell&lt;/attribution&gt;
+
+  &lt;para&gt;Many thanks; I shall lose no time in reading it.&lt;/para&gt;
+&lt;/blockquote&gt;</pre>
+<p id="heres_how_it_r">Here’s how it renders:</p>
+<div class="blockquote"><table style="border: 0; " class="blockquote">
+<tr>
+<td style="width: 10%; vertical-align: top; "> </td>
+<td style="width: 80%; vertical-align: top; "><p id="many_thanks_i_">Many thanks; I shall lose no time in reading it.</p></td>
+<td style="width: 10%; vertical-align: top; "> </td>
+</tr>
+<tr>
+<td style="width: 10%; vertical-align: top; "> </td>
+<td style="text-align: right; vertical-align: top; " colspan="2">--<span class="attribution">Wilfred Meynell</span>
+</td>
+</tr>
+</table></div>
+<p id="if_you_want_to__id4">If you want to add a quote at the <span class="emphasis"><em>beginning</em></span> of
+    your chapters (or sections, parts, etc.), use the
+    <code class="literal">epigraph</code> element. Here’s some example markup:</p>
+<pre class="programlisting" id="epigraph_att">&lt;epigraph&gt;
+  &lt;attribution&gt;Robert Benchley&lt;/attribution&gt;
+
+  &lt;para&gt;There are two kinds of people in the world: those who believe 
+  there are two kinds of people in the world, and those who don't.&lt;/para&gt;
+&lt;/epigraph&gt;</pre>
+<p id="and_heres_how_">And here’s how it renders:</p>
+<div class="epigraph">
+<p id="there_are_two_k_id2">There are two kinds of people in the world: those who believe
+      there are two kinds of people in the world, and those who don’t.</p>
+<div class="attribution"><span>—<span class="attribution">Robert Benchley</span></span></div>
+</div>
+</div>
+<div class="sect1" data-original-filename="ch03.xml" id="math_in_docbook">
+<div class="titlepage"><div><div><h2 class="title">Math in DocBook</h2></div></div></div>
+<p id="math_content_is">Math content is generally handled in one of two ways: text for
+    simple math, images for complex math.</p>
+<div class="note" id="if_you_are_writ_id1"><p id="if_you_are_writ_id2">If you are writing a very math-heavy book, consider <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#math_in_docbook" target="_top">writing
+      in Atlas</a>. Alternatively, you can write your book in LaTeX and we
+      will package it through a vendor with deep math-typesetting experience.
+      You could also decide (after consulting with your editor and Tools) to
+      experiment with your own LaTeX<span class="unicode">→</span>DocBook
+      conversion, provided you let the Tools team vet a sample of your results
+      before you get too far along.</p></div>
+<div class="sect2" id="simple_math">
+<div class="titlepage"><div><div><h3 class="title">Simple Math</h3></div></div></div>
+<p id="use_regular_tex">Use regular text set in <code class="literal">equation</code> elements for
+      any math you can type using the following:</p>
+<div class="itemizedlist" id="standard_keyboa_id1"><ul class="itemizedlist">
+<li class="listitem"><p id="standard_keyboa_id2">Standard keyboard characters</p></li>
+<li class="listitem"><p id="superscripts_an"><sup>Superscripts</sup> and/or
+          <sub>subscripts</sub></p></li>
+<li class="listitem"><p id="greek_letters_">Greek letters (e.g., ∑)</p></li>
+<li class="listitem"><p id="operators_or_ot">Operators or other special characters (e.g., ∫—see <a class="xref" href="ch03.html#unicode" title="Unicode for Special Characters">“Unicode for Special Characters”</a>)</p></li>
+</ul></div>
+<p id="for_example_wr">For example, write the Pythagorean theorem in text, but not the
+      quadratic formula.</p>
+<p id="here_are_some_e">Here are some examples:</p>
+<div class="variablelist" id="titled_formal_e_id1"><dl class="variablelist">
+<dt><span class="term">Titled formal equation</span></dt>
+<dd>
+<pre class="programlisting" id="equation_idp">&lt;equation id="pythagorean"&gt;
+&lt;title&gt;Pythagorean Theorem&lt;/title&gt;
+  &lt;mathphrase&gt;
+    &lt;emphasis&gt;a&lt;/emphasis&gt;&lt;superscript&gt;2&lt;/superscript&gt; + 
+    &lt;emphasis&gt;b&lt;/emphasis&gt;&lt;superscript&gt;2&lt;/superscript&gt; = 
+    &lt;emphasis&gt;c&lt;/emphasis&gt;&lt;superscript&gt;2&lt;/superscript&gt;
+  &lt;/mathphrase&gt;
+&lt;/equation&gt;</pre>
+<div class="equation" id="pythagorean">
+<div class="equation-title">Equation 3-1. Pythagorean theorem</div>
+<div class="equation-contents"><span class="mathphrase"><span class="emphasis"><em>a</em></span><sup>2</sup> +
+              <span class="emphasis"><em>b</em></span><sup>2</sup> =
+              <span class="emphasis"><em>c</em></span><sup>2</sup></span></div>
+</div>
+</dd>
+<dt><span class="term">Block, untitled informal equation</span></dt>
+<dd>
+<pre class="programlisting" id="informalequati_id1">&lt;informalequation&gt;
+  &lt;mathphrase&gt;
+    &lt;emphasis&gt;a&lt;/emphasis&gt;&lt;superscript&gt;2&lt;/superscript&gt; + 
+    &lt;emphasis&gt;b&lt;/emphasis&gt;&lt;superscript&gt;2&lt;/superscript&gt; = 
+    &lt;emphasis&gt;c&lt;/emphasis&gt;&lt;superscript&gt;2&lt;/superscript&gt;
+  &lt;/mathphrase&gt;
+&lt;/informalequation&gt;</pre>
+<div class="informalequation" id="a__b__c"><span class="mathphrase"><span class="emphasis"><em>a</em></span><sup>2</sup> +
+              <span class="emphasis"><em>b</em></span><sup>2</sup> =
+              <span class="emphasis"><em>c</em></span><sup>2</sup></span></div>
+</dd>
+<dt><span class="term">Inline equation</span></dt>
+<dd>
+<p id="simply_write_th">Simply write the math inline with the regular text, styling
+            with emphasis, superscript, and subscript as needed. (An <code class="literal">inlineequation</code> element does exist,
+            but it’s not necessary for standard rendering in our
+            toolchain.)</p>
+<pre class="programlisting" id="parahere_is_a">&lt;para&gt;Here is a simple text inline equation: &lt;emphasis&gt;a&lt;/emphasis&gt;
+&lt;superscript&gt;2&lt;/superscript&gt; + &lt;emphasis&gt;b&lt;/emphasis&gt;&lt;superscript&gt;2
+&lt;/superscript&gt; = &lt;emphasis&gt;c&lt;/emphasis&gt;&lt;superscript&gt;2&lt;/superscript&gt; 
+(yes, it's the Pythagorean theorem).&lt;/para&gt;</pre>
+<p id="here_is_a_simpl">Here is a simple text inline equation:
+            <span class="emphasis"><em>a</em></span><sup>2</sup> +
+            <span class="emphasis"><em>b</em></span><sup>2</sup> =
+            <span class="emphasis"><em>c</em></span><sup>2</sup> (yes, it’s the
+            Pythagorean theorem).</p>
+</dd>
+</dl></div>
+</div>
+<div class="sect2" id="complex_math">
+<div class="titlepage"><div><div><h3 class="title">Complex Math</h3></div></div></div>
+<div class="sidebar" id="latex_and_mathml_now_supported_with_caveats">
+<div class="titlepage"><div><div><div class="sidebar-title">LaTeX and MathML Now Supported (with Caveats)</div></div></div></div>
+<p id="oreillys_prod">O’Reilly’s production toolchains <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#math_in_docbook" target="_top">now
+        support LaTeX and MathML markup</a>, with two caveats:</p>
+<div class="itemizedlist" id="if_you_are_writ_id3"><ul class="itemizedlist">
+<li class="listitem"><p id="if_you_are_writ_id4">If you are writing in SVN, we cannot support LaTeX or MathML
+            during the manuscript stage. If you wish to use them, you may
+            submit your equations as images (details on this below) and we can
+            have the images converted to MathML during Production.
+            Alternatively, you may put placeholders in your book and submit
+            the markup to us separately.</p></li>
+<li class="listitem"><p id="support_is_limi">Support is limited to books in the Animal, Cookbook, or
+            Hacks series. Nutshells and Pocket Refs are not supported at this
+            time, but we plan to extend support in the future.</p></li>
+</ul></div>
+<p id="please_write_to">Please write to <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code> with any
+        questions.</p>
+<p id="if_you_do_not_w">If you do not wish to handle the math in your book using LaTeX
+        or MathML, please follow the guidelines below.</p>
+</div>
+<div class="sect3" id="images">
+<div class="titlepage"><div><div><h4 class="title">Images</h4></div></div></div>
+<p id="you_can_create__id2">You can create expressions using a third-party equation editor
+        and save them as images. Here are a few editor options, but feel free
+        to try others:</p>
+<div class="variablelist" id="mathtypeuse_thi"><dl class="variablelist">
+<dt><span class="term"><a class="ulink" href="http://www.dessci.com/en/products/mathtype/trial.asp" target="_top">MathType</a></span></dt>
+<dd><p id="use_this_applic">Use this application to create equations and save them as
+              images. Comes with a free trial.</p></dd>
+<dt><span class="term">Word’s built-in EquationEditor</span></dt>
+<dd><p id="if_you_have_wor">If you have Word 2007, do not create equations with the
+              default EE; use the previous EE, which you can access from the
+              Insert ribbon. When you have created an equation, you can
+              capture it as a screenshot.</p></dd>
+<dt><span class="term">Daum Equation editor</span></dt>
+<dd><p id="this_is_a_free_">This is a <a class="ulink" href="https://itunes.apple.com/us/app/daum-equation-editor/id540665783?mt=12" target="_top">free
+              tool</a> (downloadable or usable online via the Chrome
+              browser) that can export high-quality PNGs.</p></dd>
+</dl></div>
+<p id="here_are_some_m">Here are some markup examples:</p>
+<div class="variablelist" id="titled_formal_e_id2"><dl class="variablelist">
+<dt><span class="term">Titled formal equation</span></dt>
+<dd>
+<pre class="programlisting" id="equation_idq">&lt;equation id="quadratic"&gt;
+&lt;title&gt;Quadratic Formula&lt;/title&gt;
+  &lt;mediaobject&gt;
+    &lt;imageobject&gt;
+      &lt;imagedata fileref="images/quadratic.png" format="PNG" /&gt;
+    &lt;/imageobject&gt;
+  &lt;/mediaobject&gt;
+&lt;/equation&gt;</pre>
+<div class="equation" id="quadratic">
+<div class="equation-title">Equation 3-2. Quadratic formula</div>
+<div class="equation-contents"><div class="mediaobject"><img style="width: 243; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001574/images/quadratic.png"></div></div>
+</div>
+</dd>
+<dt><span class="term">Block, untitled informal equation</span></dt>
+<dd>
+<pre class="programlisting" id="informalequati_id2">&lt;informalequation&gt;
+  &lt;mediaobject&gt;
+    &lt;imageobject&gt;
+      &lt;imagedata fileref="images/quadratic.png" format="PNG" /&gt;
+    &lt;/imageobject&gt;
+  &lt;/mediaobject&gt;
+&lt;/informalequation&gt;</pre>
+<div class="informalequation" id="informalequation"><div class="mediaobject"><img style="width: 243; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001574/images/quadratic.png"></div></div>
+</dd>
+<dt><span class="term">Inline equation</span></dt>
+<dd><p id="none_avoid_usi"><span class="emphasis"><em>None.</em></span> Avoid using images for inline
+              equations. Sizing inline images poses difficulties in downstream
+              formats, as some ereaders may render the images much larger or
+              smaller than the surrounding text (which can lead to customer
+              complaints). If you need to use an image, set it apart from the
+              text as an <code class="literal">informalequation</code> as described
+              above. If you have other requests, please discuss with
+              <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>.</p></dd>
+</dl></div>
+</div>
+</div>
+</div>
+<div class="footnotes">
+<br><hr style="width: 100; align: left;">
+<div id="ftn.id592972" class="footnote"><p><a href="#id592972" class="para"><sup class="para">[2] </sup></a>O’Reilly’s filenaming convention is <code class="filename">ch00</code>,
+          <code class="filename">ch01</code>, etc. When your chapters come into
+          Production, we will rename them per this convention so that they
+          flow through our Production workflows easily.</p></div>
+<div id="ftn.id594213" class="footnote"><p><a href="#id594213" class="para"><sup class="para">[3] </sup></a>This does <span class="emphasis"><em>not</em></span> apply to books written in
+            Atlas. But if you’re writing in Atlas, you should not be reading
+            these guidelines anyway. You should be reading <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/index.html" target="_top">these</a>
+            instead.</p></div>
+<div id="ftn.id595656" class="footnote"><p><a href="#id595656" class="para"><sup class="para">[4] </sup></a>Like this.</p></div>
+<div id="ftn.id595942" class="footnote"><p><a href="#id595942" class="para"><sup class="para">[5] </sup></a>You can use a <code class="literal">CDATA</code> section
+        as long as you don’t need inline markup within the code (see <a class="xref" href="ch03.html#inline_markup_on_multiple_lines" title="Inline markup on multiple lines">“Inline markup on multiple lines”</a>). In a <code class="literal">CDATA</code> section, any text between <code class="literal">&lt;![CDATA[</code> and
+        <code class="literal">]]&gt;</code> is ignored by the XML
+        parser. You can’t use <code class="literal">CDATA</code>
+        sections if you’re using XXE, but on the other hand, you also won’t
+        need to worry about escaping special characters (as XXE takes care of
+        that for you), which is probably the better end of the bargain.</p></div>
+<div id="ftn.id596045" class="footnote"><p><a href="#id596045" class="para"><sup class="para">[6] </sup></a>E.g., <code class="literal">programlisting</code>s or
+          <code class="literal">screen</code>s, used for code blocks where line breaks
+          and spaces need to be preserved.</p></div>
+<div id="ftn.id596073" class="footnote"><p><a href="#id596073" class="para"><sup class="para">[7] </sup></a>These values apply to Subversion-generated PDFs only. Please
+            see the <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#verbatim_caveats" target="_top">new
+            guidelines</a> for max characters in Atlas-generated
+            PDFs.</p></div>
+</div></section>

@@ -1,0 +1,76 @@
+<section class="chapter" data-original-filename="readme.asciidoc" id="_outline"><div class="titlepage"><div><div><h1 class="title">Chapter 1. Outline</h1></div></div></div>
+<div class="informalfigure" id="informalfigure_id1"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.001.png"></div></div>
+<p id="chris">CHRIS</p>
+<div class="itemizedlist" id="intro_to_the_we_id1"><ul class="itemizedlist">
+<li class="listitem">
+Intro to the Web Audio API
+</li>
+<li class="listitem">
+About the book with Boris
+</li>
+<li class="listitem">
+A little Atlas Reader demo?? Or do this later?
+</li>
+</ul></div>
+<p id="so_theres_thi">"So there’s this cool new API in HTML5 that I’ve been excited about for about a year and a half now - the web audio api.  This API let me build a synthesizer (3 second demo) completely in HTML and Javascript, which I think is really cool.  But one of the challenges  of any new tech like this is effectively educating other developers on how to use APIs like this - although I’m not a Digital Signal Processing expert, I had the benefit of working closely with someone who is, and they helped me understand the API.  So my friend and coworker Boris Smus wrote a book, which I helped review along the way, and we’re here to talk about the format of that book."</p>
+<p id="nellie">NELLIE</p>
+<p id="it_seems_pretty">It seems pretty obvious to publish something like this on the Web, right?</p>
+<p id="best_way_to_rea">Best way to really show the awesomeness of this technology.</p>
+<p id="but_the_truth_i">But the truth is, publishers have it tough.</p>
+<div class="informalfigure" id="informalfigure_id2"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.002.png"></div></div>
+<p id="imagine_if_ins">Imagine if, instead of just building responsive sites for the usual displays, you had to <span class="emphasis"><em>also</em></span> build content that responds to trees and dead browsers from 10 years ago?</p>
+<div class="informalfigure" id="informalfigure_id3"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.003.png"></div></div>
+<p id="this_is_the_pub">This is the publishing landscape of today.</p>
+<p id="adding_web_publ">Adding Web publishing into the mix is a total game changer.</p>
+<p id="you_wouldnt_th">You wouldn’t think this</p>
+<div class="informalfigure" id="informalfigure_id4"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.004.png"></div></div>
+<p id="i_mean_ebooks_">I mean, ebooks are essentially HTML and CSS at their core, so we basically already convert every book into a little self-contained website</p>
+<div class="informalfigure" id="informalfigure_id5"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.005.png"></div></div>
+<p id="but_a_lot_of_th">But a lot of the devices that read ebook files—I mean devices like the Nook and the Kindle—many of these devices have only built the bare minimum of support for HTML and CSS, because they’re curating what features to support based on what <span class="emphasis"><em>they think</em></span> a book needs.</p>
+<p id="its_like_the_b">It’s like the browser landscape of 10 years ago, where every browser supported different features and you had to jump through hoops to get your sites to work everywhere, and ended up compromising on functionality</p>
+<div class="informalfigure" id="informalfigure_id6"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.006.png"></div></div>
+<p id="once_we_stop_th">Once we stop thinking about publishing and Web as distinct things, there’s a real opportunity to use the richness of the web publishing platform to enahnce interactivity in books.</p>
+<div class="informalfigure" id="informalfigure_id7"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.007.png"></div></div>
+<p id="by_getting_rid_">By getting rid of the special book packaging and moving to the web for reals, we can really show this off.</p>
+<div class="informalfigure" id="informalfigure_id8"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.008.png"></div></div>
+<p id="so_cool_right">So cool, right? But publishers can’t just get rid of the ebook package, because people still want to read that way, and we can’t get rid of print for the same reason.</p>
+<div class="informalfigure" id="informalfigure_id9"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.009.png"></div></div>
+<p id="so_in_addition_">So in addition to pubishing all the ebook formats, and the print format, we need to add in an interactive Web format as well, that includes extra cool content like those live demos.</p>
+<p id="but_we_dont_ha">But we don’t have the budgets for a hand-crafted enhanced web version of every book.</p>
+<div class="informalfigure" id="informalfigure_id10"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.010.png"></div></div>
+<p id="were_already_p">We’re already publishing all these different formats of a book, but we’re not getting 4x the sales. It’s the same number of sales, spread over different book formats.</p>
+<div class="informalfigure" id="informalfigure_id11"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.011.png"></div></div>
+<p id="so_we_need_our_">So we need our content to be responsive.</p>
+<p id="its_the_same_p">It’s the same problem you guys deal with with websites, taken even further than usual.</p>
+<div class="informalfigure" id="informalfigure_id12"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.012.png"></div></div>
+<p id="we_need_to_be_a">We need to be able to take the same source files and publish them to print, ebook, and the web without any extra manual conversion work.</p>
+<p id="but_we_couldnt">But we couldn’t really find a single existing tool that could create all these book formats and give us the Web reading experience we wanted our customers to have</p>
+<p id="so_we_built_one">So we built one.</p>
+<p id="we_built_what_i">We built what is essentially a CMS but without all the CMS-y overhead—it’s a platform built on Git that can publish long-form content responsively</p>
+<p id="when_youre_wor">When you’re working with Content Management Systems, you need to make a system that can scale, and that can accomodate like 90% of potential scenarios right out of the box</p>
+<p id="so_in_the_syste">So in the system we built, authors write in markup, pick what format to publish to, and their content gets converted and styled accordingly. And not just the container is responsive, but the content itself.</p>
+<div class="informalfigure" id="informalfigure_id13"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.013.png"></div></div>
+<p id="for_the_web_yo">For the Web, you get embedded video and audio and cool interactive stuff like the things Chris just demoed</p>
+<div class="informalfigure" id="informalfigure_id14"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.014.png"></div></div>
+<p id="for_print_you_">For print, you get placeholder images and links pointing to web resources</p>
+<div class="informalfigure" id="informalfigure_id15"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.015.png"></div></div>
+<p id="these_two_thing">These two things came from exactly the same files</p>
+<p id="print_is_still_">Print is still great: UX refined over hundreds of years</p>
+<p id="but_sometimes_i">But sometimes it’s just better to see the technology in action, rather than read a description of it.</p>
+<div class="informalfigure" id="informalfigure_id16"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.018.png"></div></div>
+<p id="to_that_end_in">To that end, in addition to regular old audio and video embeds, we built support for JSBin and iframe embeds in the web books, so you can embed just about anything you want.</p>
+<p id="and_once_you_em">And once you embrace the web for both reading and writing, you’re really opening the door for a much more collaborative and interactive experience.</p>
+<div class="informalfigure" id="informalfigure_id17"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.016.png"></div></div>
+<p id="we_can_put_book">We can put book source files in GitHub. And we actually built our authoring platform on Git for this very purpose, so you’re using the same tools to write a book that you use to write code.</p>
+<p id="so_as_chris_and">So as Chris and I are writing our book together, he can fork the repo, make changes, send me pull requests to update</p>
+<p id="i_can_pull_in_h">I can pull in his changes, rebuild with a few clicks, and presto, there’s the latest version of the book.</p>
+<div class="informalfigure" id="informalfigure_id18"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.017.png"></div></div>
+<p id="another_thing_w">Another thing we added to the system we built was to integrate the HTML commenting system with the authoring GUI, so authors can incorporate comments as they write, without jumping back and forth.</p>
+<p id="for_exaple_as_">For exaple, as we were developing this talk, there was a lot of remote participation. Chris lives in Seattle, I live in Boston, and we also wanted to get feedback from the whole development team. Everyone discussed the outline in the reading environment as it developed, and their comments bubbled back to the writing environment, for Chris and I to consider as we finalized the talk.</p>
+<p id="the_goal_is_to_">The goal is to build a more collaborative learning community, rather than just having distinct endpoints of author and reader.</p>
+<div class="informalfigure" id="informalfigure_id19"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.019.png"></div></div>
+<p id="when_youre_dea">When you’re dealing with lots of varying long form content, it comes down to scalability - you need a system that can work for almost any author, and build to almost any format.</p>
+<p id="publishing_and_">Publishing and the web are going to continue to converge, as more and more reading moves to the Web.</p>
+<div class="informalfigure" id="informalfigure_id20"><div class="mediaobject"><img src="http://orm-chimera-prod.s3.amazonaws.com/1234000001701/images/fluent-2013.020.png"></div></div>
+<p id="the_system_we_b">The system we built is called Atlas, it’s still in Beta but we want you guys to play around with it, because we have the same goals - distributing information - and we’re really excited about working with you to find new ways to spread the knowledge of innovators.</p></section><section class="chapter" data-original-filename="video.asciidoc" id="_watch_now_show_don_8217_t_tell_fluent_2013_keynote"><div class="titlepage"><div><div><h1 class="title">Chapter 2. Watch Now: "Show, Don’t Tell", Fluent 2013 Keynote</h1></div></div></div>
+<div class="informalfigure" id="informalfigure_id21"><div class="mediaobject"><iframe width="500" height="300" src="http://www.youtube.com/embed/bIe2E-9SIMI?wmode=opaque"></iframe></div></div></section>

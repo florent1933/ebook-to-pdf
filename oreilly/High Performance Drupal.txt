@@ -1,0 +1,985 @@
+<section class="chapter" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="chapter_drupal_coding_for_optimal_performance"><div class="titlepage"><div><div><h1 class="title">Chapter 1. Drupal Coding for Optimal Performance</h1></div></div></div>
+<p id="drupaloptimizin"><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc0" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc1" class="indexterm"></a>One of the great things about Drupal is the ease with which you can extend or override core functionality in order to customize it for your specific needs.  However, if you are not careful with how you code, you may introduce a huge performance bottleneck into your contributed or custom module. This chapter will give an overview of Drupal APIs relevant to performance and scalability, common coding best practices, and pitfalls to be aware of when trying to approach common tasks.</p>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_context_matters">
+<div class="titlepage"><div><div><h2 class="title">Context Matters</h2></div></div></div>
+<p id="optimizing_drup_id1"><a id="id358705" class="indexterm"></a>Before discussing the APIs and patterns that Drupal provides, it’s worth discussing which types of issues are often introduced when writing Drupal code.</p>
+<p id="performance_cpu">Performance <a id="id358722" class="indexterm"></a><a id="id358730" class="indexterm"></a><a id="id358738" class="indexterm"></a><a id="id358744" class="indexterm"></a>and scalability issues in code can affect CPU, memory, filesystem, database, and network usage, either individually or in combination. All code uses at least some CPU and memory, and all sites will access the database and filesystem and potentially make network requests. Whether any of these turns out to be a performance bottleneck is always down to context.</p>
+<p id="there_are_no_ha">There are no hard and fast rules about what makes code "fast" or "slow"—exactly the same code could be acceptable in one situation but not in another, and performance often needs to be balanced against other programming issues such as testability, readability, and maintainability.</p>
+<p id="when_writing_or">When writing or reviewing code, it’s important to think of the context the code will be executed in—both the immediate use case and whether it might also be applied to other contexts. The following are some general questions to ask, before you start trying to optimize at all:</p>
+<div class="itemizedlist" id="does_the_code_g_id1"><ul class="itemizedlist">
+<li class="listitem">
+Does the code get executed on every request?
+</li>
+<li class="listitem">
+Could it run more than once during a request? If so, a few times, or hundreds or thousands?
+</li>
+<li class="listitem">
+If the code runs less frequently, will it affect end user performance? And how critical is end user performance in that case?
+</li>
+<li class="listitem">
+Does the code have side effects that could affect the performance of other requests, such as writing to the database or flushing caches?
+</li>
+<li class="listitem">
+Is the code an isolated unit, or will it be affected by other code or the configuration and state of the Drupal installation it runs on? For example, the amount of content, users, themes, or modules installed can dramatically change the characteristics of how code performs.
+</li>
+</ul></div>
+<p id="only_after_cons">Only after considering these questions should you attempt to apply one or more of the approaches outlined here.</p>
+</div>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_false_optimizations">
+<div class="titlepage"><div><div><h2 class="title">False Optimizations</h2></div></div></div>
+<p id="false_optimizat"><a id="id358832" class="indexterm"></a><a id="id358837" class="indexterm"></a>It’s entirely possible to make the performance of code worse by "optimizing" it. This happens when additional code is added to avoid expensive processing, but the expensive processing happens anyway. The result is that both the original expensive code and the new code run, adding additional overhead to an already bad situation.</p>
+<p id="an_example_of_t">An example of this is the fairly common micro-optimization of replacing <code class="literal">array_key_exists()</code> with <code class="literal">isset()</code>. (Please note that this is used only as an example, and we’re not explicitly recommending doing so!):</p>
+<div class="variablelist" id="isset_this_is"><dl class="variablelist">
+<dt><span class="term">
+<code class="literal">isset()</code>
+</span></dt>
+<dd>
+This is a language construct that tells you whether a variable is set or not, and returns <code class="literal">false</code> if that variable is explicitly set to <code class="literal">NULL</code>.
+</dd>
+<dt><span class="term">
+<code class="literal">array_key_exists()</code>
+</span></dt>
+<dd>
+This is a function that tells you if an array key exists regardless of the value.
+</dd>
+</dl></div>
+<p id="function_calls_">Function calls in PHP have more overhead than language constructs, so <code class="literal">isset()</code> takes less time than a function call, and while the semantics are different, they can be used interchangeably if you don’t need to explicitly check for array keys set to <code class="literal">NULL</code>. Hence, a common micro-optimization is to use <code class="literal">isset()</code> unless it’s absolutely necessary to check for <code class="literal">NULL</code>.</p>
+<p id="lets_assume_yo">Let’s assume you had some code that definitely needed to use <code class="literal">array_key_exists()</code> because of the <code class="literal">NULL</code> check, but you wanted to try to run the faster <code class="literal">isset()</code> first, to skip the function call when it’s not needed. You might write code like this:</p>
+<pre class="programlisting" data-language="php" id="php_array__"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="nv">$array</code> <code class="o">=</code> <code class="k">array</code><code class="p">(</code><code class="s1">'foo'</code> <code class="o">=&gt;</code> <code class="k">NULL</code><code class="p">);</code>
+
+<code class="nb">isset</code><code class="p">(</code><code class="nv">$array</code><code class="p">[</code><code class="s1">'foo'</code><code class="p">]);</code> <code class="c1">// returns FALSE.</code>
+
+<code class="nb">array_key_exists</code><code class="p">(</code><code class="s1">'foo'</code><code class="p">,</code> <code class="nv">$array</code><code class="p">);</code> <code class="c1">// returns TRUE.</code>
+
+<code class="nb">isset</code><code class="p">(</code><code class="nv">$array</code><code class="p">[</code><code class="s1">'foo'</code><code class="p">])</code> <code class="o">||</code> <code class="nb">array_key_exists</code><code class="p">(</code><code class="s1">'foo'</code><code class="p">,</code> <code class="nv">$array</code><code class="p">);</code> <code class="c1">// returns TRUE.</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="the_last_exampl">The last example is semantically identical to just an <code class="literal">array_key_exists()</code> call, but in the case that <code class="literal">$array[‘foo’]</code> is set to a non-<code class="literal">NULL</code> value, only the <code class="literal">isset()</code> check needs to be made, avoiding the more expensive function call.</p>
+<p id="however_if_ar">However, if <code class="literal">$array[‘foo’]</code> doesn’t exist or is set to <code class="literal">NULL</code>, then the code actually has to do more work—checking <code class="literal">isset()</code> then the <code class="literal">array_key_exists()</code>, as well as the <code class="literal">||</code> operator—all of which is going to be slower than just running <code class="literal">array_key_exists()</code> in the first place!</p>
+<p id="the_only_way_to">The only way to know the effect of this is to create a realistic scenario or test on a real install, and see which code execution path is actually the most common. This comes back to context—it’s not so much the content of the code itself that determines its performance, but how exactly it is executed.</p>
+<p id="whether_this_ki">Whether this kind of optimization is a problem depends on the relative performance increase you hope to gain.</p>
+<p id="for_example_wh">For example, when checking access rights, you may need to check an administrative permission via <code class="literal">user_access()</code> as well as access permissions based on an entity ID, which requires loading the entity via <code class="literal">entity_load()</code> first. Both checks are necessary regardless, but the order is important.</p>
+<p id="while_very_few_">While very few users might have the administrative permission, a call to <code class="literal">user_access()</code> takes a fraction of the resources that loading and access-checking an entity does and won’t cause a measurable delay. It’s worth doing the cheaper check first even if the second, more expensive check will run too.</p>
+<p id="this_is_the_sam">This is the same with almost any pattern that attempts to circumvent code execution rather than completely rewriting it. For example, adding persistent caching to a function that is a cache miss in 99.9% of cases will mean extra time spent checking and writing to the cache, as well as extra space being taken up in cache storage, on top of the original code being executed. However, if the code being executed is very expensive, then the overhead of cache misses may well be outweighed regardless.</p>
+<p id="with_this_in_mi">With this in mind, we’ll first cover a common task for Drupal custom and contributed modules, and look at ways to ensure that this task is executed as fast as possible. Then we’ll move on to the APIs that Drupal provides specifically to aid with performance and scaling.</p>
+</div>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_listing_entities">
+<div class="titlepage"><div><div><h2 class="title">Listing Entities</h2></div></div></div>
+<p id="optimizing_drup_id2"><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc2" class="indexterm"></a>Whether it’s on the front page of a blog or in a gallery of images or a comment thread, much of the work done on a Drupal site involves getting a list of entities and then rendering them.</p>
+<p id="there_are_two_a_id1">There are two APIs introduced in Drupal 7, and only slightly changed in Drupal 8, that help with this:  <code class="literal">entityQuery()</code> and <code class="literal">entity_load_multiple()</code>.</p>
+<div class="sect2" id="_entityquery">
+<div class="titlepage"><div><div><h3 class="title">entityQuery()</h3></div></div></div>
+<p id="entityquery_a"><a id="id404687" class="indexterm"></a><a id="id404692" class="indexterm"></a>Rather than a direct database query to entity and field tables, <code class="literal">EntityQuery()</code> relies on a storage controller to handle building and executing the query for the appropriate entity storage backend. This has the advantage that any query run through <code class="literal">entityQuery()</code> is storage agnostic, so if you’re writing a contributed module or working on a site where it might be necessary to move to alternative entity storage in the future, all your queries will transparently use the new storage backend without any refactoring. <code class="literal">EntityQuery()</code> can be used whether you’re writing queries by hand in custom code or via the <code class="literal">entityQuery()</code> Views backend.</p>
+</div>
+<div class="sect2" id="_multiple_entity_loading">
+<div class="titlepage"><div><div><h3 class="title">Multiple Entity Loading</h3></div></div></div>
+<p id="multiple_entity"><a id="id404737" class="indexterm"></a><a id="id404743" class="indexterm"></a>Once you have some entities to list, you’ll need to load and then render them.</p>
+<p id="a_common_patter">A common pattern would be to loop over each node and load them individually:</p>
+<pre class="programlisting" data-language="php" id="php___pro"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="o">/**</code>
+ <code class="o">*</code> <code class="nx">Provide</code> <code class="nx">an</code> <code class="k">array</code> <code class="nx">of</code> <code class="nx">rendered</code> <code class="nx">entities</code> <code class="nx">given</code> <code class="nx">the</code> <code class="nx">IDs</code><code class="o">.</code>
+ <code class="o">*</code>
+ <code class="o">*</code> <code class="o">@</code><code class="nx">param</code> <code class="k">array</code> <code class="nv">$ids</code>
+ <code class="o">*</code>     <code class="nx">The</code> <code class="nx">entity</code> <code class="nx">IDs</code> <code class="nx">to</code> <code class="nx">load</code>
+ <code class="o">*</code>
+ <code class="o">*</code> <code class="o">@</code><code class="k">return</code> <code class="nv">$rendered_entities</code>
+ <code class="o">*</code>  <code class="nx">The</code> <code class="k">array</code> <code class="nx">of</code> <code class="nx">rendered</code> <code class="nx">entities</code><code class="o">.</code>
+<code class="k">function</code> <code class="nf">render_entities</code><code class="p">(</code><code class="nv">$ids</code><code class="p">)</code> <code class="p">{</code>
+  <code class="nv">$rendered_entities</code> <code class="o">=</code> <code class="k">array</code><code class="p">();</code>
+  <code class="k">foreach</code> <code class="p">(</code><code class="nv">$ids</code> <code class="k">as</code> <code class="nv">$id</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nv">$rendered_entities</code><code class="p">[</code><code class="nv">$id</code><code class="p">]</code> <code class="o">=</code> <code class="nx">entity_view</code><code class="p">(</code><code class="nx">entity_load</code><code class="p">(</code><code class="nv">$id</code><code class="p">));</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$rendered_entities</code><code class="p">;</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="drupal__introd">Drupal 7 introduced multiple entity loading and rendering so that tasks such as fetching field values from the database could be done once for all nodes with an <code class="literal">IN()</code> query rather than executed individually:</p>
+<pre class="programlisting" data-language="php" id="php_function__id1"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">render_entities</code><code class="p">(</code><code class="nv">$ids</code><code class="p">)</code> <code class="p">{</code>
+  <code class="nv">$entities</code> <code class="o">=</code> <code class="nx">entity_load_multiple</code><code class="p">(</code><code class="nv">$ids</code><code class="p">);</code>
+  <code class="k">return</code> <code class="o">=</code> <code class="nx">entity_view_multiple</code><code class="p">(</code><code class="nv">$entities</code><code class="p">);</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="by_using_the_mu">By using the multiple load and view functions, assuming 10 nodes need to be loaded and rendered, 10 similar queries to the same table can be reduced to just one. Since an individual node load could require 10 or 20 database queries, this can result in dozens or hundreds of database queries saved when loading and rendering multiple nodes at the same time.</p>
+<p id="note_that_this_">Note that this applies to hook implementations as well; for example, <code class="literal">hook_entity_load()</code> acts on an array of entities.</p>
+<p id="one_often_overl">One often overlooked hook is <code class="literal">hook_entity_prepare_view()</code>. Often, custom themes will need to add fields from user accounts/profiles when rendering nodes or comments—this could be the user’s full name, avatar, registration date, etc. A common pattern for this is <code class="literal">preprocess</code>. Let’s take nodes as an example:</p>
+<pre class="programlisting" data-language="php" id="php_template__id1"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="nx">template_preprocess_node</code><code class="p">(</code><code class="o">&amp;</code><code class="nv">$variables</code><code class="p">)</code> <code class="p">{</code>
+  <code class="nv">$node</code> <code class="o">=</code> <code class="nv">$variables</code><code class="p">[</code><code class="s1">'node'</code><code class="p">];</code>
+  <code class="nv">$variables</code><code class="p">[</code><code class="s1">'account'</code><code class="p">]</code> <code class="o">=</code> <code class="nx">user_load</code><code class="p">(</code><code class="nv">$node</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">);</code>
+  <code class="c1">// Set up custom variables based on account here.</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="when_rendering_">When rendering several different nodes or comments by different authors, this pattern can result in a lot of round trips to the database as each account is fetched individually.  The following example provides the same functionality while resolving the performance issue:</p>
+<pre class="programlisting" data-language="php" id="php_hook_enti"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="nx">hook_entity_prepare_view</code><code class="p">(</code><code class="nv">$entity_type</code><code class="p">,</code> <code class="nv">$entities</code><code class="p">)</code> <code class="p">{</code>
+  <code class="k">if</code> <code class="p">(</code><code class="nv">$entity_type</code> <code class="o">!=</code> <code class="s1">'node'</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">return</code><code class="p">;</code>
+  <code class="p">}</code>
+  <code class="nv">$uids</code> <code class="o">=</code> <code class="k">array</code><code class="p">();</code>
+  <code class="k">foreach</code> <code class="p">(</code><code class="nv">$entities</code> <code class="k">as</code> <code class="nv">$entity</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nv">$uids</code><code class="p">[]</code> <code class="o">=</code> <code class="nv">$entity</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">;</code>
+  <code class="p">}</code>
+  <code class="nv">$accounts</code> <code class="o">=</code> <code class="nx">user_load_multiple</code><code class="p">(</code><code class="nv">$uids</code><code class="p">);</code>
+  <code class="k">foreach</code> <code class="p">(</code><code class="nv">$entities</code> <code class="k">as</code> <code class="nv">$entity</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nv">$entity</code><code class="o">-&gt;</code><code class="na">account</code> <code class="o">=</code> <code class="nv">$accounts</code><code class="p">[</code><code class="nv">$entity</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">];</code>
+  <code class="p">}</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="then_entitya">Then <code class="literal">$entity-&gt;account</code> is available in <code class="literal">preprocess</code>:</p>
+<pre class="programlisting" data-language="php" id="php_template__id2"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="nx">template_preprocess_node</code><code class="p">(</code><code class="o">&amp;</code><code class="nv">$variables</code><code class="p">)</code> <code class="p">{</code>
+  <code class="nv">$account</code> <code class="o">=</code> <code class="nv">$variables</code><code class="p">[</code><code class="s1">'node'</code><code class="p">]</code><code class="o">-&gt;</code><code class="na">account</code><code class="p">;</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+</div>
+</div>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_caching">
+<div class="titlepage"><div><div><h2 class="title">Caching</h2></div></div></div>
+<p id="cachingoptimizi"><a id="id405858" class="indexterm"></a> <a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc3" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc4" class="indexterm"></a>Caching is often the quickest way to solve a performance issue. By adding caching in a particular code path, you can ensure that it will only be executed on cache misses.</p>
+<p id="before_addingad">Before adding<a id="id406001" class="indexterm"></a><a id="id406006" class="indexterm"></a> caching, though, there are a few things to consider:</p>
+<div class="itemizedlist" id="is_it_possible__id1"><ul class="itemizedlist">
+<li class="listitem">
+Is it possible to optimize the code so that it doesn’t need to be cached?
+</li>
+<li class="listitem">
+Is there already caching of the code at a higher level, for example page caching, that might affect the hit rate?
+</li>
+<li class="listitem">
+Will the cached code path be considerably quicker than the current code path?
+</li>
+<li class="listitem">
+Does the cache need to be cleared on particular events? Is it OK for it to be stale sometimes?
+</li>
+<li class="listitem">
+Is the code run multiple times with the same output during a single request?
+</li>
+</ul></div>
+<div class="sect2" id="_static_caching">
+<div class="titlepage"><div><div><h3 class="title">Static Caching</h3></div></div></div>
+<p id="cachingstaticst"><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc5" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc6" class="indexterm"></a>When code is run multiple times per request, a common optimization is to add a static cache around it.  For example, you might rewrite the following code:</p>
+<pre class="programlisting" data-language="php" id="php_function__id2"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">my_function</code><code class="p">()</code> <code class="p">{</code>
+  <code class="k">return</code> <code class="nx">something_expensive</code><code class="p">();</code>
+<code class="p">}</code></pre>
+<p id="as">as</p>
+<pre class="programlisting" data-language="php" id="php_function__id3"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">my_function</code><code class="p">()</code> <code class="p">{</code>
+  <code class="k">static</code> <code class="nv">$foo</code><code class="p">;</code>
+  <code class="k">if</code> <code class="p">(</code><code class="o">!</code><code class="nb">isset</code><code class="p">(</code><code class="nv">$foo</code><code class="p">))</code> <code class="p">{</code>
+    <code class="nv">$foo</code> <code class="o">=</code> <code class="nx">something_expensive</code><code class="p">();</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$foo</code><code class="p">;</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="because_foo_is">Because <code class="literal">$foo</code> is declared as static, it will be held in memory for the duration of the request regardless of how many times the function gets called. This means once this function has run once, it will run the <code class="literal">isset()</code> check and then immediately return.</p>
+<p id="while_it_only_t">While it only takes a couple of lines of code to add a static cache, doing so has implications that aren’t always immediately obvious.</p>
+<p id="lets_look_at_t">Let’s look at the code inside <code class="literal">something_expensive()</code>:</p>
+<pre class="programlisting" data-language="php" id="php_function__id4"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">something_expensive</code><code class="p">()</code> <code class="p">{</code>
+  <code class="k">return</code> <code class="nx">friends_count</code><code class="p">(</code><code class="nv">$GLOBALS</code><code class="p">[</code><code class="s1">'user'</code><code class="p">]);</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="whoops_if_glo">Whoops. If <code class="literal">$GLOBALS[‘user’]</code> changes <a id="id406401" class="indexterm"></a><a id="id406407" class="indexterm"></a>during the request, then <code class="literal">something_expensive()</code> will return different output. This often happens during automated tests using Drupal’s <span class="emphasis"><em>simpletest</em></span> adaption, or in a <span class="emphasis"><em>drush</em></span> process that might be sending emails to multiple different users.</p>
+<p id="its_not_imposs">It’s not impossible to fix this, of course. For example, we can key the cache based on the global user’s ID:</p>
+<pre class="programlisting" data-language="php" id="php_function__id5"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">my_function</code><code class="p">()</code> <code class="p">{</code>
+  <code class="k">static</code> <code class="nv">$foo</code><code class="p">;</code>
+  <code class="k">global</code> <code class="nv">$user</code><code class="p">;</code>
+  <code class="k">if</code> <code class="p">(</code><code class="o">!</code><code class="nb">isset</code><code class="p">(</code><code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]))</code> <code class="p">{</code>
+    <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]</code> <code class="o">=</code> <code class="nx">something_expensive</code><code class="p">();</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">];</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="now_regardless">Now, regardless of how many times the global user object is swapped out during the request, our function will return correctly, whilst still statically caching the results.</p>
+<p id="but_the_problem">But the problems don’t end there. What if the number of friends the user has changes during the request as well? This might well happen during a functional test or a long-running <span class="emphasis"><em>drush</em></span> job. Additionally, this is where memory usage starts to be a problem: a <span class="emphasis"><em>drush</em></span> job processing one million users could eventually end up with a million items in this static cache.</p>
+<p id="drupal_core_has">Drupal core has a solution for this in the form of the <code class="literal">drupal_static()</code> function. This operates similarly to static caching, except that the static cache can be accessed from different functions, both for retrieval and for reset.</p>
+<p id="now_our_functio">Now our function looks like this:</p>
+<pre class="programlisting" data-language="php" id="php_function__id6"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">my_function</code><code class="p">()</code> <code class="p">{</code>
+  <code class="c1">// Only this line changes.</code>
+  <code class="nv">$foo</code> <code class="o">=</code> <code class="o">&amp;</code><code class="nx">drupal_static</code><code class="p">(</code><code class="nx">__FUNCTION__</code><code class="p">);</code>
+  <code class="k">global</code> <code class="nv">$user</code><code class="p">;</code>
+  <code class="k">if</code> <code class="p">(</code><code class="o">!</code><code class="nb">isset</code><code class="p">(</code><code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]))</code> <code class="p">{</code>
+    <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]</code> <code class="o">=</code> <code class="nx">something_expensive</code><code class="p">();</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">];</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="code_in_unit_te">Code in unit tests that updates the user’s friends count or needs to reclaim some PHP memory can then call <code class="literal">drupal_static_reset(‘my_function’)</code> to empty the static cache.</p>
+<p id="since_drupal_st">Since <code class="literal">drupal_static()</code> is a function call, it has a lot more overhead than declaring static and including an <code class="literal">isset()</code> check. This can lead to a situation where static caching is added to micro-optimize a function, then converted to <code class="literal">drupal_static()</code> for testing purposes, which leads to the function being slower than when it had no caching at all. If you absolutely need to use <code class="literal">drupal_static()</code> and your function is going to be called dozens or hundreds of times during a request, there’s the <code class="literal">drupal_static_fast</code> pattern:</p>
+<pre class="programlisting" data-language="php" id="php_function__id7"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">my_function</code><code class="p">()</code> <code class="p">{</code>
+  <code class="k">static</code> <code class="nv">$drupal_static_fast</code><code class="p">;</code>
+  <code class="k">if</code> <code class="p">(</code><code class="o">!</code><code class="nb">isset</code><code class="p">(</code><code class="nv">$drupal_static_fast</code><code class="p">))</code> <code class="p">{</code>
+    <code class="nv">$drupal_static_fast</code><code class="p">[</code><code class="s1">'foo'</code><code class="p">]</code> <code class="o">=</code> <code class="o">&amp;</code><code class="nx">drupal_static</code><code class="p">(</code><code class="nx">__FUNCTION__</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nv">$foo</code> <code class="o">=</code> <code class="nv">$drupal_static_fast</code><code class="p">[</code><code class="s1">'foo'</code><code class="p">];</code>
+  <code class="k">global</code> <code class="nv">$user</code><code class="p">;</code>
+  <code class="k">if</code> <code class="p">(</code><code class="o">!</code><code class="nb">isset</code><code class="p">(</code><code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]))</code> <code class="p">{</code>
+    <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]</code> <code class="o">=</code> <code class="nx">something_expensive</code><code class="p">();</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">];</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="this_adds_testa">This adds testability and performance at the expense of quite a bit of complexity.</p>
+<p id="there_are_two_i">There are two issues with <code class="literal">my_function()</code> now. One is a development process issue, and the other is architectural.</p>
+<p id="in_terms_of_pro">In terms of process, if we look back at the original function, we can see it’s only a wrapper around <code class="literal">something_expensive()</code>. While a real example probably wouldn’t be a one-line wrapper, if the only thing that needs caching is <code class="literal">something_expensive()</code>, this isn’t the right place to add that caching. What we should have done was add the caching directly to <code class="literal">something_expensive()</code>, which also knows about any global state it depends on and any other factors that might influence the result (and, if you’re lucky, is in a contributed module rather than your custom code).</p>
+<p id="when_you_add_ca">When you add <a id="id407322" class="indexterm"></a><a id="id407330" class="indexterm"></a>caching to a wrapper rather than to the function itself, the following bad things happen:</p>
+<div class="itemizedlist" id="any_other_code__id1"><ul class="itemizedlist">
+<li class="listitem">
+Any other code that calls the function (here, <code class="literal">something_expensive()</code>) does not get the benefit of the static caching.
+</li>
+<li class="listitem">
+If the function or another function that calls it adds static caching at a later point, the same data will be added to the cache twice, leading to both higher memory usage and potentially hard-to-find cache invalidation bugs.
+</li>
+</ul></div>
+<p id="from_an_archite">From an architectural/readability perspective, we can see the gradual change from a very simple function to one that is balancing various variables in global state. A major change in Drupal 8 has been the migration from procedural APIs to object-oriented code based on dependency injection. Most classes are loaded via a factory method or plug-in manager, or accessed from the dependency injection container. When this is the case, simply using class properties is sufficient for managing state between methods, and no static caching is necessary at all.<a id="id358475" class="indexterm"></a><a id="id358486" class="indexterm"></a></p>
+</div>
+<div class="sect2" id="_persistent_caching">
+<div class="titlepage"><div><div><h3 class="title">Persistent Caching</h3></div></div></div>
+<p id="cachingpersiste"><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc7" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc8" class="indexterm"></a>Drupal core ships with a rich caching API, defaulting to database caching but with contributed support for files, Memcache, Redis, MongoDB, APC, and other backends.</p>
+<p id="while_static_ca">While static caching allows code to skip execution when called within a single PHP request, persistent caching is shared between PHP processes and can retain data for anything from a few seconds to several weeks.</p>
+<p id="the_cache_drupa">The Cache <a id="id407505" class="indexterm"></a>interface is well documented on the <a class="ulink" href="https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Cache!CacheBackendInterface.php/interface/CacheBackendInterface/8" target="_top">Drupal API site</a>, and there are numerous examples of basic usage in core modules. Rather than duplicating that information here, we’ll discuss some of the lesser known features and ones new to Drupal 8.</p>
+<div class="sect3" id="_cache_chains">
+<div class="titlepage"><div><div><h4 class="title">Cache chains</h4></div></div></div>
+<p id="cachechainspers"><a id="id407529" class="indexterm"></a><a id="id407537" class="indexterm"></a>A new feature <a id="id407545" class="indexterm"></a>in Drupal 8 is the <span class="emphasis"><em>cache chain backend</em></span>, a means of stringing together different cache storage backends in a way that is transparent to the calling code. This feature is primarily designed for combining two persistent storage backends together—for example, APC and database caching—in order to get the best of both. With an APC and database chain, the cache will check APC first and return immediately if an item is found. If not, it will check the database and then write back to APC if the item is found there; and on cache misses, it will write to both. It’s also possible to use the memory backend shipped with Drupal core and any other persistent backend to emulate the static + persistent caching pattern shown earlier, without the code complexity.</p>
+</div>
+<div class="sect3" id="_cache_bins">
+<div class="titlepage"><div><div><h4 class="title">Cache bins</h4></div></div></div>
+<p id="cachebinspersis"><a id="id407571" class="indexterm"></a><a id="id407579" class="indexterm"></a>Drupal core defines several different cache bins, including "bootstrap" for information required on every request, the default cache bin, and use-case-specific bins such as "page" which is only used for cached HTML pages. The cache API not only allows for storage to be swapped out but also allows it to be changed for each cache bin, via the <code class="literal">$conf[<em class="replaceable"><code>cache_backends</code></em>]</code> variable in Drupal 7 and the dependency injection container in Drupal 8.</p>
+<p id="the_bootstrap_c">The bootstrap cache bin is designed for items needed for every request; it’s used primarily by low-level Drupal APIs such as the theme registry or hook system. The cache items in this bin tend to be invalidated infrequently—often when a module is enabled or disabled—and since they’re requested all the time will have an extremely high hit rate.</p>
+<p id="on_the_other_ha">On the other hand, the "block" cache bin is used to cache the output of Drupal’s blocks system. Blocks may have different cache items per role, per user, and/or per page, which can result in hundreds of thousands or more potential entries in the bin. The bin is also cleared often on content updates, so it has a high insert/delete/update rate.</p>
+<p id="in_most_cases_">In most cases, sites will want to set up a single cache backend such as Memcache or Redis to handle all cache bins, but the option is there to use different backends with different bins if desired.</p>
+<p id="when_using_the_">When using the cache API, you’ll likely use the default cache bin, or create a custom bin. A custom bin should only be used if there’s going to be a very large amount of data to cache.</p>
+</div>
+<div class="sect3" id="_getmultiple_setmultiple_deletemultiple">
+<div class="titlepage"><div><div><h4 class="title">getMultiple()/setMultiple()/deleteMultiple()</h4></div></div></div>
+<p id="deletemultiple"><a id="id407641" class="indexterm"></a><a id="id407646" class="indexterm"></a><a id="id407651" class="indexterm"></a><a id="id407659" class="indexterm"></a><a id="id407666" class="indexterm"></a><a id="id407673" class="indexterm"></a>As with entity loading, the cache API allows for loading, setting, and deleting multiple cache objects at once. Any situation where you know the cache IDs of multiple objects in advance is a candidate for using these methods, and many different storage backends natively support multiple get, allowing a single round trip to the cache storage and a shorter code execution path.</p>
+</div>
+<div class="sect3" id="_cache_tags">
+<div class="titlepage"><div><div><h4 class="title">Cache tags</h4></div></div></div>
+<p id="cachetagspersis"><a id="id407691" class="indexterm"></a><a id="id407699" class="indexterm"></a>A new feature of the core cache API in Drupal 8 is cache tags.</p>
+<p id="there_is_often_">There is often confusion between cache tags as a concept and cache IDs, so let’s explain cache IDs first.</p>
+<p id="when_creating_a">When creating a cache ID in Drupal, the following conventions are important:</p>
+<div class="itemizedlist" id="use_the_module__id1"><ul class="itemizedlist">
+<li class="listitem">
+Use the module name or another unique prefix at the start of the cache ID to avoid naming conflicts with others.
+</li>
+<li class="listitem">
+<p id="where_a_cache_i" class="simpara">
+Where a cache ID depends on context, include enough information about this context in the ID to ensure uniqueness. That is, for a cache item that varies per user, you might use:
+</p>
+<pre class="programlisting" data-language="php" id="php_cid__m_id1"><code class="o">&lt;?</code><code class="nx">php</code> <code class="nv">$cid</code> <code class="o">=</code> <code class="s1">'my_module:'</code> <code class="o">.</code> <code class="nv">$uid</code><code class="p">;</code> <code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="if_it_varies_by" class="simpara">If it varies by language as well, then use:</p>
+<pre class="programlisting" data-language="php" id="php_cid__m_id2"><code class="o">&lt;?</code><code class="nx">php</code> <code class="nv">$cid</code> <code class="o">=</code> <code class="s1">'my_module:'</code> <code class="o">.</code> <code class="nv">$uid</code> <code class="o">.</code> <code class="s1">':'</code> <code class="nv">$langcode</code><code class="p">;</code> <code class="cp">?&gt;</code><code class="x"></code></pre>
+</li>
+</ul></div>
+<p id="in_this_case_t">In this case, the semantics of what makes up the cache ID aren’t important; all that matters is that one user doesn’t get presented content that was cached for another user or translated in a different language to the one they’re viewing the content in..</p>
+<div class="note" id="one_exception_t_id1"><p id="one_exception_t_id2">One exception to this <a id="id407877" class="indexterm"></a>is <span class="emphasis"><em>key-based invalidation</em></span>—using the updated timestamp of an entity as part of the cache key means that when the entity is updated, so is the cache key, resulting in a cache miss and new cache entry without having to explicitly clear the old key.</p></div>
+<p id="cache_tags_rat">Cache tags, rather than guaranteeing the uniqueness of cache items, are intended for cache invalidation.</p>
+<p id="a_good_example_">A good example of this is entity rendering. Entities may be rendered on their own with multiple view modes, as part of a listing of multiple entities via Views, as part of a block, or embedded within the rendering of another entity via entity references.</p>
+<p id="a_rendered_node">A rendered node may include information from referenced entities, such as the name of the user that authored the node and that user’s avatar. A Views listing might include multiple nodes like this.</p>
+<p id="to_maintain_coh">To maintain coherency <a id="id407912" class="indexterm"></a><a id="id407917" class="indexterm"></a><a id="id407922" class="indexterm"></a><a id="id407928" class="indexterm"></a>when entities are updated, there are two common approaches:</p>
+<div class="variablelist" id="set_long_ttls_a"><dl class="variablelist">
+<dt><span class="term">
+Set long TTLs and clear all caches of rendered content
+</span></dt>
+<dd>
+The cache will be completely emptied whenever a single item of content is updated, even though the majority of the cache will be unaffected. On sites with frequent content updates, this approach can lead to low hit rates and the potential for cache stampedes. However, the cache will always be accurate.
+</dd>
+<dt><span class="term">
+Set short TTLs so that content is only stale for a few seconds or minutes
+</span></dt>
+<dd>
+This results in lower hit rates regardless of the frequency of content updates. However, not explicitly clearing the cache all at once when an item is updated means there’s less likelihood of cache stampedes.
+</dd>
+</dl></div>
+<p id="cache_tags_allo">Cache tags allow for a "best of both worlds" scenario, where all cache items that include an entity are tagged with that entity’s ID, and saving the entity invalidates those cache items but no others. This allows for both cache coherency (assuming consistent tagging in the first place) and longer TTLs.</p>
+</div>
+<div class="sect3" id="_cachearray">
+<div class="titlepage"><div><div><h4 class="title">CacheArray</h4></div></div></div>
+<p id="cachearraypersi"><a id="id407980" class="indexterm"></a><a id="id407985" class="indexterm"></a><code class="literal">CacheArray</code> was originally added to Drupal 8 but has been backported to Drupal 7, along with several patches integrating it with core subsystems. As a highly dynamic system, and with so much functionality provided by modules, Drupal has evolved to carry a lot of metadata about what functionality is provided from where. This includes the theme registry (a large array of all theme hooks, templates, and preprocessors), the schema cache (which contains metadata about every database table defined by a module, which often reaches 200 or so), and several other registries. On a default install of Drupal core, these usually reach a few hundred kilobytes at most; however, many Drupal sites end up with as many as a hundred or even several hundred contributed modules enabled, each of which may be defining new database tables, theme templates, and the like.</p>
+<p id="prior_to_drupal">Prior to Drupal 7.7, each subsystem would store these arrays in one large cache item. This meant that for the theme registry, every theme function or template registered on a particular site would be loaded on every page—including theme functions for specific administrative tables that might not be used, or for functionality that might not be exposed on the site itself due to configuration. For the schema cache, while the schema metadata is only used for tables passed to <code class="literal">drupal_write_record()</code> or <code class="literal">drupal_schema_fields_sql()</code>—often as few as 10–15 tables on most sites—metadata about every database table on the site would nevertheless be loaded from the cache for every request.</p>
+<p id="cachearray_prov"><a class="ulink" href="http://api.drupal.org/api/drupal/core!lib!Drupal!Core!Utility!CacheArray.php/class/CacheArray/8" target="_top"><code class="literal">CacheArray</code></a> provides a mechanism to drastically reduce the size of these cache entries by emulating a PHP array using <code class="literal">ArrayAccess</code>. When an array key is requested that hasn’t already been cached, it’s treated as a cache miss and looked up, and then the array is populated with the returned value. At the end of the request, any newly found array keys and values get written back to the cache entry so that they’ll be a cache hit for the next request. This allows the cache item to be built on demand, populated only with data that is actually in use on the site and often excluding infrequently accessed items such as those used for administrative pages that may not be visited during normal site operation. Relatively few contributed modules need to maintain as much metadata as some of these core subsystems, but <code class="literal">CacheArray</code> provides a solution to this problem when you run into it.</p>
+<div class="note" id="cachearray_is_i_id1"><p id="cachearray_is_i_id2"><code class="literal">CacheArray</code> is in the process of being replaced by <a class="ulink" href="https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Cache!CacheCollector.php/class/CacheCollector/8" target="_top"><code class="literal">CacheCollector</code></a> in Drupal 8. <code class="literal">CacheCollector</code> has the same internal logic but uses public methods for <code class="literal">get</code> and <code class="literal">set</code> instead of <code class="literal">ArrayAccess</code>.</p></div>
+</div>
+<div class="sect3" id="_render_caching">
+<div class="titlepage"><div><div><h4 class="title">Render caching</h4></div></div></div>
+<p id="cachingrenderpe"><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc9" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc10" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc11" class="indexterm"></a>Drupal’s render API takes a structured array of data and converts it to HTML, running it through the theme system and collecting associated assets such as CSS and JavaScript. One of the more powerful but underused features of the render system is its integrated cache handling.</p>
+<p id="when_writing_co">When writing code that generates HTML, there are two main phases that the content goes through:</p>
+<div class="itemizedlist" id="building_the_ar_id1"><ul class="itemizedlist">
+<li class="listitem">
+Building the array of data (e.g., a list of nodes based on the results of a query)
+</li>
+<li class="listitem">
+Rendering the array to HTML, which mainly involves running it through the theme system
+</li>
+</ul></div>
+<p id="render_caching_">Render caching allows the majority of time spent in these operations to be skipped. We’ll take the example of a custom block that shows the five most recently published article titles, taking it from no caching at all to using the render cache as much as possible:</p>
+<pre class="programlisting" data-language="php" id="_implement_id1"><code class="sd">/**</code>
+<code class="sd"> * Implements hook_block_info().</code>
+<code class="sd"> */</code>
+<code class="k">function</code> <code class="nf">example_block_info</code><code class="p">()</code> <code class="p">{</code>
+  <code class="nv">$blocks</code><code class="p">[</code><code class="s1">'example_render_cache'</code><code class="p">]</code> <code class="o">=</code> <code class="k">array</code><code class="p">(</code>
+    <code class="s1">'info'</code> <code class="o">=&gt;</code> <code class="nx">t</code><code class="p">(</code><code class="s1">'Render caching example.'</code><code class="p">),</code>
+    <code class="s1">'cache'</code> <code class="o">=&gt;</code> <code class="nx">DRUPAL_CACHE_CUSTOM</code><code class="p">,</code>
+  <code class="p">);</code>
+  <code class="k">return</code> <code class="nv">$blocks</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="sd">/**</code>
+<code class="sd"> * Implements hook_block_view().</code>
+<code class="sd"> */</code>
+<code class="k">function</code> <code class="nf">example_block_view</code><code class="p">(</code><code class="nv">$delta</code> <code class="o">=</code> <code class="s1">''</code><code class="p">)</code> <code class="p">{</code>
+  <code class="k">switch</code> <code class="p">(</code><code class="nv">$delta</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">case</code> <code class="s1">'example_render_cache'</code><code class="o">:</code>
+      <code class="nv">$query</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">EntityFieldQuery</code><code class="p">();</code>
+      <code class="nv">$query</code><code class="o">-&gt;</code><code class="na">entityCondition</code><code class="p">(</code><code class="s1">'entity_type'</code><code class="p">,</code> <code class="s1">'node'</code><code class="p">)</code>
+        <code class="o">-&gt;</code><code class="na">entityCondition</code><code class="p">(</code><code class="s1">'bundle'</code><code class="p">,</code> <code class="s1">'article'</code><code class="p">)</code>
+        <code class="o">-&gt;</code><code class="na">propertyCondition</code><code class="p">(</code><code class="s1">'status'</code><code class="p">,</code> <code class="mi">1</code><code class="p">)</code>
+        <code class="o">-&gt;</code><code class="na">range</code><code class="p">(</code><code class="mi">0</code><code class="p">,</code> <code class="mi">5</code><code class="p">)</code>
+        <code class="o">-&gt;</code><code class="na">propertyOrderBy</code><code class="p">(</code><code class="s1">'created'</code><code class="p">,</code> <code class="s1">'ASC'</code><code class="p">);</code>
+      <code class="nv">$result</code> <code class="o">=</code> <code class="nv">$query</code><code class="o">-&gt;</code><code class="na">execute</code><code class="p">();</code>
+      <code class="nv">$nids</code> <code class="o">=</code> <code class="nb">array_keys</code><code class="p">(</code><code class="nv">$result</code><code class="p">[</code><code class="s1">'node'</code><code class="p">]);</code>
+      <code class="nv">$nodes</code> <code class="o">=</code> <code class="nx">node_load_multiple</code><code class="p">(</code><code class="nv">$nids</code><code class="p">);</code>
+      <code class="nv">$titles</code> <code class="o">=</code> <code class="k">array</code><code class="p">();</code>
+      <code class="k">foreach</code> <code class="p">(</code><code class="nv">$nodes</code> <code class="k">as</code> <code class="nv">$node</code><code class="p">)</code> <code class="p">{</code>
+        <code class="nv">$titles</code><code class="p">[]</code> <code class="o">=</code> <code class="nx">l</code><code class="p">(</code><code class="nv">$node</code><code class="o">-&gt;</code><code class="na">title</code><code class="p">,</code> <code class="s1">'node/'</code> <code class="o">.</code> <code class="nv">$node</code><code class="o">-&gt;</code><code class="na">nid</code><code class="p">);</code>
+      <code class="p">}</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'subject'</code><code class="p">]</code> <code class="o">=</code> <code class="nx">t</code><code class="p">(</code><code class="s1">'Render caching example'</code><code class="p">);</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'content'</code><code class="p">]</code> <code class="o">=</code> <code class="k">array</code><code class="p">(</code>
+        <code class="s1">'#theme'</code> <code class="o">=&gt;</code> <code class="s1">'item_list'</code><code class="p">,</code>
+        <code class="s1">'#items'</code> <code class="o">=&gt;</code> <code class="nv">$titles</code><code class="p">,</code>
+      <code class="p">);</code>
+      <code class="k">break</code><code class="p">;</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$block</code><code class="p">;</code>
+<code class="p">}</code></pre>
+<p id="when_the_block_">When the block is rendered with each request, first the <code class="literal">hook_block_view()</code> implementation is called. Then the resulting render array is run through <code class="literal">drupal_render()</code> (the second phase).</p>
+<p id="just_adding_ca">Just adding <code class="literal">#cache</code> to the render array would skip theming, but the entity query and loading would continue to happen with every request without some reorganization. Render caching allows us to skip that work as well, by moving that code to a <code class="literal">#pre_render</code> callback. This is the most complicated aspect of using render caching, so rather than adding the cache first, we’ll start by moving that code around.</p>
+<p id="hook_block_view_id1"><code class="literal">hook_block_view()</code> now looks like this:</p>
+<pre class="programlisting" data-language="php" id="_implement_id2"><code class="sd">/**</code>
+<code class="sd"> * Implements hook_block_view().</code>
+<code class="sd"> */</code>
+<code class="k">function</code> <code class="nf">example_block_view</code><code class="p">(</code><code class="nv">$delta</code> <code class="o">=</code> <code class="s1">''</code><code class="p">)</code> <code class="p">{</code>
+  <code class="k">switch</code> <code class="p">(</code><code class="nv">$delta</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">case</code> <code class="s1">'example_render_cache'</code><code class="o">:</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'subject'</code><code class="p">]</code> <code class="o">=</code> <code class="nx">t</code><code class="p">(</code><code class="s1">'Render caching example'</code><code class="p">);</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'content'</code><code class="p">]</code> <code class="o">=</code> <code class="k">array</code><code class="p">(</code>
+        <code class="s1">'#theme'</code> <code class="o">=&gt;</code> <code class="s1">'item_list'</code><code class="p">,</code>
+        <code class="s1">'#pre_render'</code> <code class="o">=&gt;</code> <code class="k">array</code><code class="p">(</code><code class="s1">'_example_render_cache_block_pre_render'</code><code class="p">),</code>
+      <code class="p">);</code>
+    <code class="k">break</code><code class="p">;</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$block</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="sd">/**</code>
+<code class="sd"> * Pre-render callback for example_render_cache block.</code>
+<code class="sd"> */</code>
+<code class="k">function</code> <code class="nf">_example_render_cache_block_pre_render</code><code class="p">(</code><code class="nv">$element</code><code class="p">)</code> <code class="p">{</code>
+  <code class="nv">$query</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">EntityFieldQuery</code><code class="p">();</code>
+  <code class="nv">$query</code><code class="o">-&gt;</code><code class="na">entityCondition</code><code class="p">(</code><code class="s1">'entity_type'</code><code class="p">,</code> <code class="s1">'node'</code><code class="p">)</code>
+    <code class="o">-&gt;</code><code class="na">entityCondition</code><code class="p">(</code><code class="s1">'bundle'</code><code class="p">,</code> <code class="s1">'article'</code><code class="p">)</code>
+    <code class="o">-&gt;</code><code class="na">propertyCondition</code><code class="p">(</code><code class="s1">'status'</code><code class="p">,</code> <code class="mi">1</code><code class="p">)</code>
+    <code class="o">-&gt;</code><code class="na">range</code><code class="p">(</code><code class="mi">0</code><code class="p">,</code> <code class="mi">5</code><code class="p">)</code>
+    <code class="o">-&gt;</code><code class="na">propertyOrderBy</code><code class="p">(</code><code class="s1">'created'</code><code class="p">,</code> <code class="s1">'ASC'</code><code class="p">);</code>
+  <code class="nv">$result</code> <code class="o">=</code> <code class="nv">$query</code><code class="o">-&gt;</code><code class="na">execute</code><code class="p">();</code>
+  <code class="nv">$nids</code> <code class="o">=</code> <code class="nb">array_keys</code><code class="p">(</code><code class="nv">$result</code><code class="p">[</code><code class="s1">'node'</code><code class="p">]);</code>
+  <code class="nv">$nodes</code> <code class="o">=</code> <code class="nx">node_load_multiple</code><code class="p">(</code><code class="nv">$nids</code><code class="p">);</code>
+  <code class="nv">$items</code> <code class="o">=</code> <code class="k">array</code><code class="p">();</code>
+  <code class="k">foreach</code> <code class="p">(</code><code class="nv">$nodes</code> <code class="k">as</code> <code class="nv">$node</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nv">$items</code><code class="p">[]</code> <code class="o">=</code> <code class="nx">l</code><code class="p">(</code><code class="nv">$node</code><code class="o">-&gt;</code><code class="na">title</code><code class="p">,</code> <code class="s1">'node/'</code> <code class="o">.</code> <code class="nv">$node</code><code class="o">-&gt;</code><code class="na">nid</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nv">$element</code><code class="p">[</code><code class="s1">'#items'</code><code class="p">]</code> <code class="o">=</code> <code class="nv">$items</code><code class="p">;</code>
+
+  <code class="k">return</code> <code class="nv">$element</code><code class="p">;</code>
+<code class="p">}</code></pre>
+<p id="hook_block_view_id2"><code class="literal">hook_block_view()</code> now returns only the minimum metadata needed; the bulk of the work is transferred to the render callback, which will be called by <code class="literal">drupal_render()</code> itself when the element is rendered.</p>
+<p id="once_this_is_do">Once this is done, adding caching requires only a small change to <code class="literal">hook_block_view()</code>:</p>
+<pre class="programlisting" data-language="php" id="_implement_id3"><code class="sd">/**</code>
+<code class="sd"> * Implements hook_block_view().</code>
+<code class="sd"> */</code>
+<code class="k">function</code> <code class="nf">example_block_view</code><code class="p">(</code><code class="nv">$delta</code> <code class="o">=</code> <code class="s1">''</code><code class="p">)</code> <code class="p">{</code>
+  <code class="k">switch</code> <code class="p">(</code><code class="nv">$delta</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">case</code> <code class="s1">'example_render_cache'</code><code class="o">:</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'subject'</code><code class="p">]</code> <code class="o">=</code> <code class="nx">t</code><code class="p">(</code><code class="s1">'Render caching example'</code><code class="p">);</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'content'</code><code class="p">]</code> <code class="o">=</code> <code class="k">array</code><code class="p">(</code>
+        <code class="s1">'#theme'</code> <code class="o">=&gt;</code> <code class="s1">'item_list'</code><code class="p">,</code>
+        <code class="s1">'#pre_render'</code> <code class="o">=&gt;</code> <code class="k">array</code><code class="p">(</code><code class="s1">'_example_render_cache_block_pre_render'</code><code class="p">),</code>
+        <code class="s1">'#cache'</code> <code class="o">=&gt;</code> <code class="k">array</code><code class="p">(</code>
+          <code class="s1">'keys'</code> <code class="o">=&gt;</code> <code class="k">array</code><code class="p">(</code><code class="s1">'example_render_cache'</code><code class="p">),</code>
+        <code class="p">),</code>
+      <code class="p">);</code>
+    <code class="k">break</code><code class="p">;</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$block</code><code class="p">;</code>
+<code class="p">}</code></pre>
+<p id="adding_cache_m">Adding <code class="literal">#cache</code> means that <code class="literal">drupal_render()</code> will check for a cache item before doing any other processing of the render array, <span class="emphasis"><em>including</em></span> the <code class="literal">#pre_render</code> callback. Profiling a page with this block before and after should show that the <code class="literal">EntityFieldQuery</code> and node loading has been removed on cache hits. See <a class="xref" href="">???</a> for more information about how to check this.<a id="id410159" class="indexterm"></a><a id="id410168" class="indexterm"></a><a id="id410176" class="indexterm"></a> <a id="id410186" class="indexterm"></a><a id="id410194" class="indexterm"></a> <a id="id410204" class="indexterm"></a><a id="id410212" class="indexterm"></a></p>
+</div>
+</div>
+</div>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_queues_and_workers">
+<div class="titlepage"><div><div><h2 class="title">Queues and Workers</h2></div></div></div>
+<p id="optimizing_drup_id3"><a id="id410232" class="indexterm"></a><a id="id410239" class="indexterm"></a>Drupal core ships with a robust queue API, defaulting to MySQL but with contributed projects providing support for Redis, Beanstalkd, and others.</p>
+<p id="the_queue_api_i">The queue API is most useful when you have expensive operations triggered by actions on the site. For example, saving a node or comment may require updating the search index, sending email notifications to multiple recipients, and clearing various caches. Performing all of these actions directly in <code class="literal">hook_node_update()</code> will mean the request that actually saves the node takes considerably longer, and introduces single points of failure in the critical path of updating content. Depending on the implementation, failures in search indexing or sending emails may show up as errors to the end user or interrupt the content saving process altogether.</p>
+<p id="instead_of_doin">Instead of doing all this work inline, in your <code class="literal">hook_node_update()</code> implementation, you can create a queue item for that node; then, in the worker callback, you can perform whichever tasks on it are necessary.</p>
+<p id="this_has_the_fo">This has the following <a id="id410278" class="indexterm"></a><a id="id410284" class="indexterm"></a>advantages:</p>
+<div class="itemizedlist" id="expensive_proce_id1"><ul class="itemizedlist">
+<li class="listitem">
+Expensive processing is taken out of the critical path of saving nodes into a background process. This allows the Apache process to be freed up quicker and pages to be served more quickly to users.
+</li>
+<li class="listitem">
+The<a id="id410307" class="indexterm"></a><a id="id410312" class="indexterm"></a> background process may be run by <span class="emphasis"><em>drush</em></span> or a queue daemon. Any operations that require high memory limits won’t bloat Apache, and they don’t necessarily need to run on the main web server at all. If queues are processed by Jenkins, it’s also possible to isolate reporting of failures for particular queues.
+</li>
+<li class="listitem">
+Multiple queue workers may run at the same time, allowing infrastructure usage to be maximized when there are lots of items in various queues. In contrast, Drupal’s <code class="literal">hook_cron()</code> only allows one cron invocation to run at a time.
+</li>
+<li class="listitem">
+Queue items are processed individually and can be returned to the queue if not successful. For example, if a queue item needs to call an external service but the API call fails with a 503 response, it can be returned to the queue to be retried later.
+</li>
+</ul></div>
+<p id="in_sum_pages_c">In sum, pages can be served to end users faster, you have more flexibility when scaling up your infrastructure, and your application will be more robust against failures or performance issues in external providers.</p>
+</div>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_cache_stampedes_and_race_conditions">
+<div class="titlepage"><div><div><h2 class="title">Cache Stampedes and Race Conditions</h2></div></div></div>
+<p id="cachestampedeso"><a id="id410365" class="indexterm"></a><a id="id410372" class="indexterm"></a><a id="id410379" class="indexterm"></a><a id="id410387" class="indexterm"></a>As sites reach large numbers of simultaneous processes, the potential for stampedes and race conditions increases.</p>
+<p id="a_stampede_can_">A stampede can happen when a cache item is empty or invalid and multiple processes attempt to populate it at the same time. Here’s an example with Drupal 7’s variable cache:</p>
+<div class="blockquote"><blockquote class="blockquote"><div class="itemizedlist" id="process_a_reque_id1"><ul class="itemizedlist">
+<li class="listitem">
+Process A requests the variable cache, but there is no valid entry, so it starts loading the variables from the database and unserializing them.
+</li>
+<li class="listitem">
+Process B then comes in; there is no cache entry yet, so it also queries the variables from the database.
+</li>
+<li class="listitem">
+Process C comes in and does the same thing.
+</li>
+<li class="listitem">
+Process A finishes building the page and caches it.
+</li>
+<li class="listitem">
+Process D requests the page and gets the cached item.
+</li>
+<li class="listitem">
+Processes B and C finish and overwrite the cache item with their own identical versions.
+</li>
+</ul></div></blockquote></div>
+<p id="in_this_case_o">In this case, only one cache item was needed, but it was created three times.</p>
+<p id="if_this_is_an_e">If this is an expensive task, it can put the server under high load as multiple different processes all do duplicate work.</p>
+<p id="there_are_two_a_id2">There are two approaches to handling this scenario:</p>
+<div class="itemizedlist" id="when_its_ok_fo_id1"><ul class="itemizedlist">
+<li class="listitem">
+When it’s OK for a few requests to be served an invalid cache item, it’s possible to use the <code class="literal">$allow_invalid</code> parameter to <code class="literal">$cache-&gt;get()</code> so that invalidated but still present cache items are returned by the API. The first request to get an invalid cache item can acquire a lock using Drupal core’s lock API, then proceed to build the new cache item and return it to the caller. Subsequent requests will fail to acquire the lock and can immediately return the stale cache item; this will happen until the new cache item is available.
+</li>
+<li class="listitem">
+When the cache item must be up to date at all times, or if a cache item is completely empty, it’s not possible to serve stale content. The first process to get a cache miss will still acquire a lock and proceed to build the fresh cache item. If the item is very expensive to build, then subsequent requests can be put into a holding pattern using <code class="literal">$lock-&gt;wait()</code>. This will return as soon as the lock is released, after which the cache should be available.
+</li>
+</ul></div>
+<p id="using_the_locki">Using the locking system can have its own problems—when a cache stampede turns into a lock stampede—and it would be remiss not to discuss these:</p>
+<div class="itemizedlist" id="by_default_acq_id1"><ul class="itemizedlist">
+<li class="listitem">
+By default, acquiring a lock requires a database write, and polling for locks queries the database quite frequently. Locking to save one inexpensive database query can be counterproductive in terms of performance since it may have as much overhead as rebuilding the cache item. The lock API has pluggable storage, so this can be improved by installing one of the alternative backends.
+</li>
+<li class="listitem">
+Items that are cached per page are less likely to be requested simultaneously than items cached once for the whole site. Where there is very little chance of a cache stampede, the extra overhead of acquiring the lock is not worth it for these items.
+</li>
+<li class="listitem">
+Items that are invalidated very frequently—say, every 10 seconds—will result in a constant acquiring and freeing of locks. Since processes that don’t acquire locks usually poll to see if the item is created, they may miss the window of the valid cache item and continue to poll.
+</li>
+</ul></div>
+<p id="if_you_are_runn">If you are running into issues with locking, consider whether the lock may be making things worse rather than better. Alternatively, it may be necessary to rethink the functionality altogether; for example, refactoring a per-page element to work across all pages on the site.<a id="id410541" class="indexterm"></a><a id="id410550" class="indexterm"></a></p>
+</div></section><section class="chapter" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="chapter_drupal_coding_for_optimal_performance"><div class="titlepage"><div><div><h1 class="title">Chapter 1. Drupal Coding for Optimal Performance</h1></div></div></div>
+<p id="drupaloptimizin"><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc0" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc1" class="indexterm"></a>One of the great things about Drupal is the ease with which you can extend or override core functionality in order to customize it for your specific needs.  However, if you are not careful with how you code, you may introduce a huge performance bottleneck into your contributed or custom module. This chapter will give an overview of Drupal APIs relevant to performance and scalability, common coding best practices, and pitfalls to be aware of when trying to approach common tasks.</p>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_context_matters">
+<div class="titlepage"><div><div><h2 class="title">Context Matters</h2></div></div></div>
+<p id="optimizing_drup_id1"><a id="id358705" class="indexterm"></a>Before discussing the APIs and patterns that Drupal provides, it’s worth discussing which types of issues are often introduced when writing Drupal code.</p>
+<p id="performance_cpu">Performance <a id="id358722" class="indexterm"></a><a id="id358730" class="indexterm"></a><a id="id358738" class="indexterm"></a><a id="id358744" class="indexterm"></a>and scalability issues in code can affect CPU, memory, filesystem, database, and network usage, either individually or in combination. All code uses at least some CPU and memory, and all sites will access the database and filesystem and potentially make network requests. Whether any of these turns out to be a performance bottleneck is always down to context.</p>
+<p id="there_are_no_ha">There are no hard and fast rules about what makes code "fast" or "slow"—exactly the same code could be acceptable in one situation but not in another, and performance often needs to be balanced against other programming issues such as testability, readability, and maintainability.</p>
+<p id="when_writing_or">When writing or reviewing code, it’s important to think of the context the code will be executed in—both the immediate use case and whether it might also be applied to other contexts. The following are some general questions to ask, before you start trying to optimize at all:</p>
+<div class="itemizedlist" id="does_the_code_g_id1"><ul class="itemizedlist">
+<li class="listitem">
+Does the code get executed on every request?
+</li>
+<li class="listitem">
+Could it run more than once during a request? If so, a few times, or hundreds or thousands?
+</li>
+<li class="listitem">
+If the code runs less frequently, will it affect end user performance? And how critical is end user performance in that case?
+</li>
+<li class="listitem">
+Does the code have side effects that could affect the performance of other requests, such as writing to the database or flushing caches?
+</li>
+<li class="listitem">
+Is the code an isolated unit, or will it be affected by other code or the configuration and state of the Drupal installation it runs on? For example, the amount of content, users, themes, or modules installed can dramatically change the characteristics of how code performs.
+</li>
+</ul></div>
+<p id="only_after_cons">Only after considering these questions should you attempt to apply one or more of the approaches outlined here.</p>
+</div>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_false_optimizations">
+<div class="titlepage"><div><div><h2 class="title">False Optimizations</h2></div></div></div>
+<p id="false_optimizat"><a id="id358832" class="indexterm"></a><a id="id358837" class="indexterm"></a>It’s entirely possible to make the performance of code worse by "optimizing" it. This happens when additional code is added to avoid expensive processing, but the expensive processing happens anyway. The result is that both the original expensive code and the new code run, adding additional overhead to an already bad situation.</p>
+<p id="an_example_of_t">An example of this is the fairly common micro-optimization of replacing <code class="literal">array_key_exists()</code> with <code class="literal">isset()</code>. (Please note that this is used only as an example, and we’re not explicitly recommending doing so!):</p>
+<div class="variablelist" id="isset_this_is"><dl class="variablelist">
+<dt><span class="term">
+<code class="literal">isset()</code>
+</span></dt>
+<dd>
+This is a language construct that tells you whether a variable is set or not, and returns <code class="literal">false</code> if that variable is explicitly set to <code class="literal">NULL</code>.
+</dd>
+<dt><span class="term">
+<code class="literal">array_key_exists()</code>
+</span></dt>
+<dd>
+This is a function that tells you if an array key exists regardless of the value.
+</dd>
+</dl></div>
+<p id="function_calls_">Function calls in PHP have more overhead than language constructs, so <code class="literal">isset()</code> takes less time than a function call, and while the semantics are different, they can be used interchangeably if you don’t need to explicitly check for array keys set to <code class="literal">NULL</code>. Hence, a common micro-optimization is to use <code class="literal">isset()</code> unless it’s absolutely necessary to check for <code class="literal">NULL</code>.</p>
+<p id="lets_assume_yo">Let’s assume you had some code that definitely needed to use <code class="literal">array_key_exists()</code> because of the <code class="literal">NULL</code> check, but you wanted to try to run the faster <code class="literal">isset()</code> first, to skip the function call when it’s not needed. You might write code like this:</p>
+<pre class="programlisting" data-language="php" id="php_array__"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="nv">$array</code> <code class="o">=</code> <code class="k">array</code><code class="p">(</code><code class="s1">'foo'</code> <code class="o">=&gt;</code> <code class="k">NULL</code><code class="p">);</code>
+
+<code class="nb">isset</code><code class="p">(</code><code class="nv">$array</code><code class="p">[</code><code class="s1">'foo'</code><code class="p">]);</code> <code class="c1">// returns FALSE.</code>
+
+<code class="nb">array_key_exists</code><code class="p">(</code><code class="s1">'foo'</code><code class="p">,</code> <code class="nv">$array</code><code class="p">);</code> <code class="c1">// returns TRUE.</code>
+
+<code class="nb">isset</code><code class="p">(</code><code class="nv">$array</code><code class="p">[</code><code class="s1">'foo'</code><code class="p">])</code> <code class="o">||</code> <code class="nb">array_key_exists</code><code class="p">(</code><code class="s1">'foo'</code><code class="p">,</code> <code class="nv">$array</code><code class="p">);</code> <code class="c1">// returns TRUE.</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="the_last_exampl">The last example is semantically identical to just an <code class="literal">array_key_exists()</code> call, but in the case that <code class="literal">$array[‘foo’]</code> is set to a non-<code class="literal">NULL</code> value, only the <code class="literal">isset()</code> check needs to be made, avoiding the more expensive function call.</p>
+<p id="however_if_ar">However, if <code class="literal">$array[‘foo’]</code> doesn’t exist or is set to <code class="literal">NULL</code>, then the code actually has to do more work—checking <code class="literal">isset()</code> then the <code class="literal">array_key_exists()</code>, as well as the <code class="literal">||</code> operator—all of which is going to be slower than just running <code class="literal">array_key_exists()</code> in the first place!</p>
+<p id="the_only_way_to">The only way to know the effect of this is to create a realistic scenario or test on a real install, and see which code execution path is actually the most common. This comes back to context—it’s not so much the content of the code itself that determines its performance, but how exactly it is executed.</p>
+<p id="whether_this_ki">Whether this kind of optimization is a problem depends on the relative performance increase you hope to gain.</p>
+<p id="for_example_wh">For example, when checking access rights, you may need to check an administrative permission via <code class="literal">user_access()</code> as well as access permissions based on an entity ID, which requires loading the entity via <code class="literal">entity_load()</code> first. Both checks are necessary regardless, but the order is important.</p>
+<p id="while_very_few_">While very few users might have the administrative permission, a call to <code class="literal">user_access()</code> takes a fraction of the resources that loading and access-checking an entity does and won’t cause a measurable delay. It’s worth doing the cheaper check first even if the second, more expensive check will run too.</p>
+<p id="this_is_the_sam">This is the same with almost any pattern that attempts to circumvent code execution rather than completely rewriting it. For example, adding persistent caching to a function that is a cache miss in 99.9% of cases will mean extra time spent checking and writing to the cache, as well as extra space being taken up in cache storage, on top of the original code being executed. However, if the code being executed is very expensive, then the overhead of cache misses may well be outweighed regardless.</p>
+<p id="with_this_in_mi">With this in mind, we’ll first cover a common task for Drupal custom and contributed modules, and look at ways to ensure that this task is executed as fast as possible. Then we’ll move on to the APIs that Drupal provides specifically to aid with performance and scaling.</p>
+</div>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_listing_entities">
+<div class="titlepage"><div><div><h2 class="title">Listing Entities</h2></div></div></div>
+<p id="optimizing_drup_id2"><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc2" class="indexterm"></a>Whether it’s on the front page of a blog or in a gallery of images or a comment thread, much of the work done on a Drupal site involves getting a list of entities and then rendering them.</p>
+<p id="there_are_two_a_id1">There are two APIs introduced in Drupal 7, and only slightly changed in Drupal 8, that help with this:  <code class="literal">entityQuery()</code> and <code class="literal">entity_load_multiple()</code>.</p>
+<div class="sect2" id="_entityquery">
+<div class="titlepage"><div><div><h3 class="title">entityQuery()</h3></div></div></div>
+<p id="entityquery_a"><a id="id404687" class="indexterm"></a><a id="id404692" class="indexterm"></a>Rather than a direct database query to entity and field tables, <code class="literal">EntityQuery()</code> relies on a storage controller to handle building and executing the query for the appropriate entity storage backend. This has the advantage that any query run through <code class="literal">entityQuery()</code> is storage agnostic, so if you’re writing a contributed module or working on a site where it might be necessary to move to alternative entity storage in the future, all your queries will transparently use the new storage backend without any refactoring. <code class="literal">EntityQuery()</code> can be used whether you’re writing queries by hand in custom code or via the <code class="literal">entityQuery()</code> Views backend.</p>
+</div>
+<div class="sect2" id="_multiple_entity_loading">
+<div class="titlepage"><div><div><h3 class="title">Multiple Entity Loading</h3></div></div></div>
+<p id="multiple_entity"><a id="id404737" class="indexterm"></a><a id="id404743" class="indexterm"></a>Once you have some entities to list, you’ll need to load and then render them.</p>
+<p id="a_common_patter">A common pattern would be to loop over each node and load them individually:</p>
+<pre class="programlisting" data-language="php" id="php___pro"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="o">/**</code>
+ <code class="o">*</code> <code class="nx">Provide</code> <code class="nx">an</code> <code class="k">array</code> <code class="nx">of</code> <code class="nx">rendered</code> <code class="nx">entities</code> <code class="nx">given</code> <code class="nx">the</code> <code class="nx">IDs</code><code class="o">.</code>
+ <code class="o">*</code>
+ <code class="o">*</code> <code class="o">@</code><code class="nx">param</code> <code class="k">array</code> <code class="nv">$ids</code>
+ <code class="o">*</code>     <code class="nx">The</code> <code class="nx">entity</code> <code class="nx">IDs</code> <code class="nx">to</code> <code class="nx">load</code>
+ <code class="o">*</code>
+ <code class="o">*</code> <code class="o">@</code><code class="k">return</code> <code class="nv">$rendered_entities</code>
+ <code class="o">*</code>  <code class="nx">The</code> <code class="k">array</code> <code class="nx">of</code> <code class="nx">rendered</code> <code class="nx">entities</code><code class="o">.</code>
+<code class="k">function</code> <code class="nf">render_entities</code><code class="p">(</code><code class="nv">$ids</code><code class="p">)</code> <code class="p">{</code>
+  <code class="nv">$rendered_entities</code> <code class="o">=</code> <code class="k">array</code><code class="p">();</code>
+  <code class="k">foreach</code> <code class="p">(</code><code class="nv">$ids</code> <code class="k">as</code> <code class="nv">$id</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nv">$rendered_entities</code><code class="p">[</code><code class="nv">$id</code><code class="p">]</code> <code class="o">=</code> <code class="nx">entity_view</code><code class="p">(</code><code class="nx">entity_load</code><code class="p">(</code><code class="nv">$id</code><code class="p">));</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$rendered_entities</code><code class="p">;</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="drupal__introd">Drupal 7 introduced multiple entity loading and rendering so that tasks such as fetching field values from the database could be done once for all nodes with an <code class="literal">IN()</code> query rather than executed individually:</p>
+<pre class="programlisting" data-language="php" id="php_function__id1"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">render_entities</code><code class="p">(</code><code class="nv">$ids</code><code class="p">)</code> <code class="p">{</code>
+  <code class="nv">$entities</code> <code class="o">=</code> <code class="nx">entity_load_multiple</code><code class="p">(</code><code class="nv">$ids</code><code class="p">);</code>
+  <code class="k">return</code> <code class="o">=</code> <code class="nx">entity_view_multiple</code><code class="p">(</code><code class="nv">$entities</code><code class="p">);</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="by_using_the_mu">By using the multiple load and view functions, assuming 10 nodes need to be loaded and rendered, 10 similar queries to the same table can be reduced to just one. Since an individual node load could require 10 or 20 database queries, this can result in dozens or hundreds of database queries saved when loading and rendering multiple nodes at the same time.</p>
+<p id="note_that_this_">Note that this applies to hook implementations as well; for example, <code class="literal">hook_entity_load()</code> acts on an array of entities.</p>
+<p id="one_often_overl">One often overlooked hook is <code class="literal">hook_entity_prepare_view()</code>. Often, custom themes will need to add fields from user accounts/profiles when rendering nodes or comments—this could be the user’s full name, avatar, registration date, etc. A common pattern for this is <code class="literal">preprocess</code>. Let’s take nodes as an example:</p>
+<pre class="programlisting" data-language="php" id="php_template__id1"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="nx">template_preprocess_node</code><code class="p">(</code><code class="o">&amp;</code><code class="nv">$variables</code><code class="p">)</code> <code class="p">{</code>
+  <code class="nv">$node</code> <code class="o">=</code> <code class="nv">$variables</code><code class="p">[</code><code class="s1">'node'</code><code class="p">];</code>
+  <code class="nv">$variables</code><code class="p">[</code><code class="s1">'account'</code><code class="p">]</code> <code class="o">=</code> <code class="nx">user_load</code><code class="p">(</code><code class="nv">$node</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">);</code>
+  <code class="c1">// Set up custom variables based on account here.</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="when_rendering_">When rendering several different nodes or comments by different authors, this pattern can result in a lot of round trips to the database as each account is fetched individually.  The following example provides the same functionality while resolving the performance issue:</p>
+<pre class="programlisting" data-language="php" id="php_hook_enti"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="nx">hook_entity_prepare_view</code><code class="p">(</code><code class="nv">$entity_type</code><code class="p">,</code> <code class="nv">$entities</code><code class="p">)</code> <code class="p">{</code>
+  <code class="k">if</code> <code class="p">(</code><code class="nv">$entity_type</code> <code class="o">!=</code> <code class="s1">'node'</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">return</code><code class="p">;</code>
+  <code class="p">}</code>
+  <code class="nv">$uids</code> <code class="o">=</code> <code class="k">array</code><code class="p">();</code>
+  <code class="k">foreach</code> <code class="p">(</code><code class="nv">$entities</code> <code class="k">as</code> <code class="nv">$entity</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nv">$uids</code><code class="p">[]</code> <code class="o">=</code> <code class="nv">$entity</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">;</code>
+  <code class="p">}</code>
+  <code class="nv">$accounts</code> <code class="o">=</code> <code class="nx">user_load_multiple</code><code class="p">(</code><code class="nv">$uids</code><code class="p">);</code>
+  <code class="k">foreach</code> <code class="p">(</code><code class="nv">$entities</code> <code class="k">as</code> <code class="nv">$entity</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nv">$entity</code><code class="o">-&gt;</code><code class="na">account</code> <code class="o">=</code> <code class="nv">$accounts</code><code class="p">[</code><code class="nv">$entity</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">];</code>
+  <code class="p">}</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="then_entitya">Then <code class="literal">$entity-&gt;account</code> is available in <code class="literal">preprocess</code>:</p>
+<pre class="programlisting" data-language="php" id="php_template__id2"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="nx">template_preprocess_node</code><code class="p">(</code><code class="o">&amp;</code><code class="nv">$variables</code><code class="p">)</code> <code class="p">{</code>
+  <code class="nv">$account</code> <code class="o">=</code> <code class="nv">$variables</code><code class="p">[</code><code class="s1">'node'</code><code class="p">]</code><code class="o">-&gt;</code><code class="na">account</code><code class="p">;</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+</div>
+</div>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_caching">
+<div class="titlepage"><div><div><h2 class="title">Caching</h2></div></div></div>
+<p id="cachingoptimizi"><a id="id405858" class="indexterm"></a> <a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc3" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc4" class="indexterm"></a>Caching is often the quickest way to solve a performance issue. By adding caching in a particular code path, you can ensure that it will only be executed on cache misses.</p>
+<p id="before_addingad">Before adding<a id="id406001" class="indexterm"></a><a id="id406006" class="indexterm"></a> caching, though, there are a few things to consider:</p>
+<div class="itemizedlist" id="is_it_possible__id1"><ul class="itemizedlist">
+<li class="listitem">
+Is it possible to optimize the code so that it doesn’t need to be cached?
+</li>
+<li class="listitem">
+Is there already caching of the code at a higher level, for example page caching, that might affect the hit rate?
+</li>
+<li class="listitem">
+Will the cached code path be considerably quicker than the current code path?
+</li>
+<li class="listitem">
+Does the cache need to be cleared on particular events? Is it OK for it to be stale sometimes?
+</li>
+<li class="listitem">
+Is the code run multiple times with the same output during a single request?
+</li>
+</ul></div>
+<div class="sect2" id="_static_caching">
+<div class="titlepage"><div><div><h3 class="title">Static Caching</h3></div></div></div>
+<p id="cachingstaticst"><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc5" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc6" class="indexterm"></a>When code is run multiple times per request, a common optimization is to add a static cache around it.  For example, you might rewrite the following code:</p>
+<pre class="programlisting" data-language="php" id="php_function__id2"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">my_function</code><code class="p">()</code> <code class="p">{</code>
+  <code class="k">return</code> <code class="nx">something_expensive</code><code class="p">();</code>
+<code class="p">}</code></pre>
+<p id="as">as</p>
+<pre class="programlisting" data-language="php" id="php_function__id3"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">my_function</code><code class="p">()</code> <code class="p">{</code>
+  <code class="k">static</code> <code class="nv">$foo</code><code class="p">;</code>
+  <code class="k">if</code> <code class="p">(</code><code class="o">!</code><code class="nb">isset</code><code class="p">(</code><code class="nv">$foo</code><code class="p">))</code> <code class="p">{</code>
+    <code class="nv">$foo</code> <code class="o">=</code> <code class="nx">something_expensive</code><code class="p">();</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$foo</code><code class="p">;</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="because_foo_is">Because <code class="literal">$foo</code> is declared as static, it will be held in memory for the duration of the request regardless of how many times the function gets called. This means once this function has run once, it will run the <code class="literal">isset()</code> check and then immediately return.</p>
+<p id="while_it_only_t">While it only takes a couple of lines of code to add a static cache, doing so has implications that aren’t always immediately obvious.</p>
+<p id="lets_look_at_t">Let’s look at the code inside <code class="literal">something_expensive()</code>:</p>
+<pre class="programlisting" data-language="php" id="php_function__id4"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">something_expensive</code><code class="p">()</code> <code class="p">{</code>
+  <code class="k">return</code> <code class="nx">friends_count</code><code class="p">(</code><code class="nv">$GLOBALS</code><code class="p">[</code><code class="s1">'user'</code><code class="p">]);</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="whoops_if_glo">Whoops. If <code class="literal">$GLOBALS[‘user’]</code> changes <a id="id406401" class="indexterm"></a><a id="id406407" class="indexterm"></a>during the request, then <code class="literal">something_expensive()</code> will return different output. This often happens during automated tests using Drupal’s <span class="emphasis"><em>simpletest</em></span> adaption, or in a <span class="emphasis"><em>drush</em></span> process that might be sending emails to multiple different users.</p>
+<p id="its_not_imposs">It’s not impossible to fix this, of course. For example, we can key the cache based on the global user’s ID:</p>
+<pre class="programlisting" data-language="php" id="php_function__id5"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">my_function</code><code class="p">()</code> <code class="p">{</code>
+  <code class="k">static</code> <code class="nv">$foo</code><code class="p">;</code>
+  <code class="k">global</code> <code class="nv">$user</code><code class="p">;</code>
+  <code class="k">if</code> <code class="p">(</code><code class="o">!</code><code class="nb">isset</code><code class="p">(</code><code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]))</code> <code class="p">{</code>
+    <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]</code> <code class="o">=</code> <code class="nx">something_expensive</code><code class="p">();</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">];</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="now_regardless">Now, regardless of how many times the global user object is swapped out during the request, our function will return correctly, whilst still statically caching the results.</p>
+<p id="but_the_problem">But the problems don’t end there. What if the number of friends the user has changes during the request as well? This might well happen during a functional test or a long-running <span class="emphasis"><em>drush</em></span> job. Additionally, this is where memory usage starts to be a problem: a <span class="emphasis"><em>drush</em></span> job processing one million users could eventually end up with a million items in this static cache.</p>
+<p id="drupal_core_has">Drupal core has a solution for this in the form of the <code class="literal">drupal_static()</code> function. This operates similarly to static caching, except that the static cache can be accessed from different functions, both for retrieval and for reset.</p>
+<p id="now_our_functio">Now our function looks like this:</p>
+<pre class="programlisting" data-language="php" id="php_function__id6"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">my_function</code><code class="p">()</code> <code class="p">{</code>
+  <code class="c1">// Only this line changes.</code>
+  <code class="nv">$foo</code> <code class="o">=</code> <code class="o">&amp;</code><code class="nx">drupal_static</code><code class="p">(</code><code class="nx">__FUNCTION__</code><code class="p">);</code>
+  <code class="k">global</code> <code class="nv">$user</code><code class="p">;</code>
+  <code class="k">if</code> <code class="p">(</code><code class="o">!</code><code class="nb">isset</code><code class="p">(</code><code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]))</code> <code class="p">{</code>
+    <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]</code> <code class="o">=</code> <code class="nx">something_expensive</code><code class="p">();</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">];</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="code_in_unit_te">Code in unit tests that updates the user’s friends count or needs to reclaim some PHP memory can then call <code class="literal">drupal_static_reset(‘my_function’)</code> to empty the static cache.</p>
+<p id="since_drupal_st">Since <code class="literal">drupal_static()</code> is a function call, it has a lot more overhead than declaring static and including an <code class="literal">isset()</code> check. This can lead to a situation where static caching is added to micro-optimize a function, then converted to <code class="literal">drupal_static()</code> for testing purposes, which leads to the function being slower than when it had no caching at all. If you absolutely need to use <code class="literal">drupal_static()</code> and your function is going to be called dozens or hundreds of times during a request, there’s the <code class="literal">drupal_static_fast</code> pattern:</p>
+<pre class="programlisting" data-language="php" id="php_function__id7"><code class="o">&lt;?</code><code class="nx">php</code>
+<code class="k">function</code> <code class="nf">my_function</code><code class="p">()</code> <code class="p">{</code>
+  <code class="k">static</code> <code class="nv">$drupal_static_fast</code><code class="p">;</code>
+  <code class="k">if</code> <code class="p">(</code><code class="o">!</code><code class="nb">isset</code><code class="p">(</code><code class="nv">$drupal_static_fast</code><code class="p">))</code> <code class="p">{</code>
+    <code class="nv">$drupal_static_fast</code><code class="p">[</code><code class="s1">'foo'</code><code class="p">]</code> <code class="o">=</code> <code class="o">&amp;</code><code class="nx">drupal_static</code><code class="p">(</code><code class="nx">__FUNCTION__</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nv">$foo</code> <code class="o">=</code> <code class="nv">$drupal_static_fast</code><code class="p">[</code><code class="s1">'foo'</code><code class="p">];</code>
+  <code class="k">global</code> <code class="nv">$user</code><code class="p">;</code>
+  <code class="k">if</code> <code class="p">(</code><code class="o">!</code><code class="nb">isset</code><code class="p">(</code><code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]))</code> <code class="p">{</code>
+    <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">]</code> <code class="o">=</code> <code class="nx">something_expensive</code><code class="p">();</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$foo</code><code class="p">[</code><code class="nv">$user</code><code class="o">-&gt;</code><code class="na">uid</code><code class="p">];</code>
+<code class="p">}</code>
+<code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="this_adds_testa">This adds testability and performance at the expense of quite a bit of complexity.</p>
+<p id="there_are_two_i">There are two issues with <code class="literal">my_function()</code> now. One is a development process issue, and the other is architectural.</p>
+<p id="in_terms_of_pro">In terms of process, if we look back at the original function, we can see it’s only a wrapper around <code class="literal">something_expensive()</code>. While a real example probably wouldn’t be a one-line wrapper, if the only thing that needs caching is <code class="literal">something_expensive()</code>, this isn’t the right place to add that caching. What we should have done was add the caching directly to <code class="literal">something_expensive()</code>, which also knows about any global state it depends on and any other factors that might influence the result (and, if you’re lucky, is in a contributed module rather than your custom code).</p>
+<p id="when_you_add_ca">When you add <a id="id407322" class="indexterm"></a><a id="id407330" class="indexterm"></a>caching to a wrapper rather than to the function itself, the following bad things happen:</p>
+<div class="itemizedlist" id="any_other_code__id1"><ul class="itemizedlist">
+<li class="listitem">
+Any other code that calls the function (here, <code class="literal">something_expensive()</code>) does not get the benefit of the static caching.
+</li>
+<li class="listitem">
+If the function or another function that calls it adds static caching at a later point, the same data will be added to the cache twice, leading to both higher memory usage and potentially hard-to-find cache invalidation bugs.
+</li>
+</ul></div>
+<p id="from_an_archite">From an architectural/readability perspective, we can see the gradual change from a very simple function to one that is balancing various variables in global state. A major change in Drupal 8 has been the migration from procedural APIs to object-oriented code based on dependency injection. Most classes are loaded via a factory method or plug-in manager, or accessed from the dependency injection container. When this is the case, simply using class properties is sufficient for managing state between methods, and no static caching is necessary at all.<a id="id358475" class="indexterm"></a><a id="id358486" class="indexterm"></a></p>
+</div>
+<div class="sect2" id="_persistent_caching">
+<div class="titlepage"><div><div><h3 class="title">Persistent Caching</h3></div></div></div>
+<p id="cachingpersiste"><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc7" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc8" class="indexterm"></a>Drupal core ships with a rich caching API, defaulting to database caching but with contributed support for files, Memcache, Redis, MongoDB, APC, and other backends.</p>
+<p id="while_static_ca">While static caching allows code to skip execution when called within a single PHP request, persistent caching is shared between PHP processes and can retain data for anything from a few seconds to several weeks.</p>
+<p id="the_cache_drupa">The Cache <a id="id407505" class="indexterm"></a>interface is well documented on the <a class="ulink" href="https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Cache!CacheBackendInterface.php/interface/CacheBackendInterface/8" target="_top">Drupal API site</a>, and there are numerous examples of basic usage in core modules. Rather than duplicating that information here, we’ll discuss some of the lesser known features and ones new to Drupal 8.</p>
+<div class="sect3" id="_cache_chains">
+<div class="titlepage"><div><div><h4 class="title">Cache chains</h4></div></div></div>
+<p id="cachechainspers"><a id="id407529" class="indexterm"></a><a id="id407537" class="indexterm"></a>A new feature <a id="id407545" class="indexterm"></a>in Drupal 8 is the <span class="emphasis"><em>cache chain backend</em></span>, a means of stringing together different cache storage backends in a way that is transparent to the calling code. This feature is primarily designed for combining two persistent storage backends together—for example, APC and database caching—in order to get the best of both. With an APC and database chain, the cache will check APC first and return immediately if an item is found. If not, it will check the database and then write back to APC if the item is found there; and on cache misses, it will write to both. It’s also possible to use the memory backend shipped with Drupal core and any other persistent backend to emulate the static + persistent caching pattern shown earlier, without the code complexity.</p>
+</div>
+<div class="sect3" id="_cache_bins">
+<div class="titlepage"><div><div><h4 class="title">Cache bins</h4></div></div></div>
+<p id="cachebinspersis"><a id="id407571" class="indexterm"></a><a id="id407579" class="indexterm"></a>Drupal core defines several different cache bins, including "bootstrap" for information required on every request, the default cache bin, and use-case-specific bins such as "page" which is only used for cached HTML pages. The cache API not only allows for storage to be swapped out but also allows it to be changed for each cache bin, via the <code class="literal">$conf[<em class="replaceable"><code>cache_backends</code></em>]</code> variable in Drupal 7 and the dependency injection container in Drupal 8.</p>
+<p id="the_bootstrap_c">The bootstrap cache bin is designed for items needed for every request; it’s used primarily by low-level Drupal APIs such as the theme registry or hook system. The cache items in this bin tend to be invalidated infrequently—often when a module is enabled or disabled—and since they’re requested all the time will have an extremely high hit rate.</p>
+<p id="on_the_other_ha">On the other hand, the "block" cache bin is used to cache the output of Drupal’s blocks system. Blocks may have different cache items per role, per user, and/or per page, which can result in hundreds of thousands or more potential entries in the bin. The bin is also cleared often on content updates, so it has a high insert/delete/update rate.</p>
+<p id="in_most_cases_">In most cases, sites will want to set up a single cache backend such as Memcache or Redis to handle all cache bins, but the option is there to use different backends with different bins if desired.</p>
+<p id="when_using_the_">When using the cache API, you’ll likely use the default cache bin, or create a custom bin. A custom bin should only be used if there’s going to be a very large amount of data to cache.</p>
+</div>
+<div class="sect3" id="_getmultiple_setmultiple_deletemultiple">
+<div class="titlepage"><div><div><h4 class="title">getMultiple()/setMultiple()/deleteMultiple()</h4></div></div></div>
+<p id="deletemultiple"><a id="id407641" class="indexterm"></a><a id="id407646" class="indexterm"></a><a id="id407651" class="indexterm"></a><a id="id407659" class="indexterm"></a><a id="id407666" class="indexterm"></a><a id="id407673" class="indexterm"></a>As with entity loading, the cache API allows for loading, setting, and deleting multiple cache objects at once. Any situation where you know the cache IDs of multiple objects in advance is a candidate for using these methods, and many different storage backends natively support multiple get, allowing a single round trip to the cache storage and a shorter code execution path.</p>
+</div>
+<div class="sect3" id="_cache_tags">
+<div class="titlepage"><div><div><h4 class="title">Cache tags</h4></div></div></div>
+<p id="cachetagspersis"><a id="id407691" class="indexterm"></a><a id="id407699" class="indexterm"></a>A new feature of the core cache API in Drupal 8 is cache tags.</p>
+<p id="there_is_often_">There is often confusion between cache tags as a concept and cache IDs, so let’s explain cache IDs first.</p>
+<p id="when_creating_a">When creating a cache ID in Drupal, the following conventions are important:</p>
+<div class="itemizedlist" id="use_the_module__id1"><ul class="itemizedlist">
+<li class="listitem">
+Use the module name or another unique prefix at the start of the cache ID to avoid naming conflicts with others.
+</li>
+<li class="listitem">
+<p id="where_a_cache_i" class="simpara">
+Where a cache ID depends on context, include enough information about this context in the ID to ensure uniqueness. That is, for a cache item that varies per user, you might use:
+</p>
+<pre class="programlisting" data-language="php" id="php_cid__m_id1"><code class="o">&lt;?</code><code class="nx">php</code> <code class="nv">$cid</code> <code class="o">=</code> <code class="s1">'my_module:'</code> <code class="o">.</code> <code class="nv">$uid</code><code class="p">;</code> <code class="cp">?&gt;</code><code class="x"></code></pre>
+<p id="if_it_varies_by" class="simpara">If it varies by language as well, then use:</p>
+<pre class="programlisting" data-language="php" id="php_cid__m_id2"><code class="o">&lt;?</code><code class="nx">php</code> <code class="nv">$cid</code> <code class="o">=</code> <code class="s1">'my_module:'</code> <code class="o">.</code> <code class="nv">$uid</code> <code class="o">.</code> <code class="s1">':'</code> <code class="nv">$langcode</code><code class="p">;</code> <code class="cp">?&gt;</code><code class="x"></code></pre>
+</li>
+</ul></div>
+<p id="in_this_case_t">In this case, the semantics of what makes up the cache ID aren’t important; all that matters is that one user doesn’t get presented content that was cached for another user or translated in a different language to the one they’re viewing the content in..</p>
+<div class="note" id="one_exception_t_id1"><p id="one_exception_t_id2">One exception to this <a id="id407877" class="indexterm"></a>is <span class="emphasis"><em>key-based invalidation</em></span>—using the updated timestamp of an entity as part of the cache key means that when the entity is updated, so is the cache key, resulting in a cache miss and new cache entry without having to explicitly clear the old key.</p></div>
+<p id="cache_tags_rat">Cache tags, rather than guaranteeing the uniqueness of cache items, are intended for cache invalidation.</p>
+<p id="a_good_example_">A good example of this is entity rendering. Entities may be rendered on their own with multiple view modes, as part of a listing of multiple entities via Views, as part of a block, or embedded within the rendering of another entity via entity references.</p>
+<p id="a_rendered_node">A rendered node may include information from referenced entities, such as the name of the user that authored the node and that user’s avatar. A Views listing might include multiple nodes like this.</p>
+<p id="to_maintain_coh">To maintain coherency <a id="id407912" class="indexterm"></a><a id="id407917" class="indexterm"></a><a id="id407922" class="indexterm"></a><a id="id407928" class="indexterm"></a>when entities are updated, there are two common approaches:</p>
+<div class="variablelist" id="set_long_ttls_a"><dl class="variablelist">
+<dt><span class="term">
+Set long TTLs and clear all caches of rendered content
+</span></dt>
+<dd>
+The cache will be completely emptied whenever a single item of content is updated, even though the majority of the cache will be unaffected. On sites with frequent content updates, this approach can lead to low hit rates and the potential for cache stampedes. However, the cache will always be accurate.
+</dd>
+<dt><span class="term">
+Set short TTLs so that content is only stale for a few seconds or minutes
+</span></dt>
+<dd>
+This results in lower hit rates regardless of the frequency of content updates. However, not explicitly clearing the cache all at once when an item is updated means there’s less likelihood of cache stampedes.
+</dd>
+</dl></div>
+<p id="cache_tags_allo">Cache tags allow for a "best of both worlds" scenario, where all cache items that include an entity are tagged with that entity’s ID, and saving the entity invalidates those cache items but no others. This allows for both cache coherency (assuming consistent tagging in the first place) and longer TTLs.</p>
+</div>
+<div class="sect3" id="_cachearray">
+<div class="titlepage"><div><div><h4 class="title">CacheArray</h4></div></div></div>
+<p id="cachearraypersi"><a id="id407980" class="indexterm"></a><a id="id407985" class="indexterm"></a><code class="literal">CacheArray</code> was originally added to Drupal 8 but has been backported to Drupal 7, along with several patches integrating it with core subsystems. As a highly dynamic system, and with so much functionality provided by modules, Drupal has evolved to carry a lot of metadata about what functionality is provided from where. This includes the theme registry (a large array of all theme hooks, templates, and preprocessors), the schema cache (which contains metadata about every database table defined by a module, which often reaches 200 or so), and several other registries. On a default install of Drupal core, these usually reach a few hundred kilobytes at most; however, many Drupal sites end up with as many as a hundred or even several hundred contributed modules enabled, each of which may be defining new database tables, theme templates, and the like.</p>
+<p id="prior_to_drupal">Prior to Drupal 7.7, each subsystem would store these arrays in one large cache item. This meant that for the theme registry, every theme function or template registered on a particular site would be loaded on every page—including theme functions for specific administrative tables that might not be used, or for functionality that might not be exposed on the site itself due to configuration. For the schema cache, while the schema metadata is only used for tables passed to <code class="literal">drupal_write_record()</code> or <code class="literal">drupal_schema_fields_sql()</code>—often as few as 10–15 tables on most sites—metadata about every database table on the site would nevertheless be loaded from the cache for every request.</p>
+<p id="cachearray_prov"><a class="ulink" href="http://api.drupal.org/api/drupal/core!lib!Drupal!Core!Utility!CacheArray.php/class/CacheArray/8" target="_top"><code class="literal">CacheArray</code></a> provides a mechanism to drastically reduce the size of these cache entries by emulating a PHP array using <code class="literal">ArrayAccess</code>. When an array key is requested that hasn’t already been cached, it’s treated as a cache miss and looked up, and then the array is populated with the returned value. At the end of the request, any newly found array keys and values get written back to the cache entry so that they’ll be a cache hit for the next request. This allows the cache item to be built on demand, populated only with data that is actually in use on the site and often excluding infrequently accessed items such as those used for administrative pages that may not be visited during normal site operation. Relatively few contributed modules need to maintain as much metadata as some of these core subsystems, but <code class="literal">CacheArray</code> provides a solution to this problem when you run into it.</p>
+<div class="note" id="cachearray_is_i_id1"><p id="cachearray_is_i_id2"><code class="literal">CacheArray</code> is in the process of being replaced by <a class="ulink" href="https://api.drupal.org/api/drupal/core!lib!Drupal!Core!Cache!CacheCollector.php/class/CacheCollector/8" target="_top"><code class="literal">CacheCollector</code></a> in Drupal 8. <code class="literal">CacheCollector</code> has the same internal logic but uses public methods for <code class="literal">get</code> and <code class="literal">set</code> instead of <code class="literal">ArrayAccess</code>.</p></div>
+</div>
+<div class="sect3" id="_render_caching">
+<div class="titlepage"><div><div><h4 class="title">Render caching</h4></div></div></div>
+<p id="cachingrenderpe"><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc9" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc10" class="indexterm"></a><a id="ix_Chapter-04-Drupal-Coding-For-Optimal-Performance-asciidoc11" class="indexterm"></a>Drupal’s render API takes a structured array of data and converts it to HTML, running it through the theme system and collecting associated assets such as CSS and JavaScript. One of the more powerful but underused features of the render system is its integrated cache handling.</p>
+<p id="when_writing_co">When writing code that generates HTML, there are two main phases that the content goes through:</p>
+<div class="itemizedlist" id="building_the_ar_id1"><ul class="itemizedlist">
+<li class="listitem">
+Building the array of data (e.g., a list of nodes based on the results of a query)
+</li>
+<li class="listitem">
+Rendering the array to HTML, which mainly involves running it through the theme system
+</li>
+</ul></div>
+<p id="render_caching_">Render caching allows the majority of time spent in these operations to be skipped. We’ll take the example of a custom block that shows the five most recently published article titles, taking it from no caching at all to using the render cache as much as possible:</p>
+<pre class="programlisting" data-language="php" id="_implement_id1"><code class="sd">/**</code>
+<code class="sd"> * Implements hook_block_info().</code>
+<code class="sd"> */</code>
+<code class="k">function</code> <code class="nf">example_block_info</code><code class="p">()</code> <code class="p">{</code>
+  <code class="nv">$blocks</code><code class="p">[</code><code class="s1">'example_render_cache'</code><code class="p">]</code> <code class="o">=</code> <code class="k">array</code><code class="p">(</code>
+    <code class="s1">'info'</code> <code class="o">=&gt;</code> <code class="nx">t</code><code class="p">(</code><code class="s1">'Render caching example.'</code><code class="p">),</code>
+    <code class="s1">'cache'</code> <code class="o">=&gt;</code> <code class="nx">DRUPAL_CACHE_CUSTOM</code><code class="p">,</code>
+  <code class="p">);</code>
+  <code class="k">return</code> <code class="nv">$blocks</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="sd">/**</code>
+<code class="sd"> * Implements hook_block_view().</code>
+<code class="sd"> */</code>
+<code class="k">function</code> <code class="nf">example_block_view</code><code class="p">(</code><code class="nv">$delta</code> <code class="o">=</code> <code class="s1">''</code><code class="p">)</code> <code class="p">{</code>
+  <code class="k">switch</code> <code class="p">(</code><code class="nv">$delta</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">case</code> <code class="s1">'example_render_cache'</code><code class="o">:</code>
+      <code class="nv">$query</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">EntityFieldQuery</code><code class="p">();</code>
+      <code class="nv">$query</code><code class="o">-&gt;</code><code class="na">entityCondition</code><code class="p">(</code><code class="s1">'entity_type'</code><code class="p">,</code> <code class="s1">'node'</code><code class="p">)</code>
+        <code class="o">-&gt;</code><code class="na">entityCondition</code><code class="p">(</code><code class="s1">'bundle'</code><code class="p">,</code> <code class="s1">'article'</code><code class="p">)</code>
+        <code class="o">-&gt;</code><code class="na">propertyCondition</code><code class="p">(</code><code class="s1">'status'</code><code class="p">,</code> <code class="mi">1</code><code class="p">)</code>
+        <code class="o">-&gt;</code><code class="na">range</code><code class="p">(</code><code class="mi">0</code><code class="p">,</code> <code class="mi">5</code><code class="p">)</code>
+        <code class="o">-&gt;</code><code class="na">propertyOrderBy</code><code class="p">(</code><code class="s1">'created'</code><code class="p">,</code> <code class="s1">'ASC'</code><code class="p">);</code>
+      <code class="nv">$result</code> <code class="o">=</code> <code class="nv">$query</code><code class="o">-&gt;</code><code class="na">execute</code><code class="p">();</code>
+      <code class="nv">$nids</code> <code class="o">=</code> <code class="nb">array_keys</code><code class="p">(</code><code class="nv">$result</code><code class="p">[</code><code class="s1">'node'</code><code class="p">]);</code>
+      <code class="nv">$nodes</code> <code class="o">=</code> <code class="nx">node_load_multiple</code><code class="p">(</code><code class="nv">$nids</code><code class="p">);</code>
+      <code class="nv">$titles</code> <code class="o">=</code> <code class="k">array</code><code class="p">();</code>
+      <code class="k">foreach</code> <code class="p">(</code><code class="nv">$nodes</code> <code class="k">as</code> <code class="nv">$node</code><code class="p">)</code> <code class="p">{</code>
+        <code class="nv">$titles</code><code class="p">[]</code> <code class="o">=</code> <code class="nx">l</code><code class="p">(</code><code class="nv">$node</code><code class="o">-&gt;</code><code class="na">title</code><code class="p">,</code> <code class="s1">'node/'</code> <code class="o">.</code> <code class="nv">$node</code><code class="o">-&gt;</code><code class="na">nid</code><code class="p">);</code>
+      <code class="p">}</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'subject'</code><code class="p">]</code> <code class="o">=</code> <code class="nx">t</code><code class="p">(</code><code class="s1">'Render caching example'</code><code class="p">);</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'content'</code><code class="p">]</code> <code class="o">=</code> <code class="k">array</code><code class="p">(</code>
+        <code class="s1">'#theme'</code> <code class="o">=&gt;</code> <code class="s1">'item_list'</code><code class="p">,</code>
+        <code class="s1">'#items'</code> <code class="o">=&gt;</code> <code class="nv">$titles</code><code class="p">,</code>
+      <code class="p">);</code>
+      <code class="k">break</code><code class="p">;</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$block</code><code class="p">;</code>
+<code class="p">}</code></pre>
+<p id="when_the_block_">When the block is rendered with each request, first the <code class="literal">hook_block_view()</code> implementation is called. Then the resulting render array is run through <code class="literal">drupal_render()</code> (the second phase).</p>
+<p id="just_adding_ca">Just adding <code class="literal">#cache</code> to the render array would skip theming, but the entity query and loading would continue to happen with every request without some reorganization. Render caching allows us to skip that work as well, by moving that code to a <code class="literal">#pre_render</code> callback. This is the most complicated aspect of using render caching, so rather than adding the cache first, we’ll start by moving that code around.</p>
+<p id="hook_block_view_id1"><code class="literal">hook_block_view()</code> now looks like this:</p>
+<pre class="programlisting" data-language="php" id="_implement_id2"><code class="sd">/**</code>
+<code class="sd"> * Implements hook_block_view().</code>
+<code class="sd"> */</code>
+<code class="k">function</code> <code class="nf">example_block_view</code><code class="p">(</code><code class="nv">$delta</code> <code class="o">=</code> <code class="s1">''</code><code class="p">)</code> <code class="p">{</code>
+  <code class="k">switch</code> <code class="p">(</code><code class="nv">$delta</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">case</code> <code class="s1">'example_render_cache'</code><code class="o">:</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'subject'</code><code class="p">]</code> <code class="o">=</code> <code class="nx">t</code><code class="p">(</code><code class="s1">'Render caching example'</code><code class="p">);</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'content'</code><code class="p">]</code> <code class="o">=</code> <code class="k">array</code><code class="p">(</code>
+        <code class="s1">'#theme'</code> <code class="o">=&gt;</code> <code class="s1">'item_list'</code><code class="p">,</code>
+        <code class="s1">'#pre_render'</code> <code class="o">=&gt;</code> <code class="k">array</code><code class="p">(</code><code class="s1">'_example_render_cache_block_pre_render'</code><code class="p">),</code>
+      <code class="p">);</code>
+    <code class="k">break</code><code class="p">;</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$block</code><code class="p">;</code>
+<code class="p">}</code>
+
+<code class="sd">/**</code>
+<code class="sd"> * Pre-render callback for example_render_cache block.</code>
+<code class="sd"> */</code>
+<code class="k">function</code> <code class="nf">_example_render_cache_block_pre_render</code><code class="p">(</code><code class="nv">$element</code><code class="p">)</code> <code class="p">{</code>
+  <code class="nv">$query</code> <code class="o">=</code> <code class="k">new</code> <code class="nx">EntityFieldQuery</code><code class="p">();</code>
+  <code class="nv">$query</code><code class="o">-&gt;</code><code class="na">entityCondition</code><code class="p">(</code><code class="s1">'entity_type'</code><code class="p">,</code> <code class="s1">'node'</code><code class="p">)</code>
+    <code class="o">-&gt;</code><code class="na">entityCondition</code><code class="p">(</code><code class="s1">'bundle'</code><code class="p">,</code> <code class="s1">'article'</code><code class="p">)</code>
+    <code class="o">-&gt;</code><code class="na">propertyCondition</code><code class="p">(</code><code class="s1">'status'</code><code class="p">,</code> <code class="mi">1</code><code class="p">)</code>
+    <code class="o">-&gt;</code><code class="na">range</code><code class="p">(</code><code class="mi">0</code><code class="p">,</code> <code class="mi">5</code><code class="p">)</code>
+    <code class="o">-&gt;</code><code class="na">propertyOrderBy</code><code class="p">(</code><code class="s1">'created'</code><code class="p">,</code> <code class="s1">'ASC'</code><code class="p">);</code>
+  <code class="nv">$result</code> <code class="o">=</code> <code class="nv">$query</code><code class="o">-&gt;</code><code class="na">execute</code><code class="p">();</code>
+  <code class="nv">$nids</code> <code class="o">=</code> <code class="nb">array_keys</code><code class="p">(</code><code class="nv">$result</code><code class="p">[</code><code class="s1">'node'</code><code class="p">]);</code>
+  <code class="nv">$nodes</code> <code class="o">=</code> <code class="nx">node_load_multiple</code><code class="p">(</code><code class="nv">$nids</code><code class="p">);</code>
+  <code class="nv">$items</code> <code class="o">=</code> <code class="k">array</code><code class="p">();</code>
+  <code class="k">foreach</code> <code class="p">(</code><code class="nv">$nodes</code> <code class="k">as</code> <code class="nv">$node</code><code class="p">)</code> <code class="p">{</code>
+    <code class="nv">$items</code><code class="p">[]</code> <code class="o">=</code> <code class="nx">l</code><code class="p">(</code><code class="nv">$node</code><code class="o">-&gt;</code><code class="na">title</code><code class="p">,</code> <code class="s1">'node/'</code> <code class="o">.</code> <code class="nv">$node</code><code class="o">-&gt;</code><code class="na">nid</code><code class="p">);</code>
+  <code class="p">}</code>
+  <code class="nv">$element</code><code class="p">[</code><code class="s1">'#items'</code><code class="p">]</code> <code class="o">=</code> <code class="nv">$items</code><code class="p">;</code>
+
+  <code class="k">return</code> <code class="nv">$element</code><code class="p">;</code>
+<code class="p">}</code></pre>
+<p id="hook_block_view_id2"><code class="literal">hook_block_view()</code> now returns only the minimum metadata needed; the bulk of the work is transferred to the render callback, which will be called by <code class="literal">drupal_render()</code> itself when the element is rendered.</p>
+<p id="once_this_is_do">Once this is done, adding caching requires only a small change to <code class="literal">hook_block_view()</code>:</p>
+<pre class="programlisting" data-language="php" id="_implement_id3"><code class="sd">/**</code>
+<code class="sd"> * Implements hook_block_view().</code>
+<code class="sd"> */</code>
+<code class="k">function</code> <code class="nf">example_block_view</code><code class="p">(</code><code class="nv">$delta</code> <code class="o">=</code> <code class="s1">''</code><code class="p">)</code> <code class="p">{</code>
+  <code class="k">switch</code> <code class="p">(</code><code class="nv">$delta</code><code class="p">)</code> <code class="p">{</code>
+    <code class="k">case</code> <code class="s1">'example_render_cache'</code><code class="o">:</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'subject'</code><code class="p">]</code> <code class="o">=</code> <code class="nx">t</code><code class="p">(</code><code class="s1">'Render caching example'</code><code class="p">);</code>
+      <code class="nv">$block</code><code class="p">[</code><code class="s1">'content'</code><code class="p">]</code> <code class="o">=</code> <code class="k">array</code><code class="p">(</code>
+        <code class="s1">'#theme'</code> <code class="o">=&gt;</code> <code class="s1">'item_list'</code><code class="p">,</code>
+        <code class="s1">'#pre_render'</code> <code class="o">=&gt;</code> <code class="k">array</code><code class="p">(</code><code class="s1">'_example_render_cache_block_pre_render'</code><code class="p">),</code>
+        <code class="s1">'#cache'</code> <code class="o">=&gt;</code> <code class="k">array</code><code class="p">(</code>
+          <code class="s1">'keys'</code> <code class="o">=&gt;</code> <code class="k">array</code><code class="p">(</code><code class="s1">'example_render_cache'</code><code class="p">),</code>
+        <code class="p">),</code>
+      <code class="p">);</code>
+    <code class="k">break</code><code class="p">;</code>
+  <code class="p">}</code>
+  <code class="k">return</code> <code class="nv">$block</code><code class="p">;</code>
+<code class="p">}</code></pre>
+<p id="adding_cache_m">Adding <code class="literal">#cache</code> means that <code class="literal">drupal_render()</code> will check for a cache item before doing any other processing of the render array, <span class="emphasis"><em>including</em></span> the <code class="literal">#pre_render</code> callback. Profiling a page with this block before and after should show that the <code class="literal">EntityFieldQuery</code> and node loading has been removed on cache hits. See <a class="xref" href="">???</a> for more information about how to check this.<a id="id410159" class="indexterm"></a><a id="id410168" class="indexterm"></a><a id="id410176" class="indexterm"></a> <a id="id410186" class="indexterm"></a><a id="id410194" class="indexterm"></a> <a id="id410204" class="indexterm"></a><a id="id410212" class="indexterm"></a></p>
+</div>
+</div>
+</div>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_queues_and_workers">
+<div class="titlepage"><div><div><h2 class="title">Queues and Workers</h2></div></div></div>
+<p id="optimizing_drup_id3"><a id="id410232" class="indexterm"></a><a id="id410239" class="indexterm"></a>Drupal core ships with a robust queue API, defaulting to MySQL but with contributed projects providing support for Redis, Beanstalkd, and others.</p>
+<p id="the_queue_api_i">The queue API is most useful when you have expensive operations triggered by actions on the site. For example, saving a node or comment may require updating the search index, sending email notifications to multiple recipients, and clearing various caches. Performing all of these actions directly in <code class="literal">hook_node_update()</code> will mean the request that actually saves the node takes considerably longer, and introduces single points of failure in the critical path of updating content. Depending on the implementation, failures in search indexing or sending emails may show up as errors to the end user or interrupt the content saving process altogether.</p>
+<p id="instead_of_doin">Instead of doing all this work inline, in your <code class="literal">hook_node_update()</code> implementation, you can create a queue item for that node; then, in the worker callback, you can perform whichever tasks on it are necessary.</p>
+<p id="this_has_the_fo">This has the following <a id="id410278" class="indexterm"></a><a id="id410284" class="indexterm"></a>advantages:</p>
+<div class="itemizedlist" id="expensive_proce_id1"><ul class="itemizedlist">
+<li class="listitem">
+Expensive processing is taken out of the critical path of saving nodes into a background process. This allows the Apache process to be freed up quicker and pages to be served more quickly to users.
+</li>
+<li class="listitem">
+The<a id="id410307" class="indexterm"></a><a id="id410312" class="indexterm"></a> background process may be run by <span class="emphasis"><em>drush</em></span> or a queue daemon. Any operations that require high memory limits won’t bloat Apache, and they don’t necessarily need to run on the main web server at all. If queues are processed by Jenkins, it’s also possible to isolate reporting of failures for particular queues.
+</li>
+<li class="listitem">
+Multiple queue workers may run at the same time, allowing infrastructure usage to be maximized when there are lots of items in various queues. In contrast, Drupal’s <code class="literal">hook_cron()</code> only allows one cron invocation to run at a time.
+</li>
+<li class="listitem">
+Queue items are processed individually and can be returned to the queue if not successful. For example, if a queue item needs to call an external service but the API call fails with a 503 response, it can be returned to the queue to be retried later.
+</li>
+</ul></div>
+<p id="in_sum_pages_c">In sum, pages can be served to end users faster, you have more flexibility when scaling up your infrastructure, and your application will be more robust against failures or performance issues in external providers.</p>
+</div>
+<div class="sect1" data-original-filename="Chapter-04-Drupal-Coding-For-Optimal-Performance.asciidoc" id="_cache_stampedes_and_race_conditions">
+<div class="titlepage"><div><div><h2 class="title">Cache Stampedes and Race Conditions</h2></div></div></div>
+<p id="cachestampedeso"><a id="id410365" class="indexterm"></a><a id="id410372" class="indexterm"></a><a id="id410379" class="indexterm"></a><a id="id410387" class="indexterm"></a>As sites reach large numbers of simultaneous processes, the potential for stampedes and race conditions increases.</p>
+<p id="a_stampede_can_">A stampede can happen when a cache item is empty or invalid and multiple processes attempt to populate it at the same time. Here’s an example with Drupal 7’s variable cache:</p>
+<div class="blockquote"><blockquote class="blockquote"><div class="itemizedlist" id="process_a_reque_id1"><ul class="itemizedlist">
+<li class="listitem">
+Process A requests the variable cache, but there is no valid entry, so it starts loading the variables from the database and unserializing them.
+</li>
+<li class="listitem">
+Process B then comes in; there is no cache entry yet, so it also queries the variables from the database.
+</li>
+<li class="listitem">
+Process C comes in and does the same thing.
+</li>
+<li class="listitem">
+Process A finishes building the page and caches it.
+</li>
+<li class="listitem">
+Process D requests the page and gets the cached item.
+</li>
+<li class="listitem">
+Processes B and C finish and overwrite the cache item with their own identical versions.
+</li>
+</ul></div></blockquote></div>
+<p id="in_this_case_o">In this case, only one cache item was needed, but it was created three times.</p>
+<p id="if_this_is_an_e">If this is an expensive task, it can put the server under high load as multiple different processes all do duplicate work.</p>
+<p id="there_are_two_a_id2">There are two approaches to handling this scenario:</p>
+<div class="itemizedlist" id="when_its_ok_fo_id1"><ul class="itemizedlist">
+<li class="listitem">
+When it’s OK for a few requests to be served an invalid cache item, it’s possible to use the <code class="literal">$allow_invalid</code> parameter to <code class="literal">$cache-&gt;get()</code> so that invalidated but still present cache items are returned by the API. The first request to get an invalid cache item can acquire a lock using Drupal core’s lock API, then proceed to build the new cache item and return it to the caller. Subsequent requests will fail to acquire the lock and can immediately return the stale cache item; this will happen until the new cache item is available.
+</li>
+<li class="listitem">
+When the cache item must be up to date at all times, or if a cache item is completely empty, it’s not possible to serve stale content. The first process to get a cache miss will still acquire a lock and proceed to build the fresh cache item. If the item is very expensive to build, then subsequent requests can be put into a holding pattern using <code class="literal">$lock-&gt;wait()</code>. This will return as soon as the lock is released, after which the cache should be available.
+</li>
+</ul></div>
+<p id="using_the_locki">Using the locking system can have its own problems—when a cache stampede turns into a lock stampede—and it would be remiss not to discuss these:</p>
+<div class="itemizedlist" id="by_default_acq_id1"><ul class="itemizedlist">
+<li class="listitem">
+By default, acquiring a lock requires a database write, and polling for locks queries the database quite frequently. Locking to save one inexpensive database query can be counterproductive in terms of performance since it may have as much overhead as rebuilding the cache item. The lock API has pluggable storage, so this can be improved by installing one of the alternative backends.
+</li>
+<li class="listitem">
+Items that are cached per page are less likely to be requested simultaneously than items cached once for the whole site. Where there is very little chance of a cache stampede, the extra overhead of acquiring the lock is not worth it for these items.
+</li>
+<li class="listitem">
+Items that are invalidated very frequently—say, every 10 seconds—will result in a constant acquiring and freeing of locks. Since processes that don’t acquire locks usually poll to see if the item is created, they may miss the window of the valid cache item and continue to poll.
+</li>
+</ul></div>
+<p id="if_you_are_runn">If you are running into issues with locking, consider whether the lock may be making things worse rather than better. Alternatively, it may be necessary to rethink the functionality altogether; for example, refactoring a per-page element to work across all pages on the site.<a id="id410541" class="indexterm"></a><a id="id410550" class="indexterm"></a></p>
+</div></section>

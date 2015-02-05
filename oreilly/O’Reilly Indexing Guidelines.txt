@@ -1,0 +1,538 @@
+<section class="chapter" data-original-filename="docbook_indexing_guidelines.asciidoc" id="docbook_indexing_guidelines"><div class="titlepage"><div><div><h1 class="title">Chapter 3. DocBook Indexing Guidelines</h1></div></div></div>
+<p id="these_guideline">These guidelines are specific to indexing in DocBook. Note that O’Reilly books are generally indexed by professionals during Production, and this document is what we usually give to vendors. We’ve stored it here for cases where authors are adding their own indexterms, if first approved by Editorial and Production.</p>
+<div class="sect1" data-original-filename="docbook_indexing_guidelines.asciidoc" id="_tools_and_validating_markup">
+<div class="titlepage"><div><div><h2 class="title">Tools and Validating Markup</h2></div></div></div>
+<p id="you_can_choose_">You can choose the tools you use to enter the index tags, but you must use an <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch01.html" target="_top">XML editor</a> of some kind (XMLmind, oXygen, etc.). Do NOT attempt to index in MS Word because Word mangles DocBook (despite claims to the contrary). We have a simple indexing macro for XMLmind that makes the indexing process easier. See the <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000001577/ch01.html#customizing_xxe" target="_top">XMLmind Editor Tutorial</a> for info on getting the macro.</p>
+<p id="whatever_method">Whatever method you decide to use to index the book, the XML files that you return to us must be well-formed and valid DocBook 4.5. Most XML editors will check validity for you, and there are several other tools (e.g., <a class="ulink" href="http://xmlsoft.org/xmllint.html" target="_top">xmllint</a>) that can do so as well. If you are unsure about your tools, please ask <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>.</p>
+<div class="itemizedlist" id="if_you_are_work_id1"><ul class="itemizedlist">
+<li class="listitem">
+If you are working on a <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/" target="_top">DocBook book in Atlas</a>, you’ll need to use one of the validity tools mentioned above. Atlas does not check validity for you.
+</li>
+<li class="listitem">
+If you are working on a DocBook book using the <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000001574/" target="_top">older Subversion toolchain</a>, you can check validity by using the SVN commit hook (orm:commitpdf). This method uses <a class="ulink" href="http://xmlsoft.org/xmllint.html" target="_top">xmllint</a>, and you can see the log that xmllint generates when you try to create a PDF in the repo (<span class="emphasis"><em>pdf/.buildlog</em></span>). Please see the <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000001574/ch02.html#triggering_pdf_builds" target="_top">DocBook Authoring Guidelines</a> more info on using the SVN commit hook.
+</li>
+</ul></div>
+</div>
+<div class="sect1" data-original-filename="docbook_indexing_guidelines.asciidoc" id="_proper_markup">
+<div class="titlepage"><div><div><h2 class="title">Proper Markup</h2></div></div></div>
+<p id="avoid_inserting">Avoid inserting <code class="literal">&lt;indexterm&gt;</code>s inside elements such as <code class="literal">&lt;literal&gt;</code>, <code class="literal">&lt;emphasis&gt;</code>, <code class="literal">&lt;title&gt;</code>, <code class="literal">&lt;sectN&gt;</code>. Generally, they should be at the end of <code class="literal">&lt;para&gt;</code>s, before the final period.</p>
+<div class="itemizedlist" id="never_ever_in_id1"><ul class="itemizedlist">
+<li class="listitem">
+NEVER, EVER! insert <code class="literal">&lt;indexterm&gt;</code>s after a closing <code class="literal">&lt;/para&gt;</code> and before an opening <code class="literal">&lt;para&gt;</code>. They should almost always be inserted at the end of <code class="literal">&lt;para&gt;</code>s (before the closing tag).
+</li>
+<li class="listitem">
+Do not insert <code class="literal">&lt;indexterm&gt;</code>s inside <code class="literal">&lt;title&gt;</code> or <code class="literal">&lt;sectN&gt;</code> tags.
+</li>
+<li class="listitem">
+Do not create a new <code class="literal">&lt;para&gt;</code> to insert an <code class="literal">&lt;indexterm&gt;</code>. This goes for <code class="literal">endofrange</code> terms as well.
+</li>
+<li class="listitem">
+Do not insert <code class="literal">&lt;indexterm&gt;</code>s inside <code class="literal">&lt;screen&gt;</code>, <code class="literal">&lt;programlisting&gt;</code>, <code class="literal">&lt;table&gt;</code>, <code class="literal">&lt;figure&gt;</code>, etc. Insert them at the end of the preceding <code class="literal">&lt;para&gt;</code> instead.
+</li>
+<li class="listitem">
+However, if you encounter a situation where there are no <code class="literal">&lt;para&gt;</code>s to insert an <code class="literal">&lt;indexterm&gt;</code>, you can insert the <code class="literal">&lt;indexterm&gt;</code> elsewhere, such as directly after the last line of a code block (but not inside the code block) or within a <code class="literal">&lt;para&gt;</code> in a <code class="literal">&lt;table&gt;</code>.
+</li>
+</ul></div>
+<p id="here_are_some_e">Here are some examples of what to do and what not to do.</p>
+<p id="do_this_id3">Do this:</p>
+<pre class="screen" id="use_literalse">Use &lt;literal&gt;SELECT&lt;/literal&gt;&lt;indexterm&gt;&lt;primary&gt;SELECT statements&lt;/primary&gt;&lt;/indexterm&gt; statements to show...</pre>
+<p id="not_this_id3">Not this:</p>
+<pre class="screen" id="use_literali">Use &lt;literal&gt;&lt;indexterm&gt;&lt;primary&gt;SELECT statements&lt;/primary&gt;&lt;/indexterm&gt;SELECT&lt;/literal&gt; statements to show...</pre>
+<p id="do_this_id4">Do this:</p>
+<pre class="screen" id="paraliteral_id1">&lt;para&gt;&lt;literal&gt;NULL&lt;/literal&gt; values also behave
+specially with respect to sorting and
+summary operations&lt;indexterm class="endofrange"
+startref="ch03_nullvalues"&gt;&lt;/indexterm&gt;.&lt;/para&gt;</pre>
+<p id="not_this_id4">Not this:</p>
+<pre class="screen" id="paraliteral_id2">&lt;para&gt;&lt;literal&gt;NULL&lt;/literal&gt; values also behave
+specially with respect to sorting and
+summary operations.&lt;/para&gt;
+
+&lt;para&gt;
+&lt;indexterm class="endofrange" startref="ch03_nullvalues"&gt;&lt;/indexterm&gt;
+&lt;/para&gt;</pre>
+</div>
+<div class="sect1" data-original-filename="docbook_indexing_guidelines.asciidoc" id="_indexing_syntax_2">
+<div class="titlepage"><div><div><h2 class="title">Indexing Syntax</h2></div></div></div>
+<p id="basic_index_ent">Basic index entry:</p>
+<pre class="screen" id="indextermpri">&lt;indexterm&gt;&lt;primary&gt;index entry syntax, level 1&lt;/primary&gt;&lt;/indexterm&gt;</pre>
+<p id="secondary_entry">Secondary entry (subentry):</p>
+<pre class="screen" id="indexterm_pr_id1"> &lt;indexterm&gt;
+    &lt;primary&gt;index entry syntax&lt;/primary&gt;
+    &lt;secondary&gt;for a subentry&lt;/secondary&gt;
+ &lt;/indexterm&gt;</pre>
+<p id="tertiary_entry_">Tertiary entry (sub-subentry):</p>
+<pre class="screen" id="indexterm_pr_id2"> &lt;indexterm&gt;
+    &lt;primary&gt;index entry syntax&lt;/primary&gt;
+    &lt;secondary&gt;for a subentry&lt;/secondary&gt;
+    &lt;tertiary&gt;with a subentry&lt;/tertiary&gt;
+ &lt;/indexterm&gt;</pre>
+<p id="an_index_entry__id1">An index entry with a range:</p>
+<pre class="screen" id="this_book_is_fu">This book is full of geeky text with DocBook XML markup, which starts here:
+&lt;indexterm class="startofrange" id="geekytext"&gt;&lt;primary&gt;geeky DocBook XML text&lt;/primary&gt;&lt;/indexterm&gt;blah blah blah Ajax
+blah blah blah Ruby on Rails
+blah blah blah spreading the knowledge of innovators
+...
+...
+and ends here&lt;indexterm class="endofrange" startref="geekytext"&gt;</pre>
+<div class="note" id="the_endofrange__id1"><p id="the_endofrange__id2">The <code class="literal">endofrange</code> entry does not contain a <code class="literal">&lt;primary&gt;</code> or <code class="literal">&lt;secondary&gt;</code> tag. It only has a <code class="literal">startref</code> attribute that references the <code class="literal">startofrange</code> entry. Do not place the <code class="literal">endofrange</code> entry on its own line or the processor will add excess whitespace in the PDF.</p></div>
+<p id="an_index_entry__id2">An index entry with a "(see)" and no page reference:</p>
+<pre class="screen" id="indexterm_pr_id3"> &lt;indexterm&gt;
+   &lt;primary&gt;geeky DocBook XML text&lt;/primary&gt;
+   &lt;see&gt;even more geeky DocBook XML text&lt;/see&gt;
+ &lt;/indexterm&gt;</pre>
+<p id="or_with_a_sube">Or, with a subentry:</p>
+<pre class="screen" id="indexterm_pr_id4"> &lt;indexterm&gt;
+   &lt;primary&gt;DocBook XML text&lt;/primary&gt;
+   &lt;secondary&gt;geeky&lt;/secondary&gt;
+   &lt;see&gt;even more geeky DocBook XML text&lt;/see&gt;
+ &lt;/indexterm&gt;</pre>
+<p id="changing_how_an">Changing how an entry is alphabetized:</p>
+<pre class="screen" id="indexterm_pr_id5">  &lt;indexterm&gt;
+    &lt;primary sortas="elite"&gt;l33t&lt;/primary&gt;
+  &lt;/indexterm&gt;</pre>
+<p id="a_see_also_">A "(see also)" entry:</p>
+<pre class="screen" id="indexterm_pr_id6">  &lt;indexterm&gt;
+    &lt;primary&gt;foo&lt;/primary&gt;
+    &lt;seealso&gt;bar&lt;/seealso&gt;
+  &lt;/indexterm&gt;</pre>
+</div></section><section class="chapter" data-original-filename="general_indexing_guidelines.asciidoc" id="general_indexing_guidelines"><div class="titlepage"><div><div><h1 class="title">Chapter 1. General Indexing Guidelines</h1></div></div></div>
+<p id="this_page_lists">This page lists a few specifics about the things we like to see in O’Reilly indexes.</p>
+<div class="sect1" data-original-filename="general_indexing_guidelines.asciidoc" id="_o_8217_reilly_index_don_8217_ts">
+<div class="titlepage"><div><div><h2 class="title">O’Reilly Index Don’ts</h2></div></div></div>
+<div class="itemizedlist" id="dont_use_any_s_id1"><ul class="itemizedlist">
+<li class="listitem">
+Don’t use any styles (no bold, no italic, etc.). The only exception is our (continued) jump heads, which we include in Frame and InDesign books. These are usually added by the production editor.
+</li>
+<li class="listitem">
+<p id="dont_add_a_sec" class="simpara">
+Don’t add a secondary entry when the primary entry doesn’t have a locator.
+</p>
+<div class="itemizedlist" id="do_this_vector"><ul class="itemizedlist">
+<li class="listitem">
+<p id="do_this_id1" class="simpara">
+<span class="strong"><strong>Do this:</strong></span>
+</p>
+<pre class="literallayout" id="vector_files_d">vector files, defined 26</pre>
+</li>
+<li class="listitem">
+<p id="not_this_id1" class="simpara">
+<span class="strong"><strong>Not this:</strong></span>
+</p>
+<pre class="literallayout" id="vector_files_de">vector files
+    defined, 26</pre>
+</li>
+</ul></div>
+</li>
+<li class="listitem">
+<p id="dont_alphabeti" class="simpara">
+Don’t alphabetize according to "connecting" terms.
+</p>
+<div class="itemizedlist" id="do_this_passwo"><ul class="itemizedlist">
+<li class="listitem">
+<p id="do_this_id2" class="simpara">
+<span class="strong"><strong>Do this:</strong></span>
+</p>
+<pre class="literallayout" id="passwords_optio_id1">passwords
+    options, 42
+    PPP connection and, 37
+    for printer access, 456 &lt;- Good!
+    specifying, 1142
+    writing scripts for, 517</pre>
+</li>
+<li class="listitem">
+<p id="not_this_id2" class="simpara">
+<span class="strong"><strong>Not this:</strong></span>
+</p>
+<pre class="literallayout" id="passwords_for_p">passwords
+    for printer access, 456 &lt;- Bad!
+    options, 42
+    PPP connection and, 37
+    specifying, 1142
+    writing scripts for, 517</pre>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</div>
+<div class="sect1" data-original-filename="general_indexing_guidelines.asciidoc" id="_o_8217_reilly_index_dos">
+<div class="titlepage"><div><div><h2 class="title">O’Reilly Index Dos</h2></div></div></div>
+<div class="itemizedlist" id="use_a_maximum_o_id1"><ul class="itemizedlist">
+<li class="listitem">
+Use a maximum of three levels for index entries.
+</li>
+<li class="listitem">
+Use curly quotes when quotation marks need to appear in an index entry.
+</li>
+<li class="listitem">
+<p id="place_see_refer" class="simpara">
+Place see references in parentheses, on the same line as its subject:
+</p>
+<pre class="literallayout" id="computers_see_">computers (see desktop computers)</pre>
+</li>
+<li class="listitem">
+<p id="separate_two_se" class="simpara">
+Separate two sees with a semicolon:
+</p>
+<pre class="literallayout" id="accounts_see_u">accounts (see user accounts; special accounts)</pre>
+</li>
+<li class="listitem">
+<p id="set_see_also_re" class="simpara">
+Set see also references as the last subentry:
+</p>
+<pre class="literallayout" id="filesystems_">filesystems, 12, 24, 84
+  administering, 161-165
+  Windows XP, 223
+  (see also partitions)</pre>
+</li>
+<li class="listitem">
+<p id="use_an_en_dash_" class="simpara">
+Use an en dash to show a range of pages, but only for topics that span three pages or more, like this:
+</p>
+<pre class="literallayout" id="exceptions_">exceptions, 14-25</pre>
+</li>
+<li class="listitem">
+<p id="list_only_the_f" class="simpara">
+List only the first page for a topic discussed on two consecutive pages:
+</p>
+<pre class="literallayout" id="object_persiste">object persistence, 194</pre>
+</li>
+<li class="listitem">
+<p id="when_necessary" class="simpara">
+When necessary, use "connecting words" to clarify index entries:
+</p>
+<pre class="literallayout" id="passwords_optio_id2">passwords
+  options, 42
+  PPP connection and, 37
+  for printer access, 456
+  specifying, 1142
+  writing scripts for, 517</pre>
+</li>
+<li class="listitem">
+<p id="if_an_acronym_i" class="simpara">
+If an acronym is the main entry, follow it by the name written in full in parentheses. Then, use the name written in full followed by the acronym in parentheses as a see reference:
+</p>
+<pre class="literallayout" id="ftp_file_trans">FTP (File Transfer Protocol), 198, 257
+File Transfer Protocol (see FTP)
+DNS (Domain Name System), 16, 89, 101
+Domain Name System (see DNS)</pre>
+</li>
+<li class="listitem">
+<p id="if_the_entry_ha" class="simpara">
+If the entry has only one line’s worth of locators, remove the see reference:
+</p>
+<pre class="literallayout" id="central_process">central processing units (CPUs), 127
+CPUs (central processing units), 127</pre>
+</li>
+<li class="listitem">
+<p id="place_symbols_i" class="simpara">
+Place symbols in the "Symbol" portion of the index (it is preferable to index them in the order in which they’re spelled out). Where appropriate, describe how they are used:
+</p>
+<pre class="literallayout" id="symbols__amper">Symbols
+&amp; ampersand, 39
+. dot, 45
+colon, 82, 296
+A
+ampersand (&amp;), for background operation, 39
+C
+colon (:) in search path, 82, 296
+D
+dot (.) in filenames, 45</pre>
+</li>
+</ul></div>
+</div>
+<div class="sect1" data-original-filename="general_indexing_guidelines.asciidoc" id="_indexing_the_preface_and_appendixes">
+<div class="titlepage"><div><div><h2 class="title">Indexing the Preface and Appendixes</h2></div></div></div>
+<p id="if_the_preface_">If the preface just includes the standard O’Reilly boilerplate stuff (a short intro, Using Code Examples, How to Contact Us, Acknowledgments, etc.), there is no need for you to index it. But sometimes an author will include some important material that is worth indexing. Appendixes function in a lot of different ways. If an appendix is just a list of reference material, it is probably not worth indexing.</p>
+<p id="in_both_cases_">In both cases, the decision is up to you, the indexer. You can review the frontmatter and appendix and make a determination. If you’re unsure about a particular preface or appendix, you can always ask the production editor. Because you are taking the time to review those pages, we consider them "indexable" and therefore you should charge us for them regardless of whether you insert index markers or not.</p>
+</div>
+<div class="sect1" data-original-filename="general_indexing_guidelines.asciidoc" id="_page_breaks_in_the_index">
+<div class="titlepage"><div><div><h2 class="title">Page Breaks in the Index</h2></div></div></div>
+<p id="some_of_the_fol">Some of the following rules may be jettisoned in a tight-signature scenario:</p>
+<div class="itemizedlist" id="a_group_letter__id1"><ul class="itemizedlist">
+<li class="listitem">
+A group letter head should not be followed by a single entry at the bottom of a column.
+</li>
+<li class="listitem">
+Similarly, individual one-line entries can’t be orphaned at the end of an entire letter group.
+</li>
+<li class="listitem">
+<p id="within_any_bloc" class="simpara">
+Within any block of entries and their subentries, no single subentry can be orphaned on its own column or page.
+</p>
+<div class="itemizedlist" id="wrong_entry_su"><ul class="itemizedlist">
+<li class="listitem">
+<p id="wrong_id1" class="simpara">
+<span class="strong"><strong>Wrong:</strong></span>
+</p>
+<pre class="literallayout" id="entry_subentry__id1">entry
+    subentry
+----------------------------
+    subentry
+    subentry
+    subentry
+entry</pre>
+</li>
+<li class="listitem">
+<p id="wrong_id2" class="simpara">
+<span class="strong"><strong>Wrong:</strong></span>
+</p>
+<pre class="literallayout" id="entry_subentry__id2">entry
+    subentry
+    subentry
+    subentry
+-----------------------------
+    subentry
+entry</pre>
+</li>
+<li class="listitem">
+<p id="right" class="simpara">
+<span class="strong"><strong>Right:</strong></span>
+</p>
+<pre class="literallayout" id="entry_subentry__id3">entry
+    subentry
+    subentry
+---------------------------
+    subentry
+    subentry
+entry</pre>
+</li>
+</ul></div>
+</li>
+<li class="listitem">
+For entries that straddle pagebreaks, a “(continued)” line must appear at the top of the new page (verso pages only).
+</li>
+<li class="listitem">
+Parenthetical statements are stripped from continued lines, e.g., “&amp; (bitwise AND) operator” becomes “&amp; operator (continued)”.
+</li>
+<li class="listitem">
+Continued lines should reflect nested entries: “entry, subentry (continued)” – optional if this results in a two-line continuation.
+</li>
+<li class="listitem">
+Line breaks should not occur between the end of the entry text and the first page number, especially when the result is a single orphaned page number.
+</li>
+<li class="listitem">
+Page ranges (separated with en dashes) can’t be interrupted by line breaks.
+</li>
+<li class="listitem">
+Line breaks may not appear within an overly long entry, even if it runs onto 4 lines.
+</li>
+<li class="listitem">
+If more than two-thirds of one column’s worth of material fills the last page of the index, even out the bottom edges as much as possible. If the two columns cannot be the same height, make the first column slightly higher than the second. (As much as possible, try to make sure columns are balanced in this manner throughout the index.)
+</li>
+</ul></div>
+</div></section><section class="chapter" data-original-filename="asciidoc_indexing_guidelines.asciidoc" id="asciidoc_indexing_guidelines"><div class="titlepage"><div><div><h1 class="title">Chapter 2. AsciiDoc Indexing Guidelines</h1></div></div></div>
+<div class="sect1" data-original-filename="asciidoc_indexing_guidelines.asciidoc" id="_indexing_syntax">
+<div class="titlepage"><div><div><h2 class="title">Indexing Syntax</h2></div></div></div>
+<p id="index_entries_s">Index entries should be added inline in a text block using the syntax described below.</p>
+<div class="sect2" id="_basic_index_entry">
+<div class="titlepage"><div><div><h3 class="title">Basic Index Entry</h3></div></div></div>
+<pre class="screen" id="primary_ind_id1">((("primary index term")))</pre>
+</div>
+<div class="sect2" id="_secondary_entry_subentry">
+<div class="titlepage"><div><div><h3 class="title">Secondary Entry (Subentry)</h3></div></div></div>
+<pre class="screen" id="primary_ind_id2">((("primary index term", "subentry")))</pre>
+</div>
+<div class="sect2" id="_tertiary_entry_sub_subentry">
+<div class="titlepage"><div><div><h3 class="title">Tertiary Entry (Sub-subentry)</h3></div></div></div>
+<pre class="screen" id="primary_ind_id3">((("primary index term", "subentry", "sub-subentry")))</pre>
+</div>
+<div class="sect2" id="_an_index_entry_with_a_range">
+<div class="titlepage"><div><div><h3 class="title">An Index Entry with a Range</h3></div></div></div>
+<pre class="screen" id="the_future_of_e">The future of ebooks is HTML5.((("HTML5", id="ix_html5", range="startofrange"))) In the following pages
+...
+blah blah blah canvas
+blah blah blah local storage
+blah blah blah geolocation
+...
+Learn HTML 5 today!(((range="endofrange", startref="ix_html5")))</pre>
+</div>
+<div class="sect2" id="_an_index_entry_with_a_see_and_no_page_reference">
+<div class="titlepage"><div><div><h3 class="title">An Index Entry with a "(see)" and No Page Reference</h3></div></div></div>
+<pre class="screen" id="flash_has_been_">Flash has been supplanted by HTML5.((("Flash", see="HTML5")))</pre>
+</div>
+<div class="sect2" id="_changing_how_an_entry_is_alphabetized">
+<div class="titlepage"><div><div><h3 class="title">Changing How an Entry Is Alphabetized</h3></div></div></div>
+<pre class="screen" id="makerbot_lets_y">Makerbot lets you produce your own 3-D trinkets.((("3-D", sortas="three-d")))</pre>
+</div>
+<div class="sect2" id="_a_see_also_entry">
+<div class="titlepage"><div><div><h3 class="title">A "(see also)" Entry</h3></div></div></div>
+<pre class="screen" id="in_addition_to_">In addition to the Makerbot, RepRap also allows you to make 3-D stuff((("Makerbot", seealso="RepRap")))</pre>
+<div class="note" id="for_basic_index_id1">
+<p id="for_basic_index_id2">For basic index entries without attributes (i.e., without ranges, a "see", a "see also", or a "sortas"), you do not need to enclose terms in quotation marks. For example, the following markup is fine:</p>
+<pre class="screen" id="xml_rdf_sp">(((XML, RDF, SPARQL)))</pre>
+<p id="however_if_you_id1">However, if you include any attributes, you must put all entries in quotes, e.g.:</p>
+<pre class="screen" id="xml_rdf">((("XML", "RDF", "SPARQL", seealso="XQuery")))</pre>
+<p id="otherwise_entr">Otherwise, entries will not be converted properly to DocBook and the PDF output.</p>
+</div>
+</div>
+</div>
+<div class="sect1" data-original-filename="asciidoc_indexing_guidelines.asciidoc" id="_an_entry_with_special_characters">
+<div class="titlepage"><div><div><h2 class="title">An Entry with Special Characters</h2></div></div></div>
+<p id="often_the_entry">Often the entry will appear in the index, but the character will be missing. For example, this markup:</p>
+<pre class="screen" id="symbol_id1">((("# symbol")))</pre>
+<p id="will_generate_j">will generate just the word "symbol" in the index, without the "#".</p>
+<p id="first_try_escap">First try escaping the character:</p>
+<pre class="screen" id="symbol_id2">((("\# symbol")))</pre>
+<p id="if_that_doesnt">If that doesn’t work, try an inline passthrough (three plus signs on either side):</p>
+<pre class="screen" id="sym">((("+++#+++ symbol")))</pre>
+<p id="note_this_only_">Note this only works on special characters in indexterms, not in attributes. See <a class="xref" href="ch02.html#dos_and_donts" title="Dos and Don’ts">“Dos and Don’ts”</a> for more about what not to put in attributes.</p>
+<p id="please_refer_to">Please refer to the <a class="ulink" href="http://www.methods.co.nz/asciidoc/userguide.html" target="_top">AsciiDoc User Guide</a> or contact mailto:toolsreq@oreilly.com if you need further guidance on how to format the markup.</p>
+</div>
+<div class="sect1" data-original-filename="asciidoc_indexing_guidelines.asciidoc" id="dos_and_donts">
+<div class="titlepage"><div><div><h2 class="title">Dos and Don’ts</h2></div></div></div>
+<p id="one_downside_of">One downside of indexing in the current version of Atlas is that it permits PDF builds even if the files contains validity errors. Our in-house production tools do not allow builds if the files contain validity errors. This can lead to cases where an indexer generates a perfectly nice-looking index in Atlas and sends the files back to the Prod Ed, only to have the Prod Ed run into errors when trying to make a PDF with our tools.</p>
+<p id="if_you_are_inte">If you are interested in setting up a local toolchain for validation purposes, we’d be happy to help with the setup. Just send a note to <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>.</p>
+<p id="you_can_steer_c">You can steer clear of validity errors by keeping the following in mind. See the <a class="xref" href="ch01.html" title="Chapter 1. General Indexing Guidelines">Chapter 1</a> for more general dos and don’ts.</p>
+<div class="sect2" id="_don_8217_t_put_spaces_between_index_markers">
+<div class="titlepage"><div><div><h3 class="title">Don’t put spaces between index markers</h3></div></div></div>
+<p id="bad_id1">Bad:</p>
+<pre class="screen" id="para_ends_here_id1">Para ends here. ((("XHTML"))) ((("widgets")))</pre>
+<p id="good_id1">Good:</p>
+<pre class="screen" id="para_ends_here_id2">Para ends here.((("XHTML")))((("widgets")))</pre>
+</div>
+<div class="sect2" id="_don_8217_t_use_duplicate_ids">
+<div class="titlepage"><div><div><h3 class="title">Don’t use duplicate IDs</h3></div></div></div>
+<p id="bad_id2">Bad:</p>
+<pre class="screen" id="xhtml_id_id1">((("XHTML", id="ix_XHTML", range="startofrange"))) ((("widgets", id="ix_XHTML", range="startofrange")))</pre>
+<p id="good_id2">Good:</p>
+<pre class="screen" id="xhtml_id_id2">((("XHTML", id="ix_XHTML", range="startofrange")))((("widgets", id="ix_widgets", range="startofrange")))</pre>
+</div>
+<div class="sect2" id="_don_8217_t_omit_the_commas_between_attributes">
+<div class="titlepage"><div><div><h3 class="title">Don’t omit the commas between attributes</h3></div></div></div>
+<p id="bad_id3">Bad:</p>
+<pre class="screen" id="xhtml_id_id3">((("XHTML" id="ix_XHTML" range="startofrange")))</pre>
+<p id="good_id3">Good:</p>
+<pre class="screen" id="xhtml_id_id4">((("XHTML", id="ix_XHTML", range="startofrange")))</pre>
+</div>
+<div class="sect2" id="_don_8217_t_put_spaces_or_special_characters_in_id_startref_attributes">
+<div class="titlepage"><div><div><h3 class="title">Don’t put spaces or special characters in id/startref attributes</h3></div></div></div>
+<p id="use_underscores">Use underscores between words instead of spaces in attributes, and don’t use symbols or punctuation (parentheses, equals signs, etc.), although these can go in the actual indexterms. In other words the id and startref attributes should only contain letters, digits, and underscores. Since they are only used as internal links, it’s fine if they don’t match the indexterm values precisely.</p>
+<p id="bad_id4">Bad:</p>
+<pre class="screen" id="getelementb_id1">((("getElementById() method", id="getElementById() method", range="startofrange")))</pre>
+<p id="good_id4">Good:</p>
+<pre class="screen" id="getelementb_id2">((("getElementById() method", id="getElementById_method", range="startofrange")))</pre>
+<p id="bad_id5">Bad:</p>
+<pre class="screen" id="fixed_layou_id1">((("fixed layouts", id="ix_fixed layouts", range="startofrange")))</pre>
+<p id="good_id5">Good:</p>
+<pre class="screen" id="fixed_layou_id2">((("fixed layouts", id="ix_fixed_layouts", range="startofrange")))</pre>
+</div>
+<div class="sect2" id="_don_8217_t_put_indexterms_in_figures_titles_or_code">
+<div class="titlepage"><div><div><h3 class="title">Don’t put indexterms in figures, titles, or code</h3></div></div></div>
+<p id="put_the_terms_i">Put the terms in a nearby para instead.</p>
+<p id="bad_id6">Bad:</p>
+<pre class="screen" id="structural_se_id1">[[structural_semantics_vocabulary]]
+.Example of typical property definitions found in the Structural Semantics Vocabulary
+image::images/epbp_0301.png ((("property definitions")))
+
+Para starts here.</pre>
+<p id="good_id6">Good:</p>
+<pre class="screen" id="structural_se_id2">[[structural_semantics_vocabulary]]
+.Example of typical property definitions found in the Structural Semantics Vocabulary
+image::images/epbp_0301.png
+
+((("property definitions")))Para starts here.</pre>
+</div>
+<div class="sect2" id="_don_8217_t_have_startrefs_that_point_to_non_existent_ids">
+<div class="titlepage"><div><div><h3 class="title">Don’t have startrefs that point to non-existent ids</h3></div></div></div>
+<p id="make_sure_each_">Make sure each end marker’s startref matches some starting marker’s id, and vice versa.</p>
+</div>
+</div></section><section class="chapter" data-original-filename="docbook_indexing_guidelines.asciidoc" id="docbook_indexing_guidelines"><div class="titlepage"><div><div><h1 class="title">Chapter 3. DocBook Indexing Guidelines</h1></div></div></div>
+<p id="these_guideline">These guidelines are specific to indexing in DocBook. Note that O’Reilly books are generally indexed by professionals during Production, and this document is what we usually give to vendors. We’ve stored it here for cases where authors are adding their own indexterms, if first approved by Editorial and Production.</p>
+<div class="sect1" data-original-filename="docbook_indexing_guidelines.asciidoc" id="_tools_and_validating_markup">
+<div class="titlepage"><div><div><h2 class="title">Tools and Validating Markup</h2></div></div></div>
+<p id="you_can_choose_">You can choose the tools you use to enter the index tags, but you must use an <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch01.html" target="_top">XML editor</a> of some kind (XMLmind, oXygen, etc.). Do NOT attempt to index in MS Word because Word mangles DocBook (despite claims to the contrary). We have a simple indexing macro for XMLmind that makes the indexing process easier. See the <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000001577/ch01.html#customizing_xxe" target="_top">XMLmind Editor Tutorial</a> for info on getting the macro.</p>
+<p id="whatever_method">Whatever method you decide to use to index the book, the XML files that you return to us must be well-formed and valid DocBook 4.5. Most XML editors will check validity for you, and there are several other tools (e.g., <a class="ulink" href="http://xmlsoft.org/xmllint.html" target="_top">xmllint</a>) that can do so as well. If you are unsure about your tools, please ask <code class="email">&lt;<a class="email" href="mailto:toolsreq@oreilly.com">toolsreq@oreilly.com</a>&gt;</code>.</p>
+<div class="itemizedlist" id="if_you_are_work_id1"><ul class="itemizedlist">
+<li class="listitem">
+If you are working on a <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/" target="_top">DocBook book in Atlas</a>, you’ll need to use one of the validity tools mentioned above. Atlas does not check validity for you.
+</li>
+<li class="listitem">
+If you are working on a DocBook book using the <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000001574/" target="_top">older Subversion toolchain</a>, you can check validity by using the SVN commit hook (orm:commitpdf). This method uses <a class="ulink" href="http://xmlsoft.org/xmllint.html" target="_top">xmllint</a>, and you can see the log that xmllint generates when you try to create a PDF in the repo (<span class="emphasis"><em>pdf/.buildlog</em></span>). Please see the <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000001574/ch02.html#triggering_pdf_builds" target="_top">DocBook Authoring Guidelines</a> more info on using the SVN commit hook.
+</li>
+</ul></div>
+</div>
+<div class="sect1" data-original-filename="docbook_indexing_guidelines.asciidoc" id="_proper_markup">
+<div class="titlepage"><div><div><h2 class="title">Proper Markup</h2></div></div></div>
+<p id="avoid_inserting">Avoid inserting <code class="literal">&lt;indexterm&gt;</code>s inside elements such as <code class="literal">&lt;literal&gt;</code>, <code class="literal">&lt;emphasis&gt;</code>, <code class="literal">&lt;title&gt;</code>, <code class="literal">&lt;sectN&gt;</code>. Generally, they should be at the end of <code class="literal">&lt;para&gt;</code>s, before the final period.</p>
+<div class="itemizedlist" id="never_ever_in_id1"><ul class="itemizedlist">
+<li class="listitem">
+NEVER, EVER! insert <code class="literal">&lt;indexterm&gt;</code>s after a closing <code class="literal">&lt;/para&gt;</code> and before an opening <code class="literal">&lt;para&gt;</code>. They should almost always be inserted at the end of <code class="literal">&lt;para&gt;</code>s (before the closing tag).
+</li>
+<li class="listitem">
+Do not insert <code class="literal">&lt;indexterm&gt;</code>s inside <code class="literal">&lt;title&gt;</code> or <code class="literal">&lt;sectN&gt;</code> tags.
+</li>
+<li class="listitem">
+Do not create a new <code class="literal">&lt;para&gt;</code> to insert an <code class="literal">&lt;indexterm&gt;</code>. This goes for <code class="literal">endofrange</code> terms as well.
+</li>
+<li class="listitem">
+Do not insert <code class="literal">&lt;indexterm&gt;</code>s inside <code class="literal">&lt;screen&gt;</code>, <code class="literal">&lt;programlisting&gt;</code>, <code class="literal">&lt;table&gt;</code>, <code class="literal">&lt;figure&gt;</code>, etc. Insert them at the end of the preceding <code class="literal">&lt;para&gt;</code> instead.
+</li>
+<li class="listitem">
+However, if you encounter a situation where there are no <code class="literal">&lt;para&gt;</code>s to insert an <code class="literal">&lt;indexterm&gt;</code>, you can insert the <code class="literal">&lt;indexterm&gt;</code> elsewhere, such as directly after the last line of a code block (but not inside the code block) or within a <code class="literal">&lt;para&gt;</code> in a <code class="literal">&lt;table&gt;</code>.
+</li>
+</ul></div>
+<p id="here_are_some_e">Here are some examples of what to do and what not to do.</p>
+<p id="do_this_id3">Do this:</p>
+<pre class="screen" id="use_literalse">Use &lt;literal&gt;SELECT&lt;/literal&gt;&lt;indexterm&gt;&lt;primary&gt;SELECT statements&lt;/primary&gt;&lt;/indexterm&gt; statements to show...</pre>
+<p id="not_this_id3">Not this:</p>
+<pre class="screen" id="use_literali">Use &lt;literal&gt;&lt;indexterm&gt;&lt;primary&gt;SELECT statements&lt;/primary&gt;&lt;/indexterm&gt;SELECT&lt;/literal&gt; statements to show...</pre>
+<p id="do_this_id4">Do this:</p>
+<pre class="screen" id="paraliteral_id1">&lt;para&gt;&lt;literal&gt;NULL&lt;/literal&gt; values also behave
+specially with respect to sorting and
+summary operations&lt;indexterm class="endofrange"
+startref="ch03_nullvalues"&gt;&lt;/indexterm&gt;.&lt;/para&gt;</pre>
+<p id="not_this_id4">Not this:</p>
+<pre class="screen" id="paraliteral_id2">&lt;para&gt;&lt;literal&gt;NULL&lt;/literal&gt; values also behave
+specially with respect to sorting and
+summary operations.&lt;/para&gt;
+
+&lt;para&gt;
+&lt;indexterm class="endofrange" startref="ch03_nullvalues"&gt;&lt;/indexterm&gt;
+&lt;/para&gt;</pre>
+</div>
+<div class="sect1" data-original-filename="docbook_indexing_guidelines.asciidoc" id="_indexing_syntax_2">
+<div class="titlepage"><div><div><h2 class="title">Indexing Syntax</h2></div></div></div>
+<p id="basic_index_ent">Basic index entry:</p>
+<pre class="screen" id="indextermpri">&lt;indexterm&gt;&lt;primary&gt;index entry syntax, level 1&lt;/primary&gt;&lt;/indexterm&gt;</pre>
+<p id="secondary_entry">Secondary entry (subentry):</p>
+<pre class="screen" id="indexterm_pr_id1"> &lt;indexterm&gt;
+    &lt;primary&gt;index entry syntax&lt;/primary&gt;
+    &lt;secondary&gt;for a subentry&lt;/secondary&gt;
+ &lt;/indexterm&gt;</pre>
+<p id="tertiary_entry_">Tertiary entry (sub-subentry):</p>
+<pre class="screen" id="indexterm_pr_id2"> &lt;indexterm&gt;
+    &lt;primary&gt;index entry syntax&lt;/primary&gt;
+    &lt;secondary&gt;for a subentry&lt;/secondary&gt;
+    &lt;tertiary&gt;with a subentry&lt;/tertiary&gt;
+ &lt;/indexterm&gt;</pre>
+<p id="an_index_entry__id1">An index entry with a range:</p>
+<pre class="screen" id="this_book_is_fu">This book is full of geeky text with DocBook XML markup, which starts here:
+&lt;indexterm class="startofrange" id="geekytext"&gt;&lt;primary&gt;geeky DocBook XML text&lt;/primary&gt;&lt;/indexterm&gt;blah blah blah Ajax
+blah blah blah Ruby on Rails
+blah blah blah spreading the knowledge of innovators
+...
+...
+and ends here&lt;indexterm class="endofrange" startref="geekytext"&gt;</pre>
+<div class="note" id="the_endofrange__id1"><p id="the_endofrange__id2">The <code class="literal">endofrange</code> entry does not contain a <code class="literal">&lt;primary&gt;</code> or <code class="literal">&lt;secondary&gt;</code> tag. It only has a <code class="literal">startref</code> attribute that references the <code class="literal">startofrange</code> entry. Do not place the <code class="literal">endofrange</code> entry on its own line or the processor will add excess whitespace in the PDF.</p></div>
+<p id="an_index_entry__id2">An index entry with a "(see)" and no page reference:</p>
+<pre class="screen" id="indexterm_pr_id3"> &lt;indexterm&gt;
+   &lt;primary&gt;geeky DocBook XML text&lt;/primary&gt;
+   &lt;see&gt;even more geeky DocBook XML text&lt;/see&gt;
+ &lt;/indexterm&gt;</pre>
+<p id="or_with_a_sube">Or, with a subentry:</p>
+<pre class="screen" id="indexterm_pr_id4"> &lt;indexterm&gt;
+   &lt;primary&gt;DocBook XML text&lt;/primary&gt;
+   &lt;secondary&gt;geeky&lt;/secondary&gt;
+   &lt;see&gt;even more geeky DocBook XML text&lt;/see&gt;
+ &lt;/indexterm&gt;</pre>
+<p id="changing_how_an">Changing how an entry is alphabetized:</p>
+<pre class="screen" id="indexterm_pr_id5">  &lt;indexterm&gt;
+    &lt;primary sortas="elite"&gt;l33t&lt;/primary&gt;
+  &lt;/indexterm&gt;</pre>
+<p id="a_see_also_">A "(see also)" entry:</p>
+<pre class="screen" id="indexterm_pr_id6">  &lt;indexterm&gt;
+    &lt;primary&gt;foo&lt;/primary&gt;
+    &lt;seealso&gt;bar&lt;/seealso&gt;
+  &lt;/indexterm&gt;</pre>
+</div></section>

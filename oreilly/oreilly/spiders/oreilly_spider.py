@@ -55,7 +55,7 @@ class OreillySpider(scrapy.Spider):
 
     def parseFirstEbookPage(self, response):
         item = response.meta['item']
-        item['content']={}
+        item['content']=""
 
         print "parseFirstEbookPage"
         author = ""
@@ -99,7 +99,6 @@ class OreillySpider(scrapy.Spider):
 
     def parseContent(self, response):
         item = response.meta['item']
-        item['content'] = ""
         content = re.search(r'</header>(.*)<footer>' ,response.body, re.DOTALL)       
         item['content']= item['content'] + content.group(1) 
 

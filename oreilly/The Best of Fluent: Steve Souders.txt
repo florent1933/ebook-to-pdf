@@ -1,0 +1,661 @@
+<section class="chapter" data-original-filename="Your-Script-Just-Killed-My-Site.asciidoc" id="_your_script_just_killed_my_site"><div class="titlepage"><div><div><h1 class="title">Chapter 2. Your Script Just Killed My Site</h1></div></div></div>
+<div class="informalfigure" id="informalfigure_id2"><div class="mediaobject"><iframe width="100%" height="300" src="http://www.youtube.com/embed/aHDNmTpqi7w?wmode=opaque"></iframe></div></div>
+<div class="sidebar" id="your_script_just_killed_my_site">
+<div class="titlepage"><div><div><div class="sidebar-title">Your Script Just Killed My Site</div></div></div></div>
+<p id="hiccup_we_all_">Hiccup. We all get them occasionally. So does the web. When an internet or server hiccup causes a script, stylesheet, or font file to timeout, the result can be devastating—the containing web page is likely to appear completely white for a minute or more. What’s worse—your monitors are unlikely to register this outage. Don’t worry—this probably won’t happen to your website. Or will it?</p>
+</div>
+<div class="sect1" data-original-filename="Your-Script-Just-Killed-My-Site.asciidoc" id="_video_transcript_2">
+<div class="titlepage"><div><div><h2 class="title">Video Transcript</h2></div></div></div>
+<p id="steve_souders_"><span class="strong"><strong>Steve Souders:</strong></span> Everyone knows what I’m talking about. I’m talking about third party scripts. It’s the most unreliable thing next to PowerPoint on a Macbook Air at a conference.</p>
+<p id="laughter_id6"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="steve_you_can_"><span class="strong"><strong>Steve:</strong></span> You can find the slides on my website. I’ll put them up on SlideShare in a minute.</p>
+<p id="weve_all_heard">We’ve all heard that expression a chain is only as strong as its weakest link. Now, in computer parlance, the phrase for that is single point of failure. It’s the same idea. If you have a single component in your system, in your integrated system, and that single component fails and brings down the whole system, that’s a single point of failure.</p>
+<p id="in_computer_arc">In computer architecture, we don’t like single points of failure. Most of us think about, I call it SPOF, most of us think about SPOF in terms of hardware architecture.</p>
+<p id="heres_a_canoni">Here’s a canonical hardware diagram from Wikipedia. We see the router, single router in the middle of everything. If we only have one of those, and it has a hardware failure, the site is down. Similarly, the application server, if you only have one application server, it’s a single point of failure. If that goes down, the website is down.</p>
+<p id="were_familiar_">We’re familiar with that concept of single point of failure in terms of hardware. What about software?</p>
+<p id="most_people_who">Most people who are working on production websites on the front end can look at this page and spot several single points of failure. How many see them? All right. No one. I see them. I see them every day.</p>
+<p id="widgets_ads_i">Widgets. Ads. In this page, I know, also, analytics. All of those are a single point of failure for this website, Business Insider. Why is that the case? It has to do with blocking. How about that? Isn’t that great? Very appropriate? No feedback for that? A chuckle or something?</p>
+<p id="audience_member"><span class="strong"><strong>Audience member:</strong></span> Woo.</p>
+<p id="steve_there_we"><span class="strong"><strong>Steve:</strong></span> There we go. It has to do with blocking. Synchronous scripts, we probably, hopefully by now all know this. If you load an external script synchronously, every DOM element below that script tag in the page is blocked from rendering. Browsers have a lot of inconsistent behavior, but they’re all unanimous on this. This is true in every browser.</p>
+<p id="if_any_of_those">If any of those widgets, analytics or ads that I highlighted load a script synchronously, they can block the page, resulting in this behavior. Do we consider this a failure? I didn’t have a piece of hardware failover. I consider this a failure. This is not a user experience that is going to keep our users coming back to our site. It’s going to drive them away. That’s a failure.</p>
+<p id="how_did_this_fa">How did this failure happen? Business Insider, they’ve got several third party snippets in their page. They’ve got Quantcast, but they’re loading this script asynchronously. They’ve got insertBefore in there. They’ve got Google Analytics. Great pattern here. The Google command queue. Terrible name. GAQ. Who thought of that name? GAQ. They’ve got the GAQ queue going, so they’re loading Google Analytics asynchronously.</p>
+<p id="theyve_got_kis">They’ve got KISSmetrics down there, probably not what you thought initially, and they’re loading that asynchronously. Then there’s the Twitter @Anywhere, and they’re loading it synchronously. Script src equals blah. That’s not asynchronous, and that’s a fail.</p>
+<p id="we_know_that_th">We know that this could block the page, maybe, if there’s a failure, but realistically, how often does that happen. I call this front-end SPOF. We can find examples of it. In fact, I can give you an example that will reproduce this failure 100 percent of the time.</p>
+<p id="were_going_to__id2">We’re going to use web pagetest to show it. If you don’t know that, that’s the number one takeaway from this talk. Go to web pagetest.org. We’re going to test Business Insider, and I notice that it’s blocked from rendering for somewhere between 20 and 30 seconds.</p>
+<p id="how_did_that_ha">How did that happen? We can see down below where this failure request occurred, and it’s for the Twitter @Anywhere JavaScript. Why did it fail? Why did it take so long to fail? I did this test from inside China, behind the Great Firewall. Guess what? Twitter.com is blocked.</p>
+<p id="it_doesnt_fail">It doesn’t fail right away. It times out. I’m in IE here, and the timeout is 20 seconds. 20 seconds this script is taking to time out, and during that entire time, Business Insider is blank. Every user behind the Great Firewall in China, and there’s more than a million or two people there…</p>
+<p id="laughter_id7"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="steve_is_gett"><span class="strong"><strong>Steve:</strong></span> …is getting this experience. I don’t know. Maybe Business Insider doesn’t care about the audience in China. This is 100 percent reproducible. I wrote this blog post when Jean and I were there for Velocity China last December.</p>
+<p id="how_did_that_co">How did that come about? Where did the failure occur? Here’s the Twitter @Anywhere developer page, and they’ve got this in their snippet, in their pattern, that they’re propagating to their users. They’re saying, "Load it synchronously. Script src blah." They’re putting it in the head above the body.</p>
+<p id="remember_every">Remember, every DOM element below the script tag is going to be blocked from rendering. The body is below the script tag, so that means everything in the page is going to be blank. If this times out, and in China, it times out. We get this behavior in China, but what about other places? Most of us aren’t traveling to China. When we go there, we don’t spend a lot of time on Business Insider. How about here in the US?</p>
+<p id="luckily_i_run_">Luckily, I run this project called the HTTP Archive. If you haven’t tried it before, that’s the number two takeaway from today. Go to httparchive.org. I analyze 200,000 websites twice a month, and I’ve got this big MySQL database at my disposal. I said, "Let me try to find some examples of this in the most recent run of these 200,000 websites. Let me select the URL of the page and the web pagetest ID." HTTP Archive runs on top of web pagetest.</p>
+<p id="im_going_to_pu">I’m going to pull it from the two main tables we have. Pages, which is the high level information, and requests, which is every individual request for the page. I have to join those. First of all, I’m going to select pages just in the most recent runs, and I’m going to join the two tables. I’m only going to look at sites that are ranked in the top 20,000 worldwide, try to narrow it down and find some more popular sites that experience this problem.</p>
+<p id="that_page_has_t">That page has to contain a script that takes more than 10 seconds to load. The overall page is therefore going to be blocked from rendering for at least 10 seconds. I’m going to group it by page ID. Why did I go through all of this, a keynote with detailed SQL? Because all the code and data is downloadable, you can download this data and do the exact same analysis or other analyses if you want to.</p>
+<p id="i_did_this_anal">I did this analysis, and guess what? I found some examples. Here is…I can’t read the website. This is Beta Brands. Top 20,000 website. It doesn’t render for 10 to 15 seconds. If we look, it’s because this request to a Facebook JavaScript file took 14 seconds to download. It was loaded synchronously. Script src equals blah. Not async, so it blocks the entire page from rendering.</p>
+<p id="heres_another_">Here’s another example. This is BigFollow. It’s interesting because it’s a way of attracting more Twitter followers, but for some reason, they’re loading +1 and Facebook. Both of those took over 20 seconds to download, so it blocked the page from rendering. I don’t know. Maybe +1 and Facebook knew about that, and they’re trying to mess with BigFollow.</p>
+<p id="i_dont_know_wh">I don’t know why it took 20 seconds, but it did. It didn’t happen on every website, but it happened on about 0.1 percent of the websites in the crawl. Here’s another one loading something from Glam Media. They’re the world’s leader in curated social media. They are not the world’s leader on high-performance, third-party snippets.</p>
+<p id="laughter_id8"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="steve_heres_a"><span class="strong"><strong>Steve:</strong></span> Here’s another one that’s got everything in there. Facebook and some Google and some Twitter. For some reason, they all took 5 to 10 seconds to download, blocking the rendering in the page.</p>
+<p id="this_is_a_probl">This is a problem. It does occur. Outages occur. Hiccups in the Internet occur. When that happens with third-party scripts that you’ve put into your page in a synchronous way, your site is going to go blank for your users. This has happened in the past. There are news articles about it. It happens every day, and it’s going to continue to happen.</p>
+<p id="this_has_been_a">This has been a cautionary tale of woe and foreboding, but it doesn’t have to be that way. There’s a sunny side to this picture. Unfortunately, we’re out of time, so…</p>
+<p id="laughter_id9"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="steve_if_you_w"><span class="strong"><strong>Steve:</strong></span> If you want to hear the sunny side, you’ve got to come to my talk at 11:50. Between now and then, I want you to ask yourself a question. What’s your website’s weakest link? I wouldn’t be surprised if it’s on the front end. Thank you.</p>
+<p id="applause_id2"><span class="emphasis"><em>[applause]</em></span></p>
+</div></section><section class="chapter" data-original-filename="High-Performance-Snippets.asciidoc" id="_high_performance_snippets"><div class="titlepage"><div><div><h1 class="title">Chapter 1. High Performance Snippets</h1></div></div></div>
+<div class="informalfigure" id="informalfigure_id1"><div class="mediaobject"><iframe width="100%" height="300" src="http://www.youtube.com/embed/ZPmotBbYw-w?wmode=opaque"></iframe></div></div>
+<div class="sidebar" id="high_performance_snippets">
+<div class="titlepage"><div><div><div class="sidebar-title">High Performance Snippets</div></div></div></div>
+<p id="ads_buttons_w">Ads, buttons, widgets—third-party content is popular on today’s websites. JavaScript provides a great way to mashup content from different sources. Unfortunately, in most cases, each JavaScript snippet is capable of bringing down the entire site.</p>
+</div>
+<div class="sect1" data-original-filename="High-Performance-Snippets.asciidoc" id="_video_transcript">
+<div class="titlepage"><div><div><h2 class="title">Video Transcript</h2></div></div></div>
+<p id="ok_so_heres_">OK, so here’s, let’s see, OK, so last talk before lunch. How many
+people here work with JavaScript?</p>
+<p id="laughter_id1"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="cool_hey_keep">Cool. Hey. Keep everyone awake. How many people here heard my talk
+this morning? Wow. I must have done well, you came back. That’s kind of not so
+good, because the first five slides are the same. But it kind of
+sets the context for what I’m going to talk about.</p>
+<p id="i_think_this_wi">I think this will, so the talk this morning and this talk are brand
+new talks. That’s always fun, except I was up till three in the
+morning doing them. But they’re good talks, and I think it’s going
+to be a little short, but that’ll be good. We’ll get a little more
+time for lunch.</p>
+<p id="i_want_you_to_p">I want you to pay less attention to the content of the slides and
+more attention to the background photos. Because that’s really
+where the bulk of my time is spent.</p>
+<p id="laughter_id2"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="you_think_im_j">You think I’m joking. I go, OK, this next one is about short cache
+times. What’s the background photo? Something with a clock or an
+hourglass. Then I go on Flickr. Search for hourglass, Creative
+Commons. It takes a long time.
+This one, snippets really are not fast. There’s kind of a meaning
+to the photos.</p>
+<p id="were_when_i_s">We’re, when I started working on performance eight years ago, I
+remember the first team that I went to talk to about making their
+website faster said, there’s nothing we can do. I was at Yahoo at
+the time. Yahoo doesn’t own an ISP and Yahoo doesn’t own a browser.
+The team said, "What do you want us to do? There’s nothing we can
+do."</p>
+<p id="the_assumption_">The assumption was that our life, in our case as web programmers,
+our web presence, the presence of our website was out of our
+control. I’ve spent the last eight years finding ways to work
+around the system, to figure out what’s really taking the most
+amount of time, and of those things, what do we control and how can
+we contort things to work that way?</p>
+<p id="in_the_second_h">In the second half of the talk, I’ll talk about this thing self-
+updating scripts that going on that Stoyan Stefanov and I just
+released a couple weeks ago. The typical response to that is, "That
+is such an amazing hack. It is so ugly." I’m not sure how to take
+that, but it is true. Some of the times, the ways to work around
+the system are not always elegant. Sometimes they’re more
+pragmatic.</p>
+<p id="its_the_same_s">It’s the same situation here. You’ll see it in this talk, in these
+slides. There are a lot of things we don’t control about snippets,
+about third-party content that we’re embedding in our sites, but
+there is a lot that we actually do control or can control or can
+push for.</p>
+<p id="certainly_we_a">Certainly, we also have a choice of removing the snippet if we feel
+like it’s bad for our site. I know that there are big sites who
+have removed snippets, and the people who own those snippets,
+large, large companies, have responded to that. They’ve removed
+them because of performance, and large companies have responded to
+that, "What can we do about that"?</p>
+<p id="if_youre_a_big">If you’re a big company, and you’re relying on some third-party
+content, and you don’t think the performance is good enough,
+threaten to drop it. If you’re a small company, maybe we should
+form some kind of co-op or something to channel all of our traffic
+together and vote as a proxy block.</p>
+<p id="im_going_to_ta">I’m going to talk about high performance snippets. How to try to
+take little, small things and make them fast. In the talk this
+morning, I picked Business Insider. The reason for this is…I
+mentioned that I was at Velocity China in December, behind the
+Great Firewall. I’ve got these 30 websites that I open up every
+morning. You might have heard this anecdote before.</p>
+<p id="i_go_into_work">I go into work, hook up the laptop. I open this web page I have
+with some JavaScript on it. I hit "Go," and it opens 30 tabs. It
+opens all the websites that I read in the morning. While those are
+loading, because I can’t stand waiting for websites to load, I get
+up and I go get breakfast. When I come back, it’s about done
+loading those 30 websites. We still have to do a better job.</p>
+<p id="this_is_one_of_">This is one of the websites that I read every morning. I did this
+in China and I actually wasn’t getting breakfast, I was sitting in
+the front row of the conference while someone was speaking. I was
+looking at it, and it was blank for, like, 60 seconds.</p>
+<p id="i_think_i_was_u">I think I was using, this morning I’d mentioned a time out of 20
+seconds for IE. I think I was using Chrome or Safari, one of those.
+It’s 120 seconds for a time out. I’m looking at this screen, and it
+was white for 120 seconds. It really got me thinking about, oh, I
+know what’s happening, it’s this front end SPOF, the single point
+of failure that I talked about before.</p>
+<p id="thats_how_i_st">That’s how I stumbled upon Business Insider. Anyone here work at
+Business Insider? If you did, would you raise your hand?</p>
+<p id="laughter_id3"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="probably_not_i">Probably not. I look at this page and I know right away that there are single
+points of failure even before I look at the source code, but then,
+I look at the source code and I verify it. It’s got snippets in
+there, the Facebook "Like" button. It’s got ads and it’s also got
+analytics in the middle. All of those are single points of failure
+for the website.</p>
+<p id="not_in_the_norm">Not in the normal sense we think of as like a server overheating or
+a disk drive crashing. It’s in the sense from the user’s
+perspective. It has to do with blocking.</p>
+<p id="all_of_those_pi">All of those pieces of third party content are being loaded, not
+all of them, but many of them are being loaded as synchronous
+scripts. If you have a synchronous script, basically that means if
+it’s scripts or SQLs file name, then it blocks all elements below
+that script tag.</p>
+<p id="style_sheets_ar">Style sheets are actually worse. Style sheets will block all
+elements in the page, so if you put style sheets at the bottom. I
+remember when I was working on the first book, and I found that
+rule about moving scripts to the bottom, I tried that with style
+sheets and it was the worst thing possible. Because style sheets
+will block everything in the page from rendering, below it and
+above it.</p>
+<p id="we_put_it_at_th">We put it at the bottom, which meant that the style sheet loaded
+last, and so, the page was blank for a really long time. Then we
+go, oh, I guess it doesn’t matter whether it’s above or below, so
+we put it at the top so it loads really fast so the page can
+render.</p>
+<p id="it_happens_for_">It happens for both of them, but for scripts, it’s just the
+elements below the script tag, and that happens in all browsers. It
+has this blocking behavior.</p>
+<p id="this_is_what_i_">This is what I saw when I was in Beijing for Business Insider, for
+like, 2 minutes, 120 seconds. It was like this, it was white. To
+me, that’s a failure. Especially if it’s 20 seconds for IE, maybe
+the user will hang on that long. 120 seconds, there’s no way the
+user’s going to hang on that long.</p>
+<p id="if_we_look_at_t_id1">If we look at the source code, I apologize if you can’t read this.
+The slides are on my website. If you go up there I’ve got links to
+the slides.</p>
+<p id="its_loading_qu">It’s loading Quantcast asynchronously. I actually didn’t know
+Quantcast has an async snippet. I think a year ago they didn’t, so
+that’s great. It’s loading Google analytics asynchronously, it’s
+loading KISSmetrics asynchronously. But then it’s loading this
+Twitter anywhere.js synchronously. The really ironic thing is they
+don’t actually use it in the page.</p>
+<p id="laughter_id4"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="theres_nowhere">There’s nowhere that they access this code. But they probably use
+it on other pages and so it just got into the template and they’re
+pulling it down. It’s blocking their entire site, in China, at
+least. They’re loading asynchronously and that’s going to produce a
+failure. It’s going to produce a failure in China 100 percent of
+the time. It’s going to produce failures here when there’s an
+outage for Twitter, right?</p>
+<p id="we_think_well">We think, well, maybe that doesn’t happen. That does happen. I
+don’t just mean Twitter. Google has outages, Facebook has outages,
+everyone has outages. That’s a fact.</p>
+<p id="even_if_it_does">Even if it doesn’t produce a failure in the sense of a 20 second or
+120 second blank page, if it’s slow to respond, then it’s going to
+impact the user experience. It’s just going to degrade it. If it
+takes 5 seconds, 5 seconds isn’t that bad of a response time for a
+script. Imagine your entire page being blocked for 5 seconds by
+this one script. You wouldn’t want that. Loading it synchronously
+like this is going to produce that experience, some percentage of
+time.</p>
+<p id="i_call_this_fro">I call this front-end SPOF, front-end single point of failure. It’s
+really important. I wrote this blog post two years ago, but we’re
+still not paying enough attention to this topic. That’s why I’m
+hammering on it here today.</p>
+<p id="heres_business">Here’s Business Insider, inside web pagetest. How many people here
+use web pagetest? It should be higher than that. You’ll find there
+are so many things you can do with web pagetest. Please go check it
+out. web pagetest.org.</p>
+<p id="im_loading_bus">I’m loading BusinessInsider.com, and it doesn’t render for 30
+seconds. That’s because I did this inside China, and it’s blocking
+Twitter.com. I don’t know if they do this intentionally, if they
+make it time out as opposed to just returning some failure code.
+Certainly, if they want to discourage, they being the owners of the
+Great Firewall…If they want to discourage traffic to Twitter.com,
+this is a great tactic to do that. Don’t fail right away. Make them
+hang on for 20 seconds or 2 minutes before you fail. It certainly
+drives me crazy. That’s what’s happening.</p>
+<p id="ill_bet_that_a">I’ll bet that almost every website that’s being worked on by people
+in this room has a front-end single point of failure. One thing you
+could do is go to web pagetest and load your site inside a web
+pagetest location inside China, and you could see if you get this
+blank rendering. It’s possible that the widget you’re using is not
+blocked by the Great Firewall. For example, Google.com is blocked.
+Google-analytics.com is not. GA is still a single point of failure
+for my website, but it won’t be caught by testing it this way from
+China.</p>
+<p id="pat_meenan_the">Pat Meenan, the guy who created and runs web pagetest, realized
+that. He’s kind of with me. He’s doing some talks about front-end
+SPOF, I think at Velocity. He’s been banging on this as well. He
+said, "Why don’t we create a black hole"? So he did. Blackhole.web
+pagetest.org. There’s the IP address. Here’s his blog, where he
+talks about it.</p>
+<p id="basically_what">Basically, what you can do, and he’s got all of this in the blog
+post there. You can do the Etsy host trick. You can pick the third
+party domains that you have in your website, whatever they are, and
+just map them to that black hole IP address. Then restart, and
+everything will go through the black hole.</p>
+<p id="anything_on_tho">Anything on those domains should time out, but you’ll see if it
+degrades the performance of your website or not. If you’re doing
+everything async, it shouldn’t be a problem. If you’re doing things
+synchronously, loading scripts synchronously, you’re going to see a
+blank page or at least blank parts of your page.</p>
+<p id="the_other_nice_">The other nice thing is you can also do the same thing in web
+pagetest. Pat has a simple scripting language. You can take these
+lines to set the DNS name, to again, any third party domain that
+you have in your site to see if you have a critical path dependency
+on that. At the end, just say navigate and put in the URL to the
+site you’re trying to test.</p>
+<p id="i_did_that_here">I did that here, and here’s how you do it. Here’s the web pagetest
+UI. Pat will make all the apologies for the UI here. It’s
+definitely not a beautiful UI, but you get used to it. There’s this
+script tab, and in there you can enter commands for this simple
+scripting language he has. This scripting language also lets you do
+things like workflow, like buy something through a shopping cart,
+log into websites. Multiple things. It’s pretty powerful but
+simple.</p>
+<p id="ive_put_in_the">I’ve put in these commands to do this DNS mapping. Instead of
+looking at Business Insider, I want to switch over and look at my
+website. You can see there, up in the upper right, if you go to my
+website, there’s the links to the morning’s talk about single point
+of failure and this talk about snippets.</p>
+<p id="just_last_week">Just last week, I added the Twitter profile widget to my page. You
+can see it right here. It’s got the last three…Wow, you can
+see…I actually finished these slides about 15 minutes before the
+talk. You can see it’s got my tweet there from earlier this
+morning. I’ve got this in there. Now, when I added it, it was
+synchronous. That was the snippet that Twitter gave me.</p>
+<p id="if_i_run_it_thr">If I run it through web pagetest with those DNS mappings, I’m going
+to see this timeout. I had DNS mappings for Google Analytics and
+TWIMG.com going to the black hole, so those two requests fail. What
+we see up in the film strip view is, we don’t see a blank page. We
+see this part of the page is being blocked from rendering until
+about some time between 20 and 30 seconds, this part of the page in
+the circle.</p>
+<p id="why_is_that_re">Why is that? Remember what I said is, that the way that scripts
+block rendering is every DOM element below them in the page is
+blocked from rendering. In this case, if you remember, the Twitter
+profile widget is about in the middle of my page. It’s right there,
+in that second column, below the links to my books, which everyone
+should buy.</p>
+<p id="thats_why_its">That’s why it’s blank until about 30 seconds, because at 30 seconds
+is when those requests time out. I’m still in IE, which has a 20
+second timeout for those requests. It didn’t hit my entire page,
+but it certainly impacted the user experience. I’ve got three
+columns here. You can see the third column cut off there. The
+second half of the second column and the entire third column were
+blocked from rendering because of this Twitter widget that I put in
+there.</p>
+<p id="what_can_we_do_">What can we do about that? The main thing I would say is, "Give
+up," because it’s third party content. There’s nothing we can do.
+Well, no. I don’t believe in that. Here’s the original snippet.
+This is what they gave me. You can see script src =
+twitterwidget.js.</p>
+<p id="its_blocking_">It’s blocking. I know it’s blocking. I know, if there’s ever an
+outage, it’s going to affect my website. If it’s ever slow, it’s
+going to affect my website. What can I do about that? The obvious
+thing to do is load it async. It’s a little bit of code, but add it
+up. What is it, 10 lines of code? It’s not that bad.</p>
+<p id="matt_mullenweg_">Matt Mullenweg gave me this pointer for Christmas a couple years
+ago. I’ve never used the laser on it. Wooo.</p>
+<p id="laughter_id5"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="thats_kind_of_">That’s kind of fun. First of all, we’ve got the typical snippet
+down here, which I’ll credit to Google Analytics. They’re the ones
+who really made this really popular. There are a couple blog posts
+that I wrote about appendChild versus insertBefore and things like
+that. Why does it say this async equals true?
+We’re creating the element, and here I’m adding an onload handler,
+this doTwitter function that I’ll get to in a minute. I set the
+source, and then I insert it into the DOM. That gets the script
+loaded. Now I’m loading the widget script, asynchronously, so it’s
+not going to block my page anymore, even if I’m in China. I had to
+do this callback. The callback’s a little tricky. I have to do
+ready state for IE. But there’s also this case where Opera will
+call on-load and ready state. The first time I actually call it, I
+want to set both of those to null.</p>
+<p id="so_it_will_neve">So it will never be called twice. Then I’m going to do the code
+that they gave me before. I’m going to call the Twitter widget.
+This is a way that I can load this asynchronously, but make sure
+that the dependent code doesn’t execute until this is finished
+loading successfully. All make sense? That’s beautiful. We’re
+basically done. Right? There’s one thing you’ve got to think about,
+with defer async. That is, you can’t load a script asynchronously,
+or deferred, if it does document.write.</p>
+<p id="like_you_i_nev">Like you, I never use document.write, generally. But it turns out
+that Twitter’s Widget.js does use document.write. Here, they have
+this. Whoops. There we go. Here they have this where they’re
+writing in the div that the profile widget is going to be contained
+in. They’re doing that with document.write. They could have used a
+different technique, but that’s OK. One thing I notice here, it
+only does this document.write if there’s no ID property of X.</p>
+<p id="if_you_look_at_">If you look at the code, and I don’t know how many people know
+this, Chrome dev tools had a Prettify link for scripts. So of
+course this code is all Minified. I Prettify it and I can actually
+make it somewhat readable. X is that set of properties that I’m
+passing into the call to the widget. All I have to do is set an ID
+and it won’t' call this document.write. My guess is, it’s not going
+to create it, because it assumes that the div already exists.</p>
+<p id="what_if_we_crea">What if we create the div ourselves and pass in the ID? Let’s try
+that. The only change to what I had before is, I’m going to add the
+div myself. I’m going to give it the ID, "Souter’s Twitter." I’m
+going to add that property into the list of properties that I pass
+into the call to instantiate the widget. Lo and behold, it works.
+This is somewhat risky. I get a fair amount of traffic to my site,
+but not a huge amount and people understand I’m trying stuff on it.</p>
+<p id="im_ok_with_thi">I’m OK with this. If you go to my site now and you put in a query
+string, "Twitter equals one," you’ll get this async version of the
+Twitter widget, so you can compare them. I’m going to swap that
+out. I’m OK with it. It could be a little risky. I looked and I
+couldn’t find this ID property in the documentation for their API.
+It’s possible they might change that out from under me later. It
+might not work anymore. I don’t know. I’m not too nervous about it.</p>
+<p id="i_think_this_is">I think this is a pattern that more and more third party snippets
+should adopt, is at least have the option of passing an ID to the
+container. Because many of them are using document.write to do
+that, to write out a div or an iFrame that they’re going to put
+their snippet inside of. This is very cool. I had this terrible,
+SPOF behavior where the right hand half of my page didn’t render
+for 20 seconds if there was a timeout, if there was an issue with
+Twitter.</p>
+<p id="now_with_this_">Now, with this async version, just to be clear, the time frame
+before, was tens of seconds. Zero, 10, 20, 30. This might not look
+that much better. But it’s an order of magnitude better. One, two,
+three. The page is rendering, in fact, all of the page, except for
+the Twitter widget is rendering by three seconds. The Twitter
+widget still isn’t going to render, because I’m using the black
+hole. The black hole is still going to have timeouts for Google
+Analytics and Twitter.</p>
+<p id="what_ive_done_">What I’ve done here is separated this single point of failure out
+of my website. If Twitter goes down, the Twitter widget will be
+down, but the rest of my page is going to be fine. In fact, it’s
+going to continue to be fast. If Twitter is slow, it’s not going to
+affect my website. It’s not just about outages. It’s also about
+performant they are. I found some interesting stuff, last night, at
+three in the morning, about how fast and slow these third part
+widgets are responding to the HTTP archive.</p>
+<p id="when_you_do_">When you do 200,000 page views, different pages, you make a lot of
+requests to those widgets. So there’s a lot of data in there, about
+the average and median distribution of the response times for these
+widgets. It’s really important to look at that. It might be great
+that their party widget has a really fast median time. But if their
+95th percentile is over five or 10 seconds, that’s pretty bad. To
+think about five or 10 percent of your users are going to have some
+blocked behavior of rendering, for five or 10 seconds, is not
+really good.</p>
+<p id="so_if_youre_lo">So if you’re loading third party scripts synchronously, you really
+need to think about how to get out of that. More and more snippet
+providers are offering async versions, but if not, you can try to
+figure out a way to do it yourself. Putting it inside an iFrame is
+another idea. That was really cool. How did this happen? How did it
+happen?</p>
+<p id="the_guys_at_twi">The guys at Twitter wrote a great blog post yesterday, I don’t know
+if you read that, about how they’re moving more of their rendering
+server-side, to make it faster. They say they’ve cut the page load
+times by 8- percent. They’re smart guys. They’re doing great work
+over there. But how did this happen? One, snippets are second
+fiddle. They don’t get…My apologies to anyone who played second
+fiddle in high school, it’s just an expression. My guess is that it
+doesn’t get the primary focus of attention.</p>
+<p id="if_we_look_at_t_id2">If we look at the documentation for Anywhere.js, it says, "While
+placing JavaScript files at the bottom of the page is best practice
+for website performance," I wonder who mentioned that, "when
+including the Anywhere.js file, always place the file as close to
+the top of the page as possible." Wow, that should immediately
+raise red flags, for anyone who cares about performance.</p>
+<p id="we_know_that_sc">We know that scripts block everything below them. If you put it at
+the top of the page, it’s going to block everything in the page.
+Now, they rationalize this by saying, "The Anywhere.js file is
+small. It’s only 3K."</p>
+<p id="you_know_what__id1">You know what? If it was 50 bytes, it wouldn’t matter. If it takes
+five seconds to get that response, it’s still going to block my
+page. Whether it’s 50 bytes, 3K, 30K. It’s still going to block my
+page. It’s still a front-end, single point of failure. It doesn’t
+matter that it’s Gzipped and it’s small.</p>
+<p id="they_are_obviou">They are obviously aware of these issues, because they then go on
+to mention that all of the subsequent resources that are used by
+the features of Anywhere are loaded asynchronously. So they won’t
+impact performance. I see this over and over again. I love to visit
+with people who are creating the first version of their third party
+snippet. About half the time they go down this path. "Well, we’ve
+got a lot of code and we’ll load it…"</p>
+<p id="you_know_what__id2">"You know what we’ll do? We’ll create a bootstrap script that’s
+very small and that will dynamically load the other stuff. So if we
+have to change the other bulk of the code, we can do it dynamically
+with that bootstrap script. We’ll just make that one, small
+bootstrap script load synchronously." I don’t really care if I’m
+loading something small or big. I don’t really care whether it’s
+one thing or four things. If your site is down or over-loaded and
+it’s timing out, whether I make one request or four requests, it’s
+going to timeout my page.</p>
+<p id="whether_its_bi">Whether it’s big or small, it’s going to timeout my page. It’s
+going to degrade the user experience. It’s really bad to have any
+third party content that’s loaded synchronously.</p>
+<p id="three_things_ab">Three things about this, about what they just said. My response,
+three things. I know failures happen. Hiccups, outages, they
+happen. You can’t avoid it. Whether I’m doing a normal request,
+getting a 200 response or a conditional GET response, using if-
+modified-since, if-then-match, both of those, if they timeout, are
+going to block the page.</p>
+<p id="it_doesnt_real">It doesn’t really matter whether it’s a 200, a conditional GET
+request or not. Anywhere,js expires after 15 minutes. It’s a pretty
+short cache time. If you really like my recommendations, it’s like
+10 years in the future. Google Page Speed recommends at least a
+month. 15 minutes? That’s really short. If we look, this is kind of
+typical for the most popular third party bootstrap scripts out
+there. Widgets.js from Twitter has a cache time of 30 minutes.</p>
+<p id="alljs_from_fa">All.js, from Facebook, 15 minutes. Google Analytics, two hours. I
+think they’ve actually just raised that, recently. Pretty short.
+This is true of most bootstrap scripts. Why is that? What’s going
+to happen is, every 15 minutes, or every 30 minutes, or every 120
+minutes, the browser is going to make a conditional GET request to
+see if there’s an update. Because it’s making so many requests and
+because a conditional GET request can produce front-end SPOF, just
+as any other request, it means the likelihood of SPOF happening to
+the user is going up.</p>
+<p id="its_going_up_a">It’s going up a lot. If you have something that’s cacheable for a
+month, versus 15 minutes, the number of opportunities for front-end
+SPOF is going up two orders of magnitude. Why do people do this?
+Why do these third parties do this? It’s because they are worried
+that they’re going to make a change to their snippet. They want to
+make sure that the user gets that change, but there’s no way for
+them to modify the URL, to add a query string or anything like
+that, to the snippet on someone else’s page.</p>
+<p id="so_they_give_it">So they give it a short cache time. That means, at least every 30
+minutes, the user is checking to see if there’s an update. If you
+look at the median change time of these scripts, it’s on the order
+of a week, two weeks. They don’t change that frequently. To think
+of someone doing it every 30 minutes, when they’re visiting the
+website, that’s just took much overhead. Especially given the front
+-end SPOF dangers.</p>
+<p id="i_stopped_and_s">I stopped and said, "Is there any way that we could have our cake
+and eat it too? Could we have longer cache times for these
+bootstrap scripts, but also ensure that users get updates, if
+there’s some emergency fix?" I came up with this thing I call self-
+updating bootstrap scripts. There’s a blog post to it, another
+great photo. There’s two parts to this technique. First, the
+assumption is, and this won’t be true for all snippets, but it’s
+true of every snippet I’ve seen, that we’re going to assume that
+the snippet includes some other dynamic request to the snippet
+server.</p>
+<p id="like_a_beacon_f">Like a beacon for logging in or a JSON request, to get back some
+dynamic data, number of likes or something like that. The other
+thing is, we need to add a version number to these snippets and we
+need to pass that in this dynamic request, back to the snippet
+server. The snippet server can now look at that version number and
+the snippet server has awareness of what the current version of the
+snippet is.</p>
+<p id="if_its_version">If it’s version 127 is the current version, the server can just
+return a 204 response or whatever JSON data it normally would. But
+if there is a new version then the response for this dynamic
+request can actually notify the client that there is a new version
+available and trigger an update.</p>
+<p id="thats_the_firs">That’s the first part of the problem. how to update the client that
+there’s a new version available if we’re not using caching.</p>
+<p id="we_can_do_that">We can do that, using this technique, assuming the snippet has some
+other request that is dynamic and not read from cache. Then the
+second part of the problem is overriding that bootstrap script
+that’s in the cache.</p>
+<p id="now_the_assump">Now, the assumption here is we’ve given this bootstrap script a far
+future expiration date. I want to set it for 10 years, but I would
+change it to maybe a week. Going from 15 minutes to a week is going
+to be good improvement on performance and reducing the probability
+of front end SPOF.</p>
+<p id="if_theres_this">If there’s this bootstrap script that is cacheable for another
+week, how can we overwrite that with a new version? That’s the
+tricky part.</p>
+<p id="i_thought_of_so">I thought of some ways to do it. You could dynamically rerequest
+it, do an image request or even a dynamic JavaScript request. But
+if it’s cacheable for another five days, that dynamic request is
+just going to read it from cache.</p>
+<p id="well_so_then_y">Well, so then you could twiddle the URL. You could add a query
+string with the current time or something like that. Yeah, that
+will make the request, but it will write it to the cache with the
+query string. The next time the page is executed and executes the
+snippet with the bare bones URL, it’s still going to read the
+outdated version from the cache, so that’s not going to work.</p>
+<p id="then_you_can_us">Then you can use an XHR. XHR has this set request header, you can
+do a pragma no cache, set some other cache headers, must
+revalidate. You can do that, but I tried that and it doesn’t work
+across some major browsers.</p>
+<p id="i_was_stuck_her">I was stuck here.</p>
+<p id="i_had_been_talk">I had been talking to Stoyan Stefanov. He and I used to work at
+Yahoo together. Now he’s over at Facebook. I was describing this
+problem. I said, "Google has it. Facebook has it. It would be great
+if we could solve this." I emailed him late at night and said,
+"I’ve tried these things. I’m stuck." He said, "Oh."</p>
+<p id="the_next_mornin">The next morning he replied, and he sent this email. "Hey, I tried
+this, and it seems to work. Create an IFrame dynamically that hits
+the snippet server. The response to that IFrame contains the
+bootstrap script in it, and then programmatically reload the
+IFrame. When you reload the IFrame…"</p>
+<p id="a_reload_like_">A reload, like when you click the reload button, will re-request
+everything in the page as a conditional get request.</p>
+<p id="even_though_it_">Even though it has the bootstrap script in the cache for another
+five or seven days, it will re-request it with a conditional If-
+Modified Since header, and the server will say, "Yeah, it has been
+modified since. I’ve got an updated version for you." It will
+download the updated version and overwrite the bootstrap script in
+the cache with the new version.</p>
+<p id="weve_achieved_">We’ve achieved our goal. Let’s look at an example. That was kind of
+complicated. I encourage you to hit this. Look at blog post or hit
+this example and try it out. I’m going to walk through it in
+slides.</p>
+<p id="were_going_to__id1">We’re going to load a bootstrap script. This is just a contrived
+example. I’ve got this bootstrap script called bootstrap.js. It’s
+cacheable for a week. I’m going to load that dynamically in some
+page, and when it loads, it’s going to send a beacon. Let’s pretend
+that this is Google Analytics or some other logging snippet. It’s
+going to send a beacon, and I’m going to make sure in the beacon to
+specify the version number.</p>
+<p id="in_this_case_i">In this case, I have a version number as a timestamp. Now the
+beacon can respond with a 204 if there’s no new version of
+bootstrap.js, but if there is a new version, it can actually return
+JavaScript. When I request this beacon, I’m not requesting it as a
+new image. I’m requesting it as a dynamic script. If it returns a
+204, it’s no biggie. If it does return content, that script is
+actually executed.</p>
+<p id="the_thing_i_lov">The thing I love about this technique is…The worst thing is you
+get a bug in the updating behavior, and that updating behavior code
+is in the cache, you’re screwed. Here, the updating behavior is
+being downloaded from the server as part of this dynamic beacon, so
+we can always control the most critical part of the process.</p>
+<p id="the_beacon_retu">The beacon returns this code that dynamically creates an IFrame
+that hits this update.php with the version number. Update.php can
+have awareness of whether this version number is current or not,
+and if it’s not, then it can return content in the page that
+contains bootstrap.js.</p>
+<p id="lets_look_at_t">Let’s look at that. Here’s the iframe response. It’s got
+bootstrap.js in it. Then it has this code that is going to reload
+the page just once. It will use the hash string as a way to prevent
+infinite reloading. When it reloads the page, the browser will make
+a conditional [?] get request for this script and update it with
+the new version in the cache.</p>
+<p id="weve_solved_th">We’ve solved the problem. We can set long cache times for these
+bootstrap scripts and we can get an update when there is a new
+update available. We don’t have to do this every 15 or 30 minute
+polling, which has generated more load on our servers and a worse
+user experience and a higher likelihood of front end SPOF, we can
+just get the update when it’s available.</p>
+<p id="there_are_some_">There are some caveats. The two main ones I want to mention is, the
+first one is this update cycle is a lot like app cache. I’m going
+to load a page that has a version of bootstrap.js in the cache,
+which turns out as outdated as of this current instant. But I
+loaded the page and it read it from cache and it used that version.</p>
+<p id="then_im_going_">Then I’m going to download this new version, but the user won’t get
+that until they go to the next page view. It’s a lot like app
+cache. I’m going to use the version in cache right now and then if
+there is an update, I’ll update my cache and the user will get that
+on the next time.</p>
+<p id="this_depending">This, depending on your user metrics, your session dynamics, this
+might actually produce more up to date beacons being sent or fewer.
+It’s kind of a plus and minus. It’s not necessarily a good or bad
+thing.</p>
+<p id="the_other_probl">The other problem is, people have already deployed this. I wrote
+this blog post a couple weeks ago. Someone reported an issue where,
+in IE 8, it was opening that iframe in a new tab. I’m still
+investigating that to figure out, I can’t, no one can reproduce it,
+but we had some user reports of that. But overall, it looks like a
+pretty good technique.</p>
+<p id="im_about_done">I’m about done, let me wrap up. Takeaways, if you have any third
+party scripts in your page, make sure you’re not loading them
+synchronously in a blocking way. There are ways to work around
+that. Even if it has to be blocking, you could move it to the
+bottom of the page, if possible.</p>
+<p id="but_try_to_get_">But try to get around that, and try to encourage, and if you try to
+encourage the snippet owners to offer an async version, or if you
+own a snippet, make sure you offer an async version.</p>
+<p id="test_your_site_">Test your site with blackhole.web pagetest.org. Be aware of the
+front end single points of failure that your site has. Something I
+didn’t mention is, it’s likely that if you’re experiencing front
+end SPOF on your site, it’s not being reflected in any of your
+metrics, because most real user metrics fire after the unload
+event.</p>
+<p id="if_a_user_is_lo">If a user is looking at the page for 20 or 120 seconds, they’re not
+going to wait for unload. Or a significant percentage of them
+aren’t going to wait. You won’t necessarily see this bad behavior
+reflected in your RUM metrics.</p>
+<p id="if_you_own_a_bo">If you own a bootstrap script of your own, try to use this self-
+updating pattern and make them so you can add a longer cache time.</p>
+<p id="then_i_just_wan">Then I just want to plug, next month, I’ll be co-chairing with John
+Alspa velocity here in Santa Clara, and we’ll have more stuff about
+performance. And that’s it. Thank you.</p>
+<p id="applause_id1"><span class="emphasis"><em>[applause]</em></span></p>
+</div></section><section class="chapter" data-original-filename="Your-Script-Just-Killed-My-Site.asciidoc" id="_your_script_just_killed_my_site"><div class="titlepage"><div><div><h1 class="title">Chapter 2. Your Script Just Killed My Site</h1></div></div></div>
+<div class="informalfigure" id="informalfigure_id2"><div class="mediaobject"><iframe width="100%" height="300" src="http://www.youtube.com/embed/aHDNmTpqi7w?wmode=opaque"></iframe></div></div>
+<div class="sidebar" id="your_script_just_killed_my_site">
+<div class="titlepage"><div><div><div class="sidebar-title">Your Script Just Killed My Site</div></div></div></div>
+<p id="hiccup_we_all_">Hiccup. We all get them occasionally. So does the web. When an internet or server hiccup causes a script, stylesheet, or font file to timeout, the result can be devastating—the containing web page is likely to appear completely white for a minute or more. What’s worse—your monitors are unlikely to register this outage. Don’t worry—this probably won’t happen to your website. Or will it?</p>
+</div>
+<div class="sect1" data-original-filename="Your-Script-Just-Killed-My-Site.asciidoc" id="_video_transcript_2">
+<div class="titlepage"><div><div><h2 class="title">Video Transcript</h2></div></div></div>
+<p id="steve_souders_"><span class="strong"><strong>Steve Souders:</strong></span> Everyone knows what I’m talking about. I’m talking about third party scripts. It’s the most unreliable thing next to PowerPoint on a Macbook Air at a conference.</p>
+<p id="laughter_id6"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="steve_you_can_"><span class="strong"><strong>Steve:</strong></span> You can find the slides on my website. I’ll put them up on SlideShare in a minute.</p>
+<p id="weve_all_heard">We’ve all heard that expression a chain is only as strong as its weakest link. Now, in computer parlance, the phrase for that is single point of failure. It’s the same idea. If you have a single component in your system, in your integrated system, and that single component fails and brings down the whole system, that’s a single point of failure.</p>
+<p id="in_computer_arc">In computer architecture, we don’t like single points of failure. Most of us think about, I call it SPOF, most of us think about SPOF in terms of hardware architecture.</p>
+<p id="heres_a_canoni">Here’s a canonical hardware diagram from Wikipedia. We see the router, single router in the middle of everything. If we only have one of those, and it has a hardware failure, the site is down. Similarly, the application server, if you only have one application server, it’s a single point of failure. If that goes down, the website is down.</p>
+<p id="were_familiar_">We’re familiar with that concept of single point of failure in terms of hardware. What about software?</p>
+<p id="most_people_who">Most people who are working on production websites on the front end can look at this page and spot several single points of failure. How many see them? All right. No one. I see them. I see them every day.</p>
+<p id="widgets_ads_i">Widgets. Ads. In this page, I know, also, analytics. All of those are a single point of failure for this website, Business Insider. Why is that the case? It has to do with blocking. How about that? Isn’t that great? Very appropriate? No feedback for that? A chuckle or something?</p>
+<p id="audience_member"><span class="strong"><strong>Audience member:</strong></span> Woo.</p>
+<p id="steve_there_we"><span class="strong"><strong>Steve:</strong></span> There we go. It has to do with blocking. Synchronous scripts, we probably, hopefully by now all know this. If you load an external script synchronously, every DOM element below that script tag in the page is blocked from rendering. Browsers have a lot of inconsistent behavior, but they’re all unanimous on this. This is true in every browser.</p>
+<p id="if_any_of_those">If any of those widgets, analytics or ads that I highlighted load a script synchronously, they can block the page, resulting in this behavior. Do we consider this a failure? I didn’t have a piece of hardware failover. I consider this a failure. This is not a user experience that is going to keep our users coming back to our site. It’s going to drive them away. That’s a failure.</p>
+<p id="how_did_this_fa">How did this failure happen? Business Insider, they’ve got several third party snippets in their page. They’ve got Quantcast, but they’re loading this script asynchronously. They’ve got insertBefore in there. They’ve got Google Analytics. Great pattern here. The Google command queue. Terrible name. GAQ. Who thought of that name? GAQ. They’ve got the GAQ queue going, so they’re loading Google Analytics asynchronously.</p>
+<p id="theyve_got_kis">They’ve got KISSmetrics down there, probably not what you thought initially, and they’re loading that asynchronously. Then there’s the Twitter @Anywhere, and they’re loading it synchronously. Script src equals blah. That’s not asynchronous, and that’s a fail.</p>
+<p id="we_know_that_th">We know that this could block the page, maybe, if there’s a failure, but realistically, how often does that happen. I call this front-end SPOF. We can find examples of it. In fact, I can give you an example that will reproduce this failure 100 percent of the time.</p>
+<p id="were_going_to__id2">We’re going to use web pagetest to show it. If you don’t know that, that’s the number one takeaway from this talk. Go to web pagetest.org. We’re going to test Business Insider, and I notice that it’s blocked from rendering for somewhere between 20 and 30 seconds.</p>
+<p id="how_did_that_ha">How did that happen? We can see down below where this failure request occurred, and it’s for the Twitter @Anywhere JavaScript. Why did it fail? Why did it take so long to fail? I did this test from inside China, behind the Great Firewall. Guess what? Twitter.com is blocked.</p>
+<p id="it_doesnt_fail">It doesn’t fail right away. It times out. I’m in IE here, and the timeout is 20 seconds. 20 seconds this script is taking to time out, and during that entire time, Business Insider is blank. Every user behind the Great Firewall in China, and there’s more than a million or two people there…</p>
+<p id="laughter_id7"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="steve_is_gett"><span class="strong"><strong>Steve:</strong></span> …is getting this experience. I don’t know. Maybe Business Insider doesn’t care about the audience in China. This is 100 percent reproducible. I wrote this blog post when Jean and I were there for Velocity China last December.</p>
+<p id="how_did_that_co">How did that come about? Where did the failure occur? Here’s the Twitter @Anywhere developer page, and they’ve got this in their snippet, in their pattern, that they’re propagating to their users. They’re saying, "Load it synchronously. Script src blah." They’re putting it in the head above the body.</p>
+<p id="remember_every">Remember, every DOM element below the script tag is going to be blocked from rendering. The body is below the script tag, so that means everything in the page is going to be blank. If this times out, and in China, it times out. We get this behavior in China, but what about other places? Most of us aren’t traveling to China. When we go there, we don’t spend a lot of time on Business Insider. How about here in the US?</p>
+<p id="luckily_i_run_">Luckily, I run this project called the HTTP Archive. If you haven’t tried it before, that’s the number two takeaway from today. Go to httparchive.org. I analyze 200,000 websites twice a month, and I’ve got this big MySQL database at my disposal. I said, "Let me try to find some examples of this in the most recent run of these 200,000 websites. Let me select the URL of the page and the web pagetest ID." HTTP Archive runs on top of web pagetest.</p>
+<p id="im_going_to_pu">I’m going to pull it from the two main tables we have. Pages, which is the high level information, and requests, which is every individual request for the page. I have to join those. First of all, I’m going to select pages just in the most recent runs, and I’m going to join the two tables. I’m only going to look at sites that are ranked in the top 20,000 worldwide, try to narrow it down and find some more popular sites that experience this problem.</p>
+<p id="that_page_has_t">That page has to contain a script that takes more than 10 seconds to load. The overall page is therefore going to be blocked from rendering for at least 10 seconds. I’m going to group it by page ID. Why did I go through all of this, a keynote with detailed SQL? Because all the code and data is downloadable, you can download this data and do the exact same analysis or other analyses if you want to.</p>
+<p id="i_did_this_anal">I did this analysis, and guess what? I found some examples. Here is…I can’t read the website. This is Beta Brands. Top 20,000 website. It doesn’t render for 10 to 15 seconds. If we look, it’s because this request to a Facebook JavaScript file took 14 seconds to download. It was loaded synchronously. Script src equals blah. Not async, so it blocks the entire page from rendering.</p>
+<p id="heres_another_">Here’s another example. This is BigFollow. It’s interesting because it’s a way of attracting more Twitter followers, but for some reason, they’re loading +1 and Facebook. Both of those took over 20 seconds to download, so it blocked the page from rendering. I don’t know. Maybe +1 and Facebook knew about that, and they’re trying to mess with BigFollow.</p>
+<p id="i_dont_know_wh">I don’t know why it took 20 seconds, but it did. It didn’t happen on every website, but it happened on about 0.1 percent of the websites in the crawl. Here’s another one loading something from Glam Media. They’re the world’s leader in curated social media. They are not the world’s leader on high-performance, third-party snippets.</p>
+<p id="laughter_id8"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="steve_heres_a"><span class="strong"><strong>Steve:</strong></span> Here’s another one that’s got everything in there. Facebook and some Google and some Twitter. For some reason, they all took 5 to 10 seconds to download, blocking the rendering in the page.</p>
+<p id="this_is_a_probl">This is a problem. It does occur. Outages occur. Hiccups in the Internet occur. When that happens with third-party scripts that you’ve put into your page in a synchronous way, your site is going to go blank for your users. This has happened in the past. There are news articles about it. It happens every day, and it’s going to continue to happen.</p>
+<p id="this_has_been_a">This has been a cautionary tale of woe and foreboding, but it doesn’t have to be that way. There’s a sunny side to this picture. Unfortunately, we’re out of time, so…</p>
+<p id="laughter_id9"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="steve_if_you_w"><span class="strong"><strong>Steve:</strong></span> If you want to hear the sunny side, you’ve got to come to my talk at 11:50. Between now and then, I want you to ask yourself a question. What’s your website’s weakest link? I wouldn’t be surprised if it’s on the front end. Thank you.</p>
+<p id="applause_id2"><span class="emphasis"><em>[applause]</em></span></p>
+</div></section>

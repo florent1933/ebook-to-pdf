@@ -1,0 +1,1053 @@
+<section class="chapter" data-original-filename="book.xml" id="working_with_xmlmind_editor"><div class="titlepage"><div><div><h1 class="title">Chapter 1. Working with XMLmind Editor</h1></div></div></div>
+<p id="the_orm_product">The ORM production team favors XMLMind Editor (XXE). Therefore,
+    much of our documentation refers to XXE, and we have developed some nice
+    customizations for it (details in the next section). However, please
+    remember that you are not obliged to write in XXE—you can choose your
+    preferred tool, e.g., oXygen XML Author. See <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch01.html" target="_top">“Picking
+    an XML Editor”</a> in the DocBook guidelines for more info.</p>
+<p id="if_you_decide_t">If you decide to use XXE, please download the professional version
+    3.5.2:</p>
+<table style="border: 0; " class="simplelist"><tr><td><a class="ulink" href="http://www.xmlmind.com/archive/xmleditor/3.5.2/" target="_top">http://www.xmlmind.com/archive/xmleditor/3.5.2/</a></td></tr></table>
+<p id="this_version_is">This version is free and permits commercial use, unlike later
+    versions. You do not need a license for it. The <code class="filename"><a class="ulink" href="http://www.xmlmind.com/archive/xmleditor/3.5.2/xxe-std-3_5_2.zip" target="_top">xxe-std-3_5_2.zip</a></code>
+    file will work on Windows, Linux, and Mac OS X operating systems.</p>
+<div class="note" id="xxe_is_official_id1"><p id="xxe_is_official_id2">XXE is officially supported on Windows XP/Vista/7, on Linux 2.6,
+      and on Mac OS X 10.4 (Tiger), 10.5 (Leopard), 10.6 (Snow Leopard). It is
+      possible to use it on other Java 1.5+ platforms (e.g., Solaris), but
+      without support from XMLmind.</p></div>
+<p id="the_information">The information in this document is geared toward using XXE as part
+    of O’Reilly’s workflow. For more general information about getting started
+    with XXE, a good starting point is the <a class="ulink" href="http://www.xmlmind.com/xmleditor/documentation.shtml" target="_top">official XXE
+    documentation</a>. The XXE site also provides a <a class="ulink" href="http://www.xmlmind.com/xmleditor/_distrib/doc/quickrefcard/quickrefcard-Letter.pdf" target="_top">useful
+    PDF</a>. Additionally, you may want to take a look at the XML.com
+    article <a class="ulink" href="http://www.xml.com/pub/a/2007/06/20/getting-productive-with-xmlmind.html" target="_top">“Getting
+    Productive with XMLMind”</a> by O’Reilly authors James Elliot and Marc
+    Loy. Their article was referenced during the creation of this document and
+    is a good resource for beginners.</p>
+<div class="sect1" data-original-filename="book.xml" id="customizing_xxe">
+<div class="titlepage"><div><div><h2 class="title">Customizing XXE</h2></div></div></div>
+<p id="you_can_install">You can install some customizations that tweak XXE to display your
+      DocBook documents so they more closely resemble the PDF (and eventually
+      printed) form. Download the CSS file customized to O’Reilly fonts,
+      headings, and item numbering here: .</p>
+<table style="border: 0; " class="simplelist">
+<tr><td><a class="ulink" href="https://prod.oreilly.com/external/tools/xxe/customizations/xmlmind_custom.zip" target="_top">https://prod.oreilly.com/external/tools/xxe/customizations/xmlmind_custom.zip</a></td></tr>
+<tr><td>(username: <code class="literal">guest</code>; empty
+        password)</td></tr>
+</table>
+<div class="itemizedlist" id="if_on_mac_or_li_id1"><ul class="itemizedlist">
+<li class="listitem"><p id="if_on_mac_or_li_id2">If on Mac or Linux (and Unix, more generally), unzip to
+          <code class="filename">~/.xxe/addon/</code>.</p></li>
+<li class="listitem"><p id="if_on_windows_x">If on Windows XP, unzip to <code class="filename">C:\Documents and
+          Settings\<em class="replaceable"><code>username</code></em>\Application
+          Data\XMLmind\XMLEditor\addon\</code>.</p></li>
+</ul></div>
+<p id="more_detailed_i">More detailed instructions for installing customizations can be
+      found on the <a class="ulink" href="http://www.xmlmind.com/xmleditor/addons.shtml#manual_install" target="_top">XXE
+      website</a>.</p>
+</div>
+<div class="sect1" data-original-filename="book.xml" id="using_xxe">
+<div class="titlepage"><div><div><h2 class="title">Using XXE</h2></div></div></div>
+<p id="a_program_like_">A program like XXE puts a word-processing face on XML, making it
+      more user-friendly while checking the markup validity. The Element Bar
+      (see <a class="xref" href="ch01.html#elementbar" title="Figure 1-1. The Element Bar shows the XML hierarchy">Figure 1-1</a>), or Node Path, at the top of your
+      screen lets you know where you are in the XML structure at any given
+      point (whether you are in a section, title, paragraph, list, etc.).
+      Clicking on an element in the Element Bar will display a red box around
+      the element in the document, making it easy to identify where it starts
+      and ends.</p>
+<div class="figure-float"><div class="figure" id="elementbar">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/elementbar.png" alt="The Element Bar shows the XML hierarchy"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-1. The Element Bar shows the XML hierarchy</div>
+</div></div>
+<p id="you_can_also_na">You can also navigate the hierarchy by using the movement buttons
+      in the upper-right corner of the screen. The up and down arrows move you
+      through parent and child elements; the left and right arrows move you
+      through sibling elements.</p>
+<p id="to_see_a_view_o">To see a view of the document structure in tree form, go to View→0
+      (no stylesheet). This is shown in <a class="xref" href="ch01.html#viewMenu" title="Figure 1-2. View menu">Figure 1-2</a>. If you’d
+      like to see both the DocBook and the tree view, go to
+      Options→Preferences→Window→Show both tree and styled views, as shown in
+      <a class="xref" href="ch01.html#treeView" title="Figure 1-3. Tree view">Figure 1-3</a>.</p>
+<div class="figure-float"><div class="figure" id="viewMenu">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 324; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/viewMenu.png" alt="View menu"></div></div>
+<div class="figure-title">Figure 1-2. View menu</div>
+</div></div>
+<div class="figure-float"><div class="figure" id="treeView">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/treeView.png" alt="Tree view"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-3. Tree view</div>
+</div></div>
+<div class="note" id="if_youre_wonde_id1"><p id="if_youre_wonde_id2">If you’re wondering why the <code class="filename">book.xml</code> file
+        is not editable in XXE, it’s because the content is being pulled in
+        from the <code class="literal">XInclude</code> references to the chapter files.
+        You must edit the chapter files directly. Fortunately, there is a
+        handy shortcut to open a referenced file from
+        <code class="filename">book.xml</code>: just place your cursor wherever you
+        want to edit, and hit Cmd-Shift-E. The chapter file will open at that
+        location. You can also get there by choosing Edit→Reference→Edit
+        Referenced Document.</p></div>
+<div class="sect2" id="handy_tools">
+<div class="titlepage"><div><div><h3 class="title">Handy Tools</h3></div></div></div>
+<p id="xxe_offers_a_nu">XXE offers a number of tools you can use when working on your
+        DocBook manuscript. Here are a few of our favorites:</p>
+<div class="variablelist" id="element_searchi"><dl class="variablelist">
+<dt><span class="term">Element Search</span></dt>
+<dd>
+<p id="if_you_have_the">If you have the ORM customizations installed, you can hit
+              ESC-G to open the Find Element pop up, or go to Select→Find
+              Element. Type the name of any element into the Element field, as
+              shown in <a class="xref" href="ch01.html#findelement" title="Figure 1-4. Searching for an element">Figure 1-4</a>. Click OK, and XXE will
+              jump to the next instance of that element in your document.
+              There are optional fields for specifying attributes and
+              contained text. If you are familiar with the <a class="ulink" href="http://www.w3schools.com/xpath/" target="_top">XPath</a> language,
+              the Advanced tab lets you enter an XPath to jump to a specific
+              point in a document.</p>
+<div class="warning" id="xxe_will_not_au_id1"><p id="xxe_will_not_au_id2">XXE will not automatically cycle back to the top of the
+                document in a search, so be aware of your location when
+                searching.</p></div>
+<div class="figure-float"><div class="figure" id="findelement">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 270; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/findelement.png" alt="Searching for an element"></div></div>
+<div class="figure-title">Figure 1-4. Searching for an element</div>
+</div></div>
+</dd>
+<dt><span class="term">Search &amp; Replace</span></dt>
+<dd>
+<p id="you_may_find_it">You may find it useful to search for or find/replace
+              certain words or phrases. You can do this by clicking the Search
+              tab in the righthand panel (shown in <a xml:lang="" class="xref" href="ch01.html#search" title="Figure 1-5. Searching a document">Figure 1-5</a>) or hitting Cmd-F. You can choose to ignore
+              case or search by part of a word, and you can also choose to
+              skip over a single instance or every instance of the word within
+              a certain element.</p>
+<div class="figure-float"><div class="figure" id="search">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/search.png" alt="Searching a document"></div></div>
+<div class="figure-title">Figure 1-5. Searching a document</div>
+</div></div>
+</dd>
+<dt><span class="term">Spelling</span></dt>
+<dd>
+<p id="another_tool_th">Another tool that comes in handy is the spell check
+              (illustrated in <a class="xref" href="ch01.html#spell" title="Figure 1-6. Spell check">Figure 1-6</a>), also found in the
+              righthand panel. You can use the “Skip Element” button to skip
+              over instances in certain elements; for example, if you want a
+              word to be capitalized in section headers but not within
+              text.</p>
+<div class="figure-float"><div class="figure" id="spell">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/spell.png" alt="Spell check"></div></div>
+<div class="figure-title">Figure 1-6. Spell check</div>
+</div></div>
+</dd>
+<dt><span class="term">Special Characters</span></dt>
+<dd>
+<p id="if_you_find_tha">If you find that you need to insert a character that isn’t
+              a standard keyboard character, you can choose it from the
+              Characters tab, shown in <a class="xref" href="ch01.html#characterTool" title="Figure 1-7. Character palette">Figure 1-7</a>. The
+              character palette will display the Unicode number for a
+              character if you hover over the symbol. If you can’t find a
+              symbol, but know the Unicode number, you can type in the Unicode
+              number to bring up the appropriate symbol. (See <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#unicode" target="_top">“Unicode
+              for Special Characters”</a> in the DocBook
+              guidelines.)</p>
+<div class="figure-float"><div class="figure" id="characterTool">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 324; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/characterTool.png" alt="Character palette"></div></div>
+<div class="figure-title">Figure 1-7. Character palette</div>
+</div></div>
+</dd>
+<dt><span class="term">Validation</span></dt>
+<dd>
+<p id="xxe_checks_the_">XXE checks the validity of your document as you go (the
+              little square panel in the lower-left corner indicates validity
+              status), and you can also choose the Validity tab to display any
+              errors that might have cropped up in the document.</p>
+<div class="note" id="if_youre_worki_id1"><p id="if_youre_worki_id2">If you’re working on a chapter file, you can ignore
+                errors about broken <code class="literal">xref</code>s (like those shown
+                in <a class="xref" href="ch01.html#validationtab" title="Figure 1-8. Validation tab with broken cross-reference errors">Figure 1-8</a>) if the reference is to
+                something in a different chapter file. These types of errors
+                will disappear once you open the <code class="filename">book.xml</code>
+                file with all chapters included. If they don’t disappear when
+                you open <code class="filename">book.xml</code>, they’re real validity
+                errors and need to be fixed.</p></div>
+<div class="figure-float"><div class="figure" id="validationtab">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 324; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/validation.png" alt="Validation tab with broken cross-reference errors"></div></div>
+<div class="figure-title">Figure 1-8. Validation tab with broken cross-reference
+                errors</div>
+</div></div>
+</dd>
+<dt><span class="term">Note to self…</span></dt>
+<dd>
+<p id="if_you_would_li">If you would like to put in a comment as a reminder to
+              yourself or someone else who will be working with your files,
+              you can choose Edit→Comment→Insert Comment (as shown in <a class="xref" href="ch01.html#insertcomment" title="Figure 1-9. Inserting a comment">Figure 1-9</a>). A comment will be inserted with a
+              yellow background to help it stand out. See <a class="xref" href="ch01.html#commentview" title="Figure 1-10. Comment within a document">Figure 1-10</a> for an example. The stylesheet won’t
+              display the comments in the PDF, so you don’t need to worry
+              about removing them.</p>
+<p id="another_option_">Another option is to enter <code class="literal">remark</code>s in the text. These are
+              displayed in red and italicized in XXE (assuming you have the
+              ORM customizations installed) so as to stand out. Again, they
+              won’t appear in the PDF.</p>
+<div class="figure-float"><div class="figure" id="insertcomment">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/insertcomment.png" alt="Inserting a comment"></div></div>
+<div class="figure-title">Figure 1-9. Inserting a comment</div>
+</div></div>
+</dd>
+</dl></div>
+<div class="figure-float"><div class="figure" id="commentview">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/commentview.png" alt="Comment within a document"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-10. Comment within a document</div>
+</div></div>
+</div>
+<div class="sect2" id="new_sections">
+<div class="titlepage"><div><div><h3 class="title">New Sections</h3></div></div></div>
+<p id="when_adding_sec">When adding sections to your document, use the “Add section”
+        button (see <a class="xref" href="ch01.html#secMen" title="Figure 1-11. Adding a new section">Figure 1-11</a>) to choose a
+        <code class="literal">sect<em class="replaceable"><code>N</code></em></code> element. (In
+        contrast to what’s shown in <a class="xref" href="ch01.html#secMen" title="Figure 1-11. Adding a new section">Figure 1-11</a>, do
+        <span class="emphasis"><em>not</em></span> choose the <code class="literal">section</code>
+        element; <code class="literal">sect</code><em class="replaceable"><code>n</code></em>s should
+        be used as described in <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#organizing_files" target="_top">“Organizing
+        Your Files”</a> in the DocBook guidelines.) If the new section
+        comes above or below where you want it to go in the hierarchy, you can
+        use DocBook→Promote and DocBook→Demote to move it to the appropriate
+        level. The buttons used are shown in <a class="xref" href="ch01.html#promotedemote" title="Figure 1-12. Promoting and demoting sections">Figure 1-12</a>.
+        By promoting sections, you can move a section that is currently a
+        <code class="literal">sect2</code> to a <code class="literal">sect1</code>. Demoting will
+        move a <code class="literal">sect1</code> down to a
+        <code class="literal">sect2</code>.</p>
+<p id="the_move_up_and">The Move Up and Move Down functions can be used to move elements
+        past each other, though they’re mostly used to move sections
+        around.</p>
+<div class="figure-float"><div class="figure" id="secMen">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/secMenu.png" alt="Adding a new section"></div></div>
+<div class="figure-title">Figure 1-11. Adding a new section</div>
+</div></div>
+<div class="figure" id="promotedemote">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/promotedemote.png" alt="Promoting and demoting sections"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-12. Promoting and demoting sections</div>
+</div>
+<p id="when_you_create">When you create new sections, your sections will automatically
+        renumber in XXE according to where the new section has been entered.
+        The same applies to figure and table numbering.</p>
+</div>
+<div class="sect2" id="splitting_and_merging_sections">
+<div class="titlepage"><div><div><h3 class="title">Splitting and Merging Sections</h3></div></div></div>
+<p id="if_you_need_to__id1">If you need to split up a section, select the paragraph that you
+        want to start the new section by selecting the <code class="literal">para</code> in the Element Bar, and then choose
+        DocBook→Promote to create a new section with that paragraph.</p>
+<p id="merging_two_sec">Merging two sections can be a bit more difficult. If you are
+        just moving a few paragraphs into another section, you can cut and
+        paste the text from one section to the other and delete the second
+        section title. If you have a more complex section to move, use the
+        steps below:</p>
+<div class="orderedlist" id="make_sure_the_t_id1"><ol class="orderedlist" type="1">
+<li class="listitem"><p id="make_sure_the_t_id2">Make sure the two sections you want to join are adjacent to
+            each other, with the section heading that you want to keep
+            positioned first.</p></li>
+<li class="listitem"><p id="select_the_firs">Select the first section in the Element Bar.</p></li>
+<li class="listitem"><p id="selectselect_a">Select→Select All Children (display boxes will surround all
+            the individual elements that make up that section).</p></li>
+<li class="listitem"><p id="choose_editcop">Choose Edit→Copy (Cut isn’t an option for a complex
+            section).</p></li>
+<li class="listitem"><p id="select_the_titl">Select the <code class="literal">title</code> element
+            of the second section you want to join.</p></li>
+<li class="listitem"><p id="choose_editpas">Choose Edit→Paste and paste the first section into the
+            <code class="literal">title</code> element of the second
+            section. This will replace the second section’s title with the
+            first section’s title, and insert all the other elements of the
+            first section at the beginning of the second section.</p></li>
+<li class="listitem"><p id="now_go_back_and">Now go back and delete the first section.</p></li>
+</ol></div>
+</div>
+<div class="sect2" id="using_elements_correctly">
+<div class="titlepage"><div><div><h3 class="title">Using Elements Correctly</h3></div></div></div>
+<p id="the_element_bar">The Element Bar at the top of XXE will show you which element
+        you have selected. <span class="emphasis"><em>Block elements</em></span> are
+        paragraph-level elements (e.g., <code class="literal">programlisting</code>). <span class="emphasis"><em>Inline
+        elements</em></span> go within block elements (e.g., <code class="literal">emphasis</code>). The Element Bar’s default
+        description of text in any element is <code class="literal">#text</code>. You can select <code class="literal">#text</code> and convert to an element that better
+        suits your needs, like <code class="literal">literal</code>.</p>
+<p id="for_example_if">For example: if you want to emphasize a word or phrase by
+        putting it in italics, highlight the text and click the Convert button
+        in the Edit panel. In the field that appears, start typing the name of
+        the inline element you wish to apply, in this case <code class="literal">emphasis</code>.</p>
+<p id="the_convert_but">The Convert button is shown in <a class="xref" href="ch01.html#keyCapWrap" title="Figure 1-13. Using the Convert button">Figure 1-13</a>.
+        You can also use the formatting buttons in the toolbar (above the
+        Element Bar) to convert text to emphasis, links, plain text, etc. This
+        is often faster than using the Convert button for these basic
+        elements.</p>
+<div class="figure-float"><div class="figure" id="keyCapWrap">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/keyCapWrap.png" alt="Using the Convert button"></div></div>
+<div class="figure-title">Figure 1-13. Using the Convert button</div>
+</div></div>
+<p id="to_insert_a_bul">To insert a bulleted list, choose “Add itemizedlist” from the
+        toolbar to insert the first bullet point. For a numbered list, choose
+        “Add orderedlist.” For a term-definition list, choose “Add
+        variablelist.”</p>
+<p id="if_you_dont_se">If you don’t see the element you want as an option for your
+        highlighted text, it probably means it isn’t a valid option. Try
+        placing your cursor at a different level in the hierarchy. Only the
+        elements that are valid for your location in the hierarchy according
+        to the DTD are displayed as options. (This is a very useful feature of
+        XXE as well as a potentially aggravating one, if you can’t figure out
+        why the program is not letting you do something.)</p>
+<p id="similarly_if_y">Similarly, if you’ve cut text from one spot and are having
+        trouble pasting it, make sure you are pasting into the same element.
+        XXE won’t let you paste somewhere invalid. Try moving up or down the
+        hierarchy, or use the Paste, Paste Before..., or Paste After...
+        buttons in the toolbar.</p>
+</div>
+<div class="sect2" id="inserting_tables">
+<div class="titlepage"><div><div><h3 class="title">Inserting Tables</h3></div></div></div>
+<p id="there_are_two_o">There are two options for tables: formal and informal. A formal
+        table will have a number and title, making it better suited for
+        cross-referencing. An informal table lacks a number and title and is
+        more suited for a small table interspersed with normal text that won’t
+        need to be referenced later. The easiest way to add a table to a
+        document is to choose the “Add table” button in the toolbar (shown in
+        <a class="xref" href="ch01.html#tableInsert" title="Figure 1-14. Inserting a table">Figure 1-14</a>). The most common type of table you
+        will probably use is <code class="filename">table(head_row)</code>—that is, a
+        formal table with a row at the top serving as the header.</p>
+<div class="figure-float"><div class="figure" id="tableInsert">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 405; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/tableInsert.png" alt="Inserting a table"></div></div>
+<div class="figure-title">Figure 1-14. Inserting a table</div>
+</div></div>
+<p id="if_you_need_to__id2">If you need to add rows or columns to your table (the default is
+        three rows by two columns), go to DocBook→Column→Insert Before, or
+        After or DocBook→Row→Insert Before or After.</p>
+<p id="for_a_formal_ta">For a formal table, make sure you select the <code class="literal">table</code> element and give it an <code class="literal">id</code> attribute, as illustrated in <a class="xref" href="ch01.html#tableID" title="Figure 1-15. Applying an id attribute to a table">Figure 1-15</a>. This is a unique identifier that will be used
+        when you add a cross-reference to it.</p>
+<div class="figure-float"><div class="figure" id="tableID">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 405; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/tableID.png" alt="Applying an id attribute to a table"></div></div>
+<div class="figure-title">Figure 1-15. Applying an id attribute to a table</div>
+</div></div>
+</div>
+<div class="sect2" id="figures_in_xxe">
+<div class="titlepage"><div><div><h3 class="title">Inserting Figures</h3></div></div></div>
+<p id="figures_are_sim">Figures are similar to tables in that they can be either formal
+        or informal, where formal figures have a number and title, and
+        informal figures have neither. For formal figures, make sure to fill
+        in the title. See the <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#figures" target="_top">“Figures”</a>
+        section of the DocBook guidelines for more info.</p>
+<div class="note" id="for_instruction_id1"><p id="for_instruction_id2">For instructions for producing the images for your book,
+          please see the <a class="ulink" href="https://www.oreillynet.com/oreilly/authors/welcome/illustrations.csp" target="_top">O’Reilly
+          Media Illustration Guidelines</a>.</p></div>
+<p id="place_your_imag">Place your image files in the <code class="filename">figs/</code> or <code class="filename">images/</code> directory in your repo. Then, to add
+        an image in the document, click the “Add image” button in the toolbar
+        and choose <code class="literal">figure</code> from the drop-down menu (unless
+        you have a very good reason for choosing one of the other options).
+        This is illustrated in <a class="xref" href="ch01.html#figureInsert" title="Figure 1-16. Inserting a figure">Figure 1-16</a>.</p>
+<div class="figure-float"><div class="figure" id="figureInsert">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 405; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/figureInsert.png" alt="Inserting a figure"></div></div>
+<div class="figure-title">Figure 1-16. Inserting a figure</div>
+</div></div>
+<p id="when_you_select">When you select the <code class="literal">imagedata</code> element within
+        the figure (where it says “Unknown format”), you will notice that in
+        the Attributes panel, <code class="literal">fileref</code> has
+        <span class="bold"><strong>???</strong></span> as a placeholder. Click the
+        folder icon at the top of the Attributes panel, and you can browse for
+        the file location of your image (see <a class="xref" href="ch01.html#figurePickFile2" title="Figure 1-17. Sourcing the figure file">Figure 1-17</a>). You can also manually enter this file
+        path next to <code class="literal">fileref</code> in the menu,
+        or double-click on the <code class="literal">imagedata</code> placeholder to
+        bring up a <code class="literal">fileref</code> window, as shown
+        in <a class="xref" href="ch01.html#fileref" title="Figure 1-18. Picking a file source location">Figure 1-18</a>.</p>
+<div class="figure-float"><div class="figure" id="figurePickFile2">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/figurePickFile2.png" alt="Sourcing the figure file"></div></div>
+<div class="figure-title">Figure 1-17. Sourcing the figure file</div>
+</div></div>
+<div class="figure-float"><div class="figure" id="fileref">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/fileref.png" alt="Picking a file source location"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-18. Picking a file source location</div>
+</div></div>
+<div class="warning" id="make_sure_you_p_id1"><p id="make_sure_you_p_id2">Make sure you press Return after entering the value of an
+          attribute, or it will disappear when you leave the field.</p></div>
+<p id="make_sure_to_gi">Make sure to give each figure an <code class="literal">id</code> so that it can be cross-referenced later.
+        If you notice your figures are rendering too wide for the page in your
+        PDFs, you can scale them down by adding a <code class="literal">width</code>
+        attribute value, as explained in <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#figures" target="_top">“Image
+        sizing”</a> in the DocBook guidelines.</p>
+<div class="note" id="xxe_is_able_to__id1"><p id="xxe_is_able_to__id2">XXE is able to display PNGs but not PDFs—just like web
+          pages.</p></div>
+</div>
+<div class="sect2" id="establishing_crossreferences">
+<div class="titlepage"><div><div><h3 class="title">Establishing Cross-References</h3></div></div></div>
+<p id="you_may_want_to">You may want to use placeholders for cross-references that will
+        be inserted later (like “see Chapter XX”). When you are ready to
+        insert the cross-reference, delete the <span class="emphasis"><em>entire</em></span>
+        placeholder (“Chapter XX”, not just “XX”—the stylesheet will
+        automatically generate the “Chapter” and number in the PDF), click the
+        Insert button, and choose <code class="literal">xref</code> from
+        the list of available elements in the Edit panel. Then go to the
+        Attributes panel and find the <span class="bold"><strong>???</strong></span>
+        placeholder in the <code class="literal">linkend</code> field.
+        Select the question marks and replace them with the ID of the element
+        you want to reference. You can also click the “List of values…” button
+        at the top of the panel (it looks like a yellow ruler), and it will
+        give you a list of available IDs to cross-reference. Figures <a class="xref" href="ch01.html#linkend" title="Figure 1-19. Find the ID">1-19</a> and <a class="xref" href="ch01.html#linkFlow" title="Figure 1-20. Fill in the linkend">1-20</a> illustrate this
+        process (don’t worry about the <code class="literal">xrefstyle</code> attribute,
+        though).</p>
+<div class="warning" id="make_sure_all_f_id1"><p id="make_sure_all_f_id2">Make sure all formal figures, formal tables, and formal
+          examples are explicitly cross-referenced in the text.</p></div>
+<div class="figure" id="linkend">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/linkend.png" alt="Find the ID"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-19. Find the ID</div>
+</div>
+<div class="figure" id="linkFlow">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/linkFlow.png" alt="Fill in the linkend"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-20. Fill in the linkend</div>
+</div>
+</div>
+<div class="sect2" id="inserting_hyperlinks">
+<div class="titlepage"><div><div><h3 class="title">Inserting Hyperlinks</h3></div></div></div>
+<p id="as_explained_in">As explained in <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#inserting_hyperlinks" target="_top">“Hyperlinks”</a>
+        in the DocBook guidelines, there are two types of hyperlinks you can
+        create: those with character data and those without. Here’s the markup
+        for each:</p>
+<div class="variablelist" id="with_character_"><dl class="variablelist">
+<dt><span class="term">With character data</span></dt>
+<dd><p id="ulink_urlhtt_id1"><code class="literal">&lt;ulink
+              url="http://oreilly.com"&gt;O'Reilly&lt;/ulink&gt;</code></p></dd>
+<dt><span class="term">Without character data</span></dt>
+<dd><p id="ulink_urlhtt_id2"><code class="literal">&lt;ulink
+              url="http://www.oreilly.com"/&gt;</code></p></dd>
+</dl></div>
+<p id="to_add_a_hyperl_id1">To add a hyperlink with character data in XXE, type the
+        character data as regular text (e.g., O’Reilly). Select the text,
+        click the “Convert to link” button in the top toolbar, and choose
+        <code class="literal">ulink</code> as shown in <a class="xref" href="ch01.html#ulink" title="Figure 1-21. Convert to ulink">Figure 1-21</a>.<a href="#ftn.id507480" class="footnote"><sup class="footnote" id="id507480">[1]</sup></a>If you have the ORM customizations installed, you will
+        see a red message in the element that says, <span class="emphasis"><em>Empty
+        &lt;ulink&gt;! Needs url&gt;&gt;</em></span>. Go to the Attributes
+        panel and enter the <code class="literal">url</code> there (see
+        <a class="xref" href="ch01.html#urlAttribute" title="Figure 1-22. Entering the URL">Figure 1-22</a>). It must be a full URL starting with
+        <span class="emphasis"><em>http://</em></span>, not <span class="emphasis"><em>www</em></span>. This will
+        produce a clickable link in the PDF and electronic versions of the
+        book.</p>
+<p id="to_add_a_hyperl_id2">To add a hyperlink without character data in XXE, simply insert
+        a <code class="literal">ulink</code> element via the Edit panel, and fill in the
+        <code class="literal">url</code> attribute as described above.</p>
+<div class="figure-float"><div class="figure" id="ulink">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/ulink.png" alt="Convert to ulink"></div></div>
+<div class="figure-title">Figure 1-21. Convert to ulink</div>
+</div></div>
+<div class="figure-float"><div class="figure" id="urlAttribute">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 324; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/urlAttribute.png" alt="Entering the URL"></div></div>
+<div class="figure-title">Figure 1-22. Entering the URL</div>
+</div></div>
+</div>
+<div class="sect2" id="working_with_index_terms">
+<div class="titlepage"><div><div><h3 class="title">Working with Index Terms</h3></div></div></div>
+<p id="the_index_is_au">The index is automatically generated from
+        <code class="literal">indexterm</code>s in the component book files. See
+        the <a class="ulink" href="http://atlas.labs.oreilly.com/books/1234000001578/" target="_top">O'Reilly
+        Indexing Guidelines</a> for more information on indexing
+        in DocBook. The following instructions assume the ORM customizations
+        are installed.</p>
+<div class="warning" id="if_you_are_an_a_id1"><p id="if_you_are_an_a_id2">If you are an author writing a first edition manuscript, you
+          do <span class="emphasis"><em>not</em></span> need to worry about indexterms; indexing
+          will be done by a professional indexer once your book is in
+          production.</p></div>
+<div class="sect3" id="inserting_a_new_index_entry">
+<div class="titlepage"><div><div><h4 class="title">Inserting a new index entry</h4></div></div></div>
+<p id="to_insert_a_new">To insert a new entry:</p>
+<div class="orderedlist" id="place_the_curso_id1"><ol class="orderedlist" type="1">
+<li class="listitem"><p id="place_the_curso_id2">Place the cursor where you want the entry, and hit ESC-i.
+              This will open a pop-up window that lets you type in primary,
+              secondary, and tertiary index terms, separated by
+              slashes.</p></li>
+<li class="listitem"><p id="hit_enter_and_t">Hit Enter and the index entry will appear in gray.</p></li>
+</ol></div>
+<p id="to_insert_a_se">To insert a “See” or “See also” entry:</p>
+<div class="orderedlist" id="after_creating__id1"><ol class="orderedlist" type="1">
+<li class="listitem"><p id="after_creating__id2">After creating the entry as outlined above, select the
+              <code class="literal">primary</code> element (or
+              <code class="literal">secondary</code> or <code class="literal">tertiary</code>,
+              depending on what the “See”/“See also” entry refers to) in the
+              Element Bar to highlight it.</p></li>
+<li class="listitem"><p id="select_insert_">Select “Insert After” (or hit Cmd-j) to insert the
+              <code class="literal">see</code> or <code class="literal">seealso</code>
+              element.</p></li>
+<li class="listitem"><p id="enter_the_appro">Enter the appropriate text.</p></li>
+</ol></div>
+<p id="to_insert_an_in">To insert an index range:</p>
+<div class="orderedlist" id="start_by_insert_id1"><ol class="orderedlist" type="1">
+<li class="listitem"><p id="start_by_insert_id2">Start by inserting a new entry as outlined above.</p></li>
+<li class="listitem"><p id="select_the_inde">Select the <code class="literal">indexterm</code> in the Element Bar
+              to highlight it. You should see a red box surrounding it.</p></li>
+<li class="listitem"><p id="in_the_attribut_id1">In the Attributes panel, go to the “class” row and choose
+              <code class="literal">startofrange</code>.</p></li>
+<li class="listitem"><p id="with_indexterm_">With <code class="literal">indexterm</code> still highlighted, go to
+              the “id” row and enter a name. The name can be anything you
+              want, but we suggest you follow a format. For example, if you’re
+              working in Chapter 2 and the term is <code class="literal">foo</code>,
+              then the <code class="literal">id</code> might be
+              <code class="literal">ch02_foo</code>.</p></li>
+<li class="listitem"><p id="go_to_the_place">Go to the place in the text where the range should end,
+              and insert another <code class="literal">indexterm</code> using ESC-i. But
+              don’t actually enter a term in the pop-up window; just press
+              “OK” to create an empty <code class="literal">indexterm</code>.</p></li>
+<li class="listitem"><p id="select_the_empt">Select the empty <code class="literal">indexterm</code>.</p></li>
+<li class="listitem"><p id="in_the_attribut_id2">In the Attributes panel, go to the “class” row and choose
+              <code class="literal">endofrange</code>.</p></li>
+<li class="listitem">
+<p id="with_the_empty_">With the empty <code class="literal">indexterm</code> still
+              highlighted, go to the “startref” row and enter the exact same
+              <code class="literal">id</code> you used in step 4. If you don’t use the
+              same text in the same case, you will get a validity error that
+              looks something like this:</p>
+<pre class="screen" id="reference_to_no">reference to non-existent ID "ch02_fot" [cvc-id.1]</pre>
+</li>
+</ol></div>
+</div>
+<div class="sect3" id="editing_existing_entries">
+<div class="titlepage"><div><div><h4 class="title">Editing existing entries</h4></div></div></div>
+<p id="to_search_for_i">To search for index entries using XXE:</p>
+<div class="orderedlist" id="open_the_bookx_id1"><ol class="orderedlist" type="1">
+<li class="listitem"><p id="open_the_bookx_id2">Open the <code class="filename">book.xml</code> file.</p></li>
+<li class="listitem"><p id="with_the_cursor">With the cursor at the top of the document, hit ESC-G to
+              open the Find Element pop up.</p></li>
+<li class="listitem"><p id="in_the_element">In the “Element” field, type in
+              <code class="literal">indexterm</code>. If you want to find a particular
+              term, type it in the “Containing Text” field.</p></li>
+<li class="listitem"><p id="hit_enter_to_ju">Hit Enter to jump to the first instance in the book. Hit
+              Cmd-A to jump to the next instance.</p></li>
+<li class="listitem"><p id="once_you_find_t">Once you find the entry you want, you won’t be able to
+              edit it because the data is contained in the chapter file, not
+              the <code class="filename">book.xml</code> file that you’re searching in.
+              So hit Cmd-Shift-E to open the referenced file and jump to the
+              entry.</p></li>
+<li class="listitem"><p id="edit_and_save">Edit and save.</p></li>
+<li class="listitem"><p id="go_back_to_book">Go back to <code class="filename">book.xml</code> to do your next
+              search.</p></li>
+</ol></div>
+</div>
+</div>
+</div>
+<div class="footnotes">
+<br><hr style="width: 100; align: left;">
+<div id="ftn.id507480" class="footnote"><p><a href="#id507480" class="para"><sup class="para">[1] </sup></a>Do <span class="emphasis"><em>not</em></span> choose <code class="literal">link</code>.
+            That is a different element altogether and should not be used
+            unless you have a good reason.</p></div>
+</div></section><section class="chapter" data-original-filename="book.xml" id="working_with_xmlmind_editor"><div class="titlepage"><div><div><h1 class="title">Chapter 1. Working with XMLmind Editor</h1></div></div></div>
+<p id="the_orm_product">The ORM production team favors XMLMind Editor (XXE). Therefore,
+    much of our documentation refers to XXE, and we have developed some nice
+    customizations for it (details in the next section). However, please
+    remember that you are not obliged to write in XXE—you can choose your
+    preferred tool, e.g., oXygen XML Author. See <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch01.html" target="_top">“Picking
+    an XML Editor”</a> in the DocBook guidelines for more info.</p>
+<p id="if_you_decide_t">If you decide to use XXE, please download the professional version
+    3.5.2:</p>
+<table style="border: 0; " class="simplelist"><tr><td><a class="ulink" href="http://www.xmlmind.com/archive/xmleditor/3.5.2/" target="_top">http://www.xmlmind.com/archive/xmleditor/3.5.2/</a></td></tr></table>
+<p id="this_version_is">This version is free and permits commercial use, unlike later
+    versions. You do not need a license for it. The <code class="filename"><a class="ulink" href="http://www.xmlmind.com/archive/xmleditor/3.5.2/xxe-std-3_5_2.zip" target="_top">xxe-std-3_5_2.zip</a></code>
+    file will work on Windows, Linux, and Mac OS X operating systems.</p>
+<div class="note" id="xxe_is_official_id1"><p id="xxe_is_official_id2">XXE is officially supported on Windows XP/Vista/7, on Linux 2.6,
+      and on Mac OS X 10.4 (Tiger), 10.5 (Leopard), 10.6 (Snow Leopard). It is
+      possible to use it on other Java 1.5+ platforms (e.g., Solaris), but
+      without support from XMLmind.</p></div>
+<p id="the_information">The information in this document is geared toward using XXE as part
+    of O’Reilly’s workflow. For more general information about getting started
+    with XXE, a good starting point is the <a class="ulink" href="http://www.xmlmind.com/xmleditor/documentation.shtml" target="_top">official XXE
+    documentation</a>. The XXE site also provides a <a class="ulink" href="http://www.xmlmind.com/xmleditor/_distrib/doc/quickrefcard/quickrefcard-Letter.pdf" target="_top">useful
+    PDF</a>. Additionally, you may want to take a look at the XML.com
+    article <a class="ulink" href="http://www.xml.com/pub/a/2007/06/20/getting-productive-with-xmlmind.html" target="_top">“Getting
+    Productive with XMLMind”</a> by O’Reilly authors James Elliot and Marc
+    Loy. Their article was referenced during the creation of this document and
+    is a good resource for beginners.</p>
+<div class="sect1" data-original-filename="book.xml" id="customizing_xxe">
+<div class="titlepage"><div><div><h2 class="title">Customizing XXE</h2></div></div></div>
+<p id="you_can_install">You can install some customizations that tweak XXE to display your
+      DocBook documents so they more closely resemble the PDF (and eventually
+      printed) form. Download the CSS file customized to O’Reilly fonts,
+      headings, and item numbering here: .</p>
+<table style="border: 0; " class="simplelist">
+<tr><td><a class="ulink" href="https://prod.oreilly.com/external/tools/xxe/customizations/xmlmind_custom.zip" target="_top">https://prod.oreilly.com/external/tools/xxe/customizations/xmlmind_custom.zip</a></td></tr>
+<tr><td>(username: <code class="literal">guest</code>; empty
+        password)</td></tr>
+</table>
+<div class="itemizedlist" id="if_on_mac_or_li_id1"><ul class="itemizedlist">
+<li class="listitem"><p id="if_on_mac_or_li_id2">If on Mac or Linux (and Unix, more generally), unzip to
+          <code class="filename">~/.xxe/addon/</code>.</p></li>
+<li class="listitem"><p id="if_on_windows_x">If on Windows XP, unzip to <code class="filename">C:\Documents and
+          Settings\<em class="replaceable"><code>username</code></em>\Application
+          Data\XMLmind\XMLEditor\addon\</code>.</p></li>
+</ul></div>
+<p id="more_detailed_i">More detailed instructions for installing customizations can be
+      found on the <a class="ulink" href="http://www.xmlmind.com/xmleditor/addons.shtml#manual_install" target="_top">XXE
+      website</a>.</p>
+</div>
+<div class="sect1" data-original-filename="book.xml" id="using_xxe">
+<div class="titlepage"><div><div><h2 class="title">Using XXE</h2></div></div></div>
+<p id="a_program_like_">A program like XXE puts a word-processing face on XML, making it
+      more user-friendly while checking the markup validity. The Element Bar
+      (see <a class="xref" href="ch01.html#elementbar" title="Figure 1-1. The Element Bar shows the XML hierarchy">Figure 1-1</a>), or Node Path, at the top of your
+      screen lets you know where you are in the XML structure at any given
+      point (whether you are in a section, title, paragraph, list, etc.).
+      Clicking on an element in the Element Bar will display a red box around
+      the element in the document, making it easy to identify where it starts
+      and ends.</p>
+<div class="figure-float"><div class="figure" id="elementbar">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/elementbar.png" alt="The Element Bar shows the XML hierarchy"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-1. The Element Bar shows the XML hierarchy</div>
+</div></div>
+<p id="you_can_also_na">You can also navigate the hierarchy by using the movement buttons
+      in the upper-right corner of the screen. The up and down arrows move you
+      through parent and child elements; the left and right arrows move you
+      through sibling elements.</p>
+<p id="to_see_a_view_o">To see a view of the document structure in tree form, go to View→0
+      (no stylesheet). This is shown in <a class="xref" href="ch01.html#viewMenu" title="Figure 1-2. View menu">Figure 1-2</a>. If you’d
+      like to see both the DocBook and the tree view, go to
+      Options→Preferences→Window→Show both tree and styled views, as shown in
+      <a class="xref" href="ch01.html#treeView" title="Figure 1-3. Tree view">Figure 1-3</a>.</p>
+<div class="figure-float"><div class="figure" id="viewMenu">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 324; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/viewMenu.png" alt="View menu"></div></div>
+<div class="figure-title">Figure 1-2. View menu</div>
+</div></div>
+<div class="figure-float"><div class="figure" id="treeView">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/treeView.png" alt="Tree view"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-3. Tree view</div>
+</div></div>
+<div class="note" id="if_youre_wonde_id1"><p id="if_youre_wonde_id2">If you’re wondering why the <code class="filename">book.xml</code> file
+        is not editable in XXE, it’s because the content is being pulled in
+        from the <code class="literal">XInclude</code> references to the chapter files.
+        You must edit the chapter files directly. Fortunately, there is a
+        handy shortcut to open a referenced file from
+        <code class="filename">book.xml</code>: just place your cursor wherever you
+        want to edit, and hit Cmd-Shift-E. The chapter file will open at that
+        location. You can also get there by choosing Edit→Reference→Edit
+        Referenced Document.</p></div>
+<div class="sect2" id="handy_tools">
+<div class="titlepage"><div><div><h3 class="title">Handy Tools</h3></div></div></div>
+<p id="xxe_offers_a_nu">XXE offers a number of tools you can use when working on your
+        DocBook manuscript. Here are a few of our favorites:</p>
+<div class="variablelist" id="element_searchi"><dl class="variablelist">
+<dt><span class="term">Element Search</span></dt>
+<dd>
+<p id="if_you_have_the">If you have the ORM customizations installed, you can hit
+              ESC-G to open the Find Element pop up, or go to Select→Find
+              Element. Type the name of any element into the Element field, as
+              shown in <a class="xref" href="ch01.html#findelement" title="Figure 1-4. Searching for an element">Figure 1-4</a>. Click OK, and XXE will
+              jump to the next instance of that element in your document.
+              There are optional fields for specifying attributes and
+              contained text. If you are familiar with the <a class="ulink" href="http://www.w3schools.com/xpath/" target="_top">XPath</a> language,
+              the Advanced tab lets you enter an XPath to jump to a specific
+              point in a document.</p>
+<div class="warning" id="xxe_will_not_au_id1"><p id="xxe_will_not_au_id2">XXE will not automatically cycle back to the top of the
+                document in a search, so be aware of your location when
+                searching.</p></div>
+<div class="figure-float"><div class="figure" id="findelement">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 270; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/findelement.png" alt="Searching for an element"></div></div>
+<div class="figure-title">Figure 1-4. Searching for an element</div>
+</div></div>
+</dd>
+<dt><span class="term">Search &amp; Replace</span></dt>
+<dd>
+<p id="you_may_find_it">You may find it useful to search for or find/replace
+              certain words or phrases. You can do this by clicking the Search
+              tab in the righthand panel (shown in <a xml:lang="" class="xref" href="ch01.html#search" title="Figure 1-5. Searching a document">Figure 1-5</a>) or hitting Cmd-F. You can choose to ignore
+              case or search by part of a word, and you can also choose to
+              skip over a single instance or every instance of the word within
+              a certain element.</p>
+<div class="figure-float"><div class="figure" id="search">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/search.png" alt="Searching a document"></div></div>
+<div class="figure-title">Figure 1-5. Searching a document</div>
+</div></div>
+</dd>
+<dt><span class="term">Spelling</span></dt>
+<dd>
+<p id="another_tool_th">Another tool that comes in handy is the spell check
+              (illustrated in <a class="xref" href="ch01.html#spell" title="Figure 1-6. Spell check">Figure 1-6</a>), also found in the
+              righthand panel. You can use the “Skip Element” button to skip
+              over instances in certain elements; for example, if you want a
+              word to be capitalized in section headers but not within
+              text.</p>
+<div class="figure-float"><div class="figure" id="spell">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/spell.png" alt="Spell check"></div></div>
+<div class="figure-title">Figure 1-6. Spell check</div>
+</div></div>
+</dd>
+<dt><span class="term">Special Characters</span></dt>
+<dd>
+<p id="if_you_find_tha">If you find that you need to insert a character that isn’t
+              a standard keyboard character, you can choose it from the
+              Characters tab, shown in <a class="xref" href="ch01.html#characterTool" title="Figure 1-7. Character palette">Figure 1-7</a>. The
+              character palette will display the Unicode number for a
+              character if you hover over the symbol. If you can’t find a
+              symbol, but know the Unicode number, you can type in the Unicode
+              number to bring up the appropriate symbol. (See <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#unicode" target="_top">“Unicode
+              for Special Characters”</a> in the DocBook
+              guidelines.)</p>
+<div class="figure-float"><div class="figure" id="characterTool">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 324; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/characterTool.png" alt="Character palette"></div></div>
+<div class="figure-title">Figure 1-7. Character palette</div>
+</div></div>
+</dd>
+<dt><span class="term">Validation</span></dt>
+<dd>
+<p id="xxe_checks_the_">XXE checks the validity of your document as you go (the
+              little square panel in the lower-left corner indicates validity
+              status), and you can also choose the Validity tab to display any
+              errors that might have cropped up in the document.</p>
+<div class="note" id="if_youre_worki_id1"><p id="if_youre_worki_id2">If you’re working on a chapter file, you can ignore
+                errors about broken <code class="literal">xref</code>s (like those shown
+                in <a class="xref" href="ch01.html#validationtab" title="Figure 1-8. Validation tab with broken cross-reference errors">Figure 1-8</a>) if the reference is to
+                something in a different chapter file. These types of errors
+                will disappear once you open the <code class="filename">book.xml</code>
+                file with all chapters included. If they don’t disappear when
+                you open <code class="filename">book.xml</code>, they’re real validity
+                errors and need to be fixed.</p></div>
+<div class="figure-float"><div class="figure" id="validationtab">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 324; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/validation.png" alt="Validation tab with broken cross-reference errors"></div></div>
+<div class="figure-title">Figure 1-8. Validation tab with broken cross-reference
+                errors</div>
+</div></div>
+</dd>
+<dt><span class="term">Note to self…</span></dt>
+<dd>
+<p id="if_you_would_li">If you would like to put in a comment as a reminder to
+              yourself or someone else who will be working with your files,
+              you can choose Edit→Comment→Insert Comment (as shown in <a class="xref" href="ch01.html#insertcomment" title="Figure 1-9. Inserting a comment">Figure 1-9</a>). A comment will be inserted with a
+              yellow background to help it stand out. See <a class="xref" href="ch01.html#commentview" title="Figure 1-10. Comment within a document">Figure 1-10</a> for an example. The stylesheet won’t
+              display the comments in the PDF, so you don’t need to worry
+              about removing them.</p>
+<p id="another_option_">Another option is to enter <code class="literal">remark</code>s in the text. These are
+              displayed in red and italicized in XXE (assuming you have the
+              ORM customizations installed) so as to stand out. Again, they
+              won’t appear in the PDF.</p>
+<div class="figure-float"><div class="figure" id="insertcomment">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/insertcomment.png" alt="Inserting a comment"></div></div>
+<div class="figure-title">Figure 1-9. Inserting a comment</div>
+</div></div>
+</dd>
+</dl></div>
+<div class="figure-float"><div class="figure" id="commentview">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/commentview.png" alt="Comment within a document"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-10. Comment within a document</div>
+</div></div>
+</div>
+<div class="sect2" id="new_sections">
+<div class="titlepage"><div><div><h3 class="title">New Sections</h3></div></div></div>
+<p id="when_adding_sec">When adding sections to your document, use the “Add section”
+        button (see <a class="xref" href="ch01.html#secMen" title="Figure 1-11. Adding a new section">Figure 1-11</a>) to choose a
+        <code class="literal">sect<em class="replaceable"><code>N</code></em></code> element. (In
+        contrast to what’s shown in <a class="xref" href="ch01.html#secMen" title="Figure 1-11. Adding a new section">Figure 1-11</a>, do
+        <span class="emphasis"><em>not</em></span> choose the <code class="literal">section</code>
+        element; <code class="literal">sect</code><em class="replaceable"><code>n</code></em>s should
+        be used as described in <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#organizing_files" target="_top">“Organizing
+        Your Files”</a> in the DocBook guidelines.) If the new section
+        comes above or below where you want it to go in the hierarchy, you can
+        use DocBook→Promote and DocBook→Demote to move it to the appropriate
+        level. The buttons used are shown in <a class="xref" href="ch01.html#promotedemote" title="Figure 1-12. Promoting and demoting sections">Figure 1-12</a>.
+        By promoting sections, you can move a section that is currently a
+        <code class="literal">sect2</code> to a <code class="literal">sect1</code>. Demoting will
+        move a <code class="literal">sect1</code> down to a
+        <code class="literal">sect2</code>.</p>
+<p id="the_move_up_and">The Move Up and Move Down functions can be used to move elements
+        past each other, though they’re mostly used to move sections
+        around.</p>
+<div class="figure-float"><div class="figure" id="secMen">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/secMenu.png" alt="Adding a new section"></div></div>
+<div class="figure-title">Figure 1-11. Adding a new section</div>
+</div></div>
+<div class="figure" id="promotedemote">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/promotedemote.png" alt="Promoting and demoting sections"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-12. Promoting and demoting sections</div>
+</div>
+<p id="when_you_create">When you create new sections, your sections will automatically
+        renumber in XXE according to where the new section has been entered.
+        The same applies to figure and table numbering.</p>
+</div>
+<div class="sect2" id="splitting_and_merging_sections">
+<div class="titlepage"><div><div><h3 class="title">Splitting and Merging Sections</h3></div></div></div>
+<p id="if_you_need_to__id1">If you need to split up a section, select the paragraph that you
+        want to start the new section by selecting the <code class="literal">para</code> in the Element Bar, and then choose
+        DocBook→Promote to create a new section with that paragraph.</p>
+<p id="merging_two_sec">Merging two sections can be a bit more difficult. If you are
+        just moving a few paragraphs into another section, you can cut and
+        paste the text from one section to the other and delete the second
+        section title. If you have a more complex section to move, use the
+        steps below:</p>
+<div class="orderedlist" id="make_sure_the_t_id1"><ol class="orderedlist" type="1">
+<li class="listitem"><p id="make_sure_the_t_id2">Make sure the two sections you want to join are adjacent to
+            each other, with the section heading that you want to keep
+            positioned first.</p></li>
+<li class="listitem"><p id="select_the_firs">Select the first section in the Element Bar.</p></li>
+<li class="listitem"><p id="selectselect_a">Select→Select All Children (display boxes will surround all
+            the individual elements that make up that section).</p></li>
+<li class="listitem"><p id="choose_editcop">Choose Edit→Copy (Cut isn’t an option for a complex
+            section).</p></li>
+<li class="listitem"><p id="select_the_titl">Select the <code class="literal">title</code> element
+            of the second section you want to join.</p></li>
+<li class="listitem"><p id="choose_editpas">Choose Edit→Paste and paste the first section into the
+            <code class="literal">title</code> element of the second
+            section. This will replace the second section’s title with the
+            first section’s title, and insert all the other elements of the
+            first section at the beginning of the second section.</p></li>
+<li class="listitem"><p id="now_go_back_and">Now go back and delete the first section.</p></li>
+</ol></div>
+</div>
+<div class="sect2" id="using_elements_correctly">
+<div class="titlepage"><div><div><h3 class="title">Using Elements Correctly</h3></div></div></div>
+<p id="the_element_bar">The Element Bar at the top of XXE will show you which element
+        you have selected. <span class="emphasis"><em>Block elements</em></span> are
+        paragraph-level elements (e.g., <code class="literal">programlisting</code>). <span class="emphasis"><em>Inline
+        elements</em></span> go within block elements (e.g., <code class="literal">emphasis</code>). The Element Bar’s default
+        description of text in any element is <code class="literal">#text</code>. You can select <code class="literal">#text</code> and convert to an element that better
+        suits your needs, like <code class="literal">literal</code>.</p>
+<p id="for_example_if">For example: if you want to emphasize a word or phrase by
+        putting it in italics, highlight the text and click the Convert button
+        in the Edit panel. In the field that appears, start typing the name of
+        the inline element you wish to apply, in this case <code class="literal">emphasis</code>.</p>
+<p id="the_convert_but">The Convert button is shown in <a class="xref" href="ch01.html#keyCapWrap" title="Figure 1-13. Using the Convert button">Figure 1-13</a>.
+        You can also use the formatting buttons in the toolbar (above the
+        Element Bar) to convert text to emphasis, links, plain text, etc. This
+        is often faster than using the Convert button for these basic
+        elements.</p>
+<div class="figure-float"><div class="figure" id="keyCapWrap">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/keyCapWrap.png" alt="Using the Convert button"></div></div>
+<div class="figure-title">Figure 1-13. Using the Convert button</div>
+</div></div>
+<p id="to_insert_a_bul">To insert a bulleted list, choose “Add itemizedlist” from the
+        toolbar to insert the first bullet point. For a numbered list, choose
+        “Add orderedlist.” For a term-definition list, choose “Add
+        variablelist.”</p>
+<p id="if_you_dont_se">If you don’t see the element you want as an option for your
+        highlighted text, it probably means it isn’t a valid option. Try
+        placing your cursor at a different level in the hierarchy. Only the
+        elements that are valid for your location in the hierarchy according
+        to the DTD are displayed as options. (This is a very useful feature of
+        XXE as well as a potentially aggravating one, if you can’t figure out
+        why the program is not letting you do something.)</p>
+<p id="similarly_if_y">Similarly, if you’ve cut text from one spot and are having
+        trouble pasting it, make sure you are pasting into the same element.
+        XXE won’t let you paste somewhere invalid. Try moving up or down the
+        hierarchy, or use the Paste, Paste Before..., or Paste After...
+        buttons in the toolbar.</p>
+</div>
+<div class="sect2" id="inserting_tables">
+<div class="titlepage"><div><div><h3 class="title">Inserting Tables</h3></div></div></div>
+<p id="there_are_two_o">There are two options for tables: formal and informal. A formal
+        table will have a number and title, making it better suited for
+        cross-referencing. An informal table lacks a number and title and is
+        more suited for a small table interspersed with normal text that won’t
+        need to be referenced later. The easiest way to add a table to a
+        document is to choose the “Add table” button in the toolbar (shown in
+        <a class="xref" href="ch01.html#tableInsert" title="Figure 1-14. Inserting a table">Figure 1-14</a>). The most common type of table you
+        will probably use is <code class="filename">table(head_row)</code>—that is, a
+        formal table with a row at the top serving as the header.</p>
+<div class="figure-float"><div class="figure" id="tableInsert">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 405; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/tableInsert.png" alt="Inserting a table"></div></div>
+<div class="figure-title">Figure 1-14. Inserting a table</div>
+</div></div>
+<p id="if_you_need_to__id2">If you need to add rows or columns to your table (the default is
+        three rows by two columns), go to DocBook→Column→Insert Before, or
+        After or DocBook→Row→Insert Before or After.</p>
+<p id="for_a_formal_ta">For a formal table, make sure you select the <code class="literal">table</code> element and give it an <code class="literal">id</code> attribute, as illustrated in <a class="xref" href="ch01.html#tableID" title="Figure 1-15. Applying an id attribute to a table">Figure 1-15</a>. This is a unique identifier that will be used
+        when you add a cross-reference to it.</p>
+<div class="figure-float"><div class="figure" id="tableID">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 405; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/tableID.png" alt="Applying an id attribute to a table"></div></div>
+<div class="figure-title">Figure 1-15. Applying an id attribute to a table</div>
+</div></div>
+</div>
+<div class="sect2" id="figures_in_xxe">
+<div class="titlepage"><div><div><h3 class="title">Inserting Figures</h3></div></div></div>
+<p id="figures_are_sim">Figures are similar to tables in that they can be either formal
+        or informal, where formal figures have a number and title, and
+        informal figures have neither. For formal figures, make sure to fill
+        in the title. See the <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#figures" target="_top">“Figures”</a>
+        section of the DocBook guidelines for more info.</p>
+<div class="note" id="for_instruction_id1"><p id="for_instruction_id2">For instructions for producing the images for your book,
+          please see the <a class="ulink" href="https://www.oreillynet.com/oreilly/authors/welcome/illustrations.csp" target="_top">O’Reilly
+          Media Illustration Guidelines</a>.</p></div>
+<p id="place_your_imag">Place your image files in the <code class="filename">figs/</code> or <code class="filename">images/</code> directory in your repo. Then, to add
+        an image in the document, click the “Add image” button in the toolbar
+        and choose <code class="literal">figure</code> from the drop-down menu (unless
+        you have a very good reason for choosing one of the other options).
+        This is illustrated in <a class="xref" href="ch01.html#figureInsert" title="Figure 1-16. Inserting a figure">Figure 1-16</a>.</p>
+<div class="figure-float"><div class="figure" id="figureInsert">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 405; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/figureInsert.png" alt="Inserting a figure"></div></div>
+<div class="figure-title">Figure 1-16. Inserting a figure</div>
+</div></div>
+<p id="when_you_select">When you select the <code class="literal">imagedata</code> element within
+        the figure (where it says “Unknown format”), you will notice that in
+        the Attributes panel, <code class="literal">fileref</code> has
+        <span class="bold"><strong>???</strong></span> as a placeholder. Click the
+        folder icon at the top of the Attributes panel, and you can browse for
+        the file location of your image (see <a class="xref" href="ch01.html#figurePickFile2" title="Figure 1-17. Sourcing the figure file">Figure 1-17</a>). You can also manually enter this file
+        path next to <code class="literal">fileref</code> in the menu,
+        or double-click on the <code class="literal">imagedata</code> placeholder to
+        bring up a <code class="literal">fileref</code> window, as shown
+        in <a class="xref" href="ch01.html#fileref" title="Figure 1-18. Picking a file source location">Figure 1-18</a>.</p>
+<div class="figure-float"><div class="figure" id="figurePickFile2">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/figurePickFile2.png" alt="Sourcing the figure file"></div></div>
+<div class="figure-title">Figure 1-17. Sourcing the figure file</div>
+</div></div>
+<div class="figure-float"><div class="figure" id="fileref">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/fileref.png" alt="Picking a file source location"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-18. Picking a file source location</div>
+</div></div>
+<div class="warning" id="make_sure_you_p_id1"><p id="make_sure_you_p_id2">Make sure you press Return after entering the value of an
+          attribute, or it will disappear when you leave the field.</p></div>
+<p id="make_sure_to_gi">Make sure to give each figure an <code class="literal">id</code> so that it can be cross-referenced later.
+        If you notice your figures are rendering too wide for the page in your
+        PDFs, you can scale them down by adding a <code class="literal">width</code>
+        attribute value, as explained in <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#figures" target="_top">“Image
+        sizing”</a> in the DocBook guidelines.</p>
+<div class="note" id="xxe_is_able_to__id1"><p id="xxe_is_able_to__id2">XXE is able to display PNGs but not PDFs—just like web
+          pages.</p></div>
+</div>
+<div class="sect2" id="establishing_crossreferences">
+<div class="titlepage"><div><div><h3 class="title">Establishing Cross-References</h3></div></div></div>
+<p id="you_may_want_to">You may want to use placeholders for cross-references that will
+        be inserted later (like “see Chapter XX”). When you are ready to
+        insert the cross-reference, delete the <span class="emphasis"><em>entire</em></span>
+        placeholder (“Chapter XX”, not just “XX”—the stylesheet will
+        automatically generate the “Chapter” and number in the PDF), click the
+        Insert button, and choose <code class="literal">xref</code> from
+        the list of available elements in the Edit panel. Then go to the
+        Attributes panel and find the <span class="bold"><strong>???</strong></span>
+        placeholder in the <code class="literal">linkend</code> field.
+        Select the question marks and replace them with the ID of the element
+        you want to reference. You can also click the “List of values…” button
+        at the top of the panel (it looks like a yellow ruler), and it will
+        give you a list of available IDs to cross-reference. Figures <a class="xref" href="ch01.html#linkend" title="Figure 1-19. Find the ID">1-19</a> and <a class="xref" href="ch01.html#linkFlow" title="Figure 1-20. Fill in the linkend">1-20</a> illustrate this
+        process (don’t worry about the <code class="literal">xrefstyle</code> attribute,
+        though).</p>
+<div class="warning" id="make_sure_all_f_id1"><p id="make_sure_all_f_id2">Make sure all formal figures, formal tables, and formal
+          examples are explicitly cross-referenced in the text.</p></div>
+<div class="figure" id="linkend">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/linkend.png" alt="Find the ID"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-19. Find the ID</div>
+</div>
+<div class="figure" id="linkFlow">
+<div class="figure-contents"><div class="mediaobject"><table style="border: 0; width: 432; cellpadding: 0; cellspacing: 0;"><tr><td><img style="width: 432; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/linkFlow.png" alt="Fill in the linkend"></td></tr></table></div></div>
+<div class="figure-title">Figure 1-20. Fill in the linkend</div>
+</div>
+</div>
+<div class="sect2" id="inserting_hyperlinks">
+<div class="titlepage"><div><div><h3 class="title">Inserting Hyperlinks</h3></div></div></div>
+<p id="as_explained_in">As explained in <a class="ulink" href="http://chimera.labs.oreilly.com/books/1234000000058/ch02.html#inserting_hyperlinks" target="_top">“Hyperlinks”</a>
+        in the DocBook guidelines, there are two types of hyperlinks you can
+        create: those with character data and those without. Here’s the markup
+        for each:</p>
+<div class="variablelist" id="with_character_"><dl class="variablelist">
+<dt><span class="term">With character data</span></dt>
+<dd><p id="ulink_urlhtt_id1"><code class="literal">&lt;ulink
+              url="http://oreilly.com"&gt;O'Reilly&lt;/ulink&gt;</code></p></dd>
+<dt><span class="term">Without character data</span></dt>
+<dd><p id="ulink_urlhtt_id2"><code class="literal">&lt;ulink
+              url="http://www.oreilly.com"/&gt;</code></p></dd>
+</dl></div>
+<p id="to_add_a_hyperl_id1">To add a hyperlink with character data in XXE, type the
+        character data as regular text (e.g., O’Reilly). Select the text,
+        click the “Convert to link” button in the top toolbar, and choose
+        <code class="literal">ulink</code> as shown in <a class="xref" href="ch01.html#ulink" title="Figure 1-21. Convert to ulink">Figure 1-21</a>.<a href="#ftn.id507480" class="footnote"><sup class="footnote" id="id507480">[1]</sup></a>If you have the ORM customizations installed, you will
+        see a red message in the element that says, <span class="emphasis"><em>Empty
+        &lt;ulink&gt;! Needs url&gt;&gt;</em></span>. Go to the Attributes
+        panel and enter the <code class="literal">url</code> there (see
+        <a class="xref" href="ch01.html#urlAttribute" title="Figure 1-22. Entering the URL">Figure 1-22</a>). It must be a full URL starting with
+        <span class="emphasis"><em>http://</em></span>, not <span class="emphasis"><em>www</em></span>. This will
+        produce a clickable link in the PDF and electronic versions of the
+        book.</p>
+<p id="to_add_a_hyperl_id2">To add a hyperlink without character data in XXE, simply insert
+        a <code class="literal">ulink</code> element via the Edit panel, and fill in the
+        <code class="literal">url</code> attribute as described above.</p>
+<div class="figure-float"><div class="figure" id="ulink">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 378; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/ulink.png" alt="Convert to ulink"></div></div>
+<div class="figure-title">Figure 1-21. Convert to ulink</div>
+</div></div>
+<div class="figure-float"><div class="figure" id="urlAttribute">
+<div class="figure-contents"><div class="mediaobject"><img style="width: 324; " src="http://orm-chimera-prod.s3.amazonaws.com/1234000001577/images/urlAttribute.png" alt="Entering the URL"></div></div>
+<div class="figure-title">Figure 1-22. Entering the URL</div>
+</div></div>
+</div>
+<div class="sect2" id="working_with_index_terms">
+<div class="titlepage"><div><div><h3 class="title">Working with Index Terms</h3></div></div></div>
+<p id="the_index_is_au">The index is automatically generated from
+        <code class="literal">indexterm</code>s in the component book files. See
+        the <a class="ulink" href="http://atlas.labs.oreilly.com/books/1234000001578/" target="_top">O'Reilly
+        Indexing Guidelines</a> for more information on indexing
+        in DocBook. The following instructions assume the ORM customizations
+        are installed.</p>
+<div class="warning" id="if_you_are_an_a_id1"><p id="if_you_are_an_a_id2">If you are an author writing a first edition manuscript, you
+          do <span class="emphasis"><em>not</em></span> need to worry about indexterms; indexing
+          will be done by a professional indexer once your book is in
+          production.</p></div>
+<div class="sect3" id="inserting_a_new_index_entry">
+<div class="titlepage"><div><div><h4 class="title">Inserting a new index entry</h4></div></div></div>
+<p id="to_insert_a_new">To insert a new entry:</p>
+<div class="orderedlist" id="place_the_curso_id1"><ol class="orderedlist" type="1">
+<li class="listitem"><p id="place_the_curso_id2">Place the cursor where you want the entry, and hit ESC-i.
+              This will open a pop-up window that lets you type in primary,
+              secondary, and tertiary index terms, separated by
+              slashes.</p></li>
+<li class="listitem"><p id="hit_enter_and_t">Hit Enter and the index entry will appear in gray.</p></li>
+</ol></div>
+<p id="to_insert_a_se">To insert a “See” or “See also” entry:</p>
+<div class="orderedlist" id="after_creating__id1"><ol class="orderedlist" type="1">
+<li class="listitem"><p id="after_creating__id2">After creating the entry as outlined above, select the
+              <code class="literal">primary</code> element (or
+              <code class="literal">secondary</code> or <code class="literal">tertiary</code>,
+              depending on what the “See”/“See also” entry refers to) in the
+              Element Bar to highlight it.</p></li>
+<li class="listitem"><p id="select_insert_">Select “Insert After” (or hit Cmd-j) to insert the
+              <code class="literal">see</code> or <code class="literal">seealso</code>
+              element.</p></li>
+<li class="listitem"><p id="enter_the_appro">Enter the appropriate text.</p></li>
+</ol></div>
+<p id="to_insert_an_in">To insert an index range:</p>
+<div class="orderedlist" id="start_by_insert_id1"><ol class="orderedlist" type="1">
+<li class="listitem"><p id="start_by_insert_id2">Start by inserting a new entry as outlined above.</p></li>
+<li class="listitem"><p id="select_the_inde">Select the <code class="literal">indexterm</code> in the Element Bar
+              to highlight it. You should see a red box surrounding it.</p></li>
+<li class="listitem"><p id="in_the_attribut_id1">In the Attributes panel, go to the “class” row and choose
+              <code class="literal">startofrange</code>.</p></li>
+<li class="listitem"><p id="with_indexterm_">With <code class="literal">indexterm</code> still highlighted, go to
+              the “id” row and enter a name. The name can be anything you
+              want, but we suggest you follow a format. For example, if you’re
+              working in Chapter 2 and the term is <code class="literal">foo</code>,
+              then the <code class="literal">id</code> might be
+              <code class="literal">ch02_foo</code>.</p></li>
+<li class="listitem"><p id="go_to_the_place">Go to the place in the text where the range should end,
+              and insert another <code class="literal">indexterm</code> using ESC-i. But
+              don’t actually enter a term in the pop-up window; just press
+              “OK” to create an empty <code class="literal">indexterm</code>.</p></li>
+<li class="listitem"><p id="select_the_empt">Select the empty <code class="literal">indexterm</code>.</p></li>
+<li class="listitem"><p id="in_the_attribut_id2">In the Attributes panel, go to the “class” row and choose
+              <code class="literal">endofrange</code>.</p></li>
+<li class="listitem">
+<p id="with_the_empty_">With the empty <code class="literal">indexterm</code> still
+              highlighted, go to the “startref” row and enter the exact same
+              <code class="literal">id</code> you used in step 4. If you don’t use the
+              same text in the same case, you will get a validity error that
+              looks something like this:</p>
+<pre class="screen" id="reference_to_no">reference to non-existent ID "ch02_fot" [cvc-id.1]</pre>
+</li>
+</ol></div>
+</div>
+<div class="sect3" id="editing_existing_entries">
+<div class="titlepage"><div><div><h4 class="title">Editing existing entries</h4></div></div></div>
+<p id="to_search_for_i">To search for index entries using XXE:</p>
+<div class="orderedlist" id="open_the_bookx_id1"><ol class="orderedlist" type="1">
+<li class="listitem"><p id="open_the_bookx_id2">Open the <code class="filename">book.xml</code> file.</p></li>
+<li class="listitem"><p id="with_the_cursor">With the cursor at the top of the document, hit ESC-G to
+              open the Find Element pop up.</p></li>
+<li class="listitem"><p id="in_the_element">In the “Element” field, type in
+              <code class="literal">indexterm</code>. If you want to find a particular
+              term, type it in the “Containing Text” field.</p></li>
+<li class="listitem"><p id="hit_enter_to_ju">Hit Enter to jump to the first instance in the book. Hit
+              Cmd-A to jump to the next instance.</p></li>
+<li class="listitem"><p id="once_you_find_t">Once you find the entry you want, you won’t be able to
+              edit it because the data is contained in the chapter file, not
+              the <code class="filename">book.xml</code> file that you’re searching in.
+              So hit Cmd-Shift-E to open the referenced file and jump to the
+              entry.</p></li>
+<li class="listitem"><p id="edit_and_save">Edit and save.</p></li>
+<li class="listitem"><p id="go_back_to_book">Go back to <code class="filename">book.xml</code> to do your next
+              search.</p></li>
+</ol></div>
+</div>
+</div>
+</div>
+<div class="footnotes">
+<br><hr style="width: 100; align: left;">
+<div id="ftn.id507480" class="footnote"><p><a href="#id507480" class="para"><sup class="para">[1] </sup></a>Do <span class="emphasis"><em>not</em></span> choose <code class="literal">link</code>.
+            That is a different element altogether and should not be used
+            unless you have a good reason.</p></div>
+</div></section>

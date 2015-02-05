@@ -1,0 +1,865 @@
+<section class="chapter" data-original-filename="Interview.asciidoc" id="interview"><div class="titlepage"><div><div><h1 class="title">Chapter 3. Interview with Lea Verou, Fluent 2012</h1></div></div></div>
+<div class="informalfigure" id="informalfigure_id3"><div class="mediaobject"><iframe width="100%" height="300" src="http://www.youtube.com/embed/6E_VXIgPanE?wmode=opaque"></iframe></div></div>
+<div class="sidebar" id="lea_verou_interviewed_at_fluent_">
+<div class="titlepage"><div><div><div class="sidebar-title">Lea Verou Interviewed at Fluent 2012</div></div></div></div>
+<p id="lea_talks_to_ma">Lea talks to Mac Slocum about the importance of having regex in your programming tool belt.</p>
+</div>
+<div class="sect1" data-original-filename="Interview.asciidoc" id="_video_transcript_3">
+<div class="titlepage"><div><div><h2 class="title">Video Transcript</h2></div></div></div>
+<p id="mac_slocum_"><span class="strong"><strong>Mac Slocum:</strong></span> [0:01] Why are regular expressions important?</p>
+<p id="lea_verou_"><span class="strong"><strong>Lea Verou:</strong></span> [0:03] Regular expressions can greatly simplify lots of common code
+sequences. In many cases, you can condense 100 lines of code into
+single-line regular expressions.</p>
+<p id="regular__id3">[0:14] Regular expressions is just a language that describes a set
+of strings. Every time you need to test if a string matches a
+certain pattern, for example, is something an email address? Or if
+you want to extract part of a string, like extracting, for example,
+all the words in a text. Or counting them, or validating data.</p>
+<p id="regular__id4">[0:35] Regular expressions can greatly help in all of these cases,
+and they’re usually much more performant than having 100 lines of
+string manipulation functions.</p>
+<p id="slocum___id1"><span class="strong"><strong>Slocum:</strong></span> [0:43] Is it one of those skills that falls through the cracks? One
+of those things that it’s worth doubling back to make sure that
+you’ve got that in your tool set?</p>
+<p id="verou__i_id1"><span class="strong"><strong>Verou:</strong></span> [0:51] I think many developers don’t focus enough on regular
+expressions, because they’re considered one of the least exciting
+aspects of programming. They tend to get excited about new APIs,
+cool stuff, new frameworks, and libraries. That’s something that’s
+doesn’t have lots of…It’s not considered cool.</p>
+<p id="slocum___id2"><span class="strong"><strong>Slocum:</strong></span> [1:12] Switching gears a little bit, moving over to CSS a bit, do
+you think we’ll get to a point where we don’t have proprietary CSS
+elements anymore, or is that just wishful thinking?</p>
+<p id="verou__t_id1"><span class="strong"><strong>Verou:</strong></span> [1:24] That depends on how we treat the ones we have today. If we
+keep developing for proprietary features of certain browsers, the
+same way people develop for WebKit-only stuff today, then yes,
+companies will still do it, because it helps them advance in the
+browser market.</p>
+<p id="that_bas">[1:41] That basically hurts web developers. Remember what happened
+when we got a very cool browser, with many cool, shiny, proprietary
+features? Web developers got really excited about that browser and
+its proprietary features, they started using them, and then we got
+locked in that browser, and we got a decade of IE6. IE6 was a great
+browser when it was released.</p>
+<p id="slocum___id3"><span class="strong"><strong>Slocum:</strong></span> [2:05] 10 years later, not so much. Last question for you. What is
+your process for experimenting with a new feature? What’s the
+criteria that it has to meet, for you?</p>
+<p id="verou__i_id2"><span class="strong"><strong>Verou:</strong></span> [2:16] I guess the criteria is that I usually want the feature to
+have at least one implementation. It’s really hard to experiment
+with something that’s just a spec, and doesn’t have any
+implementations. Quite often, there are specs that never get
+implemented. There’s no interest from browsers, so they never
+implement them, even though they exist for years.
+For example, there used to be a spec that defined how we can have
+multiple pseudo-elements. Multiple :before pseudo-elements
+or :after pseudo-elements, or multiple ::outside pseudo-elements.
+It was really exciting. Browsers didn’t care, they didn’t implement
+it. We had to actually drop the features in that spec, because when
+there is no interest the specs changes.</p>
+<p id="slocum___id4"><span class="strong"><strong>Slocum:</strong></span> [3:03] Thanks so much for being with us. Appreciate you taking the
+time.</p>
+<p id="verou__t_id2"><span class="strong"><strong>Verou:</strong></span> [3:06] Thank you.</p>
+</div></section><section class="chapter" data-original-filename="Turning-to-the-Client-Side.asciidoc" id="client_side"><div class="titlepage"><div><div><h1 class="title">Chapter 1. Turning to the Client Side</h1></div></div></div>
+<div class="informalfigure" id="informalfigure_id1"><div class="mediaobject"><iframe width="100%" height="300" src="http://www.youtube.com/embed/0T57Ivn5-Pw?wmode=opaque"></iframe></div></div>
+<div class="sidebar" id="keynote_presentation_from_fluent_">
+<div class="titlepage"><div><div><div class="sidebar-title">Keynote Presentation from Fluent, 2012</div></div></div></div>
+<p id="lea_verou_web_">Lea Verou, Web designer, developer, and independent web evangelist.</p>
+</div>
+<div class="sect1" data-original-filename="Turning-to-the-Client-Side.asciidoc" id="_video_transcript">
+<div class="titlepage"><div><div><h2 class="title">Video Transcript</h2></div></div></div>
+<p id="hello_ev">[0:02] Hello everyone. It’s great to be here today. As you’ve probably noticed, my name is Lea Verou. If my name sounds vaguely familiar, it’s probably due to one of my open source tools. All of
+them have something in common. They try to use as little of the
+server as possible.</p>
+<p id="everythi">[0:20] Everything that can be done on the client, is done on the
+client. That’s often referred to as thin server architecture.
+Basically the server is used to store files and data and keep both
+of them safe. The client is used for pretty much everything else.</p>
+<p id="dabblet_">[0:37] Dabblet is a prime example of this, and it’s what inspired
+this presentation. It’s a social web application for testing and
+sharing snippets of CSS. It uses way more client and way less
+server than most people imagine. The biggest reason I’m a proponent
+of this approach is its basically infinite scalability.</p>
+<p id="every_line_of_c">Every line of code you write on the server might end up being
+executed hundreds or even thousands of times if your application
+becomes successful or even if you’re lucky enough to get
+Slashdotted. Everything you write on the client
+always deals with one machine. It might not be the best machine you
+can imagine. It might be an old computer that’s kind of slow, but
+it’s still probably better than a slice of your server.</p>
+<p id="it_also_">[1:26] It also helps reduce server costs quite a lot, because
+basically the server is just used to serve files. So server load
+doesn’t increase, which is the prime reason of moving to a
+dedicated server and then to more servers. Especially for me, since
+most of them are side projects, my budget for them is quite
+limited. I guess that’s a problem that many start-ups face as well.</p>
+<p id="every_ti">[1:49] Every time I have this discussion with someone or a group of
+people, some know-it-all always points out something like, "But
+servers these days are cheap, right?" Not really. Bandwidth is
+cheap. Storage is cheap. CPU cycles are very rarely cheap, and
+database administrators and performance engineers and all these
+people that help big companies that have tons of servers — these
+are never cheap. You can’t usually afford these on a side project
+or on a start-up.</p>
+<p id="another__id1">[2:23] Another added benefit of this approach is that it helps a
+much more responsive UI, a much more snappy user experience. Less
+round trips to the server means less page reloads and less dreaded
+loading spinners like the ones I have in the background to give you
+nightmares.</p>
+<p id="however_id1">[2:41] However, thin server architecture wasn’t enough. I wanted to
+get rid of the data component on the server as well and move all
+the things to the client. Is that even possible? My first naïve
+thought was to use local storage or IndexedDB to store the data on
+the client, which works well for some applications.</p>
+<p id="for_exam">[3:04] For example in cubic-bezier.com it uses local storage to
+store the curves in your library and you can import and export them
+as JSON. If I worked a bit more on that, you could probably
+download a JSON file, which would be easier. But still, using files
+for sharing is so '90s.</p>
+<p id="people_w">[3:25] People want to use URLs for sharing and that doesn’t really
+help. Another thought was using URIs as storage. This is helpful in
+cases where your data is tiny. For example, in css.coloratum.com,
+the data is just css color. Or in cubic-bezier.com, the data you
+usually want to share is not your entire library.</p>
+<p id="its_jus">[3:47] It’s just a cubic Bezier curve, so you can use that in the
+URL, and that kind of doubles as a feature as well, because you can
+predict what the URL is going to be just by knowing your data. For
+example, you want to share a color with someone and show them how
+that color looks on their screen, you can figure out the URL
+without even using the application.</p>
+<p id="tweetplu">[4:08] TweetPlus is an application for posting long tweets. It’s
+kind of like TweetLonger, but it’s entirely client-side. It has
+basically no server-side component. The server is just used for
+serving files. The way it works is by encoding the entire log suite
+in the URL, which might sound unwieldy and counterintuitive. Who
+wants to deal with huge URLs like this?</p>
+<p id="it_makes">[4:32] It makes more sense if you realize that when you post a URL
+on Twitter, it wraps it on its own URL shortener. Basically, the
+entire, huge three-plus URL that might be up to 2,000 characters
+becomes a small, 20-character t.co URL, which you can add in every
+tweet, in any tweet you want.</p>
+<p id="basicall">[4:55] Basically, it’s using Twitter to store your long tweet,
+which creates a single point of failure. If Twitter goes down, you
+lose your data, but you don’t depend on an external service. If
+TweetLonger, at some point, decides that their business model is
+not really good and they decide to close down, poof goes your long
+tweets.</p>
+<p id="i_think_">[5:16] I think to keep in mind when using this approach is A, if
+history API’s available, use history API because setting the hash
+might cause page jumps. Also, most importantly, don’t fire it too
+frequently.</p>
+<p id="good_can">[5:30] Good candidates for this are events like on Blur or an
+unload, on mouseout. Bad candidates for this is events that fire
+all the time, like on mousemove or on keyop or an input because
+that means that if someone uses your application for five minutes,
+you’ve completely littered the browser history. The browser history
+basically consists now of points of states, intermediate states on
+your application that they don’t really need to refer to.</p>
+<p id="however_id2">[6:00] However, when I create a Dabblet, it was clear that that
+approach was not going to be good, neither of these approaches. I
+couldn’t use local storage or index DB and store the snippets on
+the client because then people wouldn’t then be able to share them
+easily. Obviously, I can use huge URLs that contain the entire CSS
+and HTML code. I needed to come up with something else.</p>
+<p id="at_some_">[6:25] At some point, I had a lightbulb moment. I decided to use
+the GitHub gist API. I know you’re probably thinking, but come on,
+JSONp is not really the best way to deal with this, so you need to
+use the server as a proxy and that kind of defeats the purpose.</p>
+<p id="actually">[6:44] Actually, these days, you can use third-party APIs from the
+client directly with no server interaction by using a technology
+called Cross-Origin Resource Sharing or CORS. This basically means
+that for APIs that allow it, you can use XMLHTTPRequest normally,
+just like you would otherwise.</p>
+<p id="you_need">[7:06] You need to work around limitation 98 and 9. It doesn’t
+support CORS in the standard form. It supports it in a different
+object, X-Domain Request. That’s just a small difference. It
+basically operates in exactly the same way.</p>
+<p id="cors_is_support">CORS is supported by pretty much every browser. The main exception
+is Opera, but it will support it in Opera 12. You can already test
+it in the nightly builds.</p>
+<p id="the_bigg">[7:33] The biggest caveat, of course, is that APIs need to allow it
+explicitly by using an Access-Control-Allow-Origin header to define
+with domains can access it. Some of them are more reluctant than
+others.</p>
+<p id="some_nic">[7:46] Some nice APIs that allow it are these. Many Google APIs,
+GitHub API, which is great, especially for my case. Open Exchange
+Rates is an API that allows you to get prices between different
+currencies. Ziptastic allows you to get city and state information
+from zip codes. GetFavicon allows you to get the Favicon and many
+others.</p>
+<p id="the_most">[8:08] The most notable exceptions are Twitter. Come on. I know
+there are many of you here…</p>
+<p id="laughter"><span class="emphasis"><em>[laughter]</em></span></p>
+<p id="and_fli">[8:16] …and Flickr. There’s actually a feature request on Twitter
+for a long time. They’re kind of not saying exactly now, but it’s
+going to happen at some point. We don’t know when that point is
+going to be. I’m really looking forward to that.</p>
+<p id="its_act">[8:29] It’s actually up to you as well. If you request CORS support
+from Twitter, they will have to support it eventually if lots of
+you request it.</p>
+<p id="i_dont_think_i">I don’t think I really need to explain the benefits that CORS has
+over JSONP. It’s way more powerful. It basically allows you to do
+all the range of different HTTP requests. JSONP is just a hack that
+basically only allows GET requests. With CORS, you can do any kind
+of request, POST request, PUT request. You can send different HTTP
+headers, read HTTP headers. It has much better error handling, basically anything you can do with
+XMLHTTPRequest.</p>
+<p id="an_inter">[9:13] An interesting fact that I discovered when I launched
+Dabblet was that what for me was something that I did to avoid
+having a service side component that I had to pay for. People
+actually loved that. They thought it was a feature. They thought I
+did it because GitHub integration is something that people would
+enjoy.</p>
+<p id="it_turns">[9:36] It turns out that people trust third party APIs more than a
+random newcomer application that needs to build user trust first,
+because they know that if at some point I decide to take Dabblet
+down they won’t lose their data. It will still be at GitHub and
+they trust GitHub way more.</p>
+<p id="another__id2">[9:55] Another benefit was that it’s very easy to add new features
+because the back end is already there. For example, if I want to
+add comments, I just need to utilize the API for comments. Even now
+that the Dabblet interface doesn’t support comments yet, people can
+just go to the gist and comment there. It gives them a bunch of
+features that I didn’t even have to implement. Like they want to
+use a Git repository unit, they can do it because every gist is
+basically a small Git repository.</p>
+<p id="some_of">[10:29] Some of you might think that this is leaching. But
+actually, that’s what APIs are for. I’m not using it in any way
+that’s against the terms or anything. It’s good for them. It’s good
+for me. Win win.</p>
+<p id="so_can_">[10:44] So can clients get too fat? Other cases where you should
+use your server. A good example of this — and yes, they can get
+too fat — is mobile. In mobile, the more JavaScript you have, the
+more you drain the battery. If your application has lots of mobile
+users, maybe you should consider doing more stuff on the server if
+you can afford it.</p>
+<p id="another_case_is">Another case is things that really need to be centralized. For
+example, when Twitter launched their new interface, every time you
+used a different client, you had to mark your direct messages as read again, because they, it seems that the
+read state is stored on the client side. That’s not really, that’s
+not good. It pisses off so many people.</p>
+<p id="the_ans">[11:34] The answer is no, you shouldn’t necessarily client side all
+the things. You should examine it on a case by case basis.</p>
+<p id="thats__id1">[11:43] That’s about it. Thank you.</p>
+<p id="applause_id1"><span class="emphasis"><em>[applause]</em></span></p>
+</div></section><section class="chapter" data-original-filename="Demystifying-Regular-Expressions.asciidoc" id="demistifying_regex"><div class="titlepage"><div><div><h1 class="title">Chapter 2. Demystifying Regular Expressions</h1></div></div></div>
+<div class="informalfigure" id="informalfigure_id2"><div class="mediaobject"><iframe width="100%" height="300" src="http://www.youtube.com/embed/EkluES9Rvak?wmode=opaque"></iframe></div></div>
+<div class="sidebar" id="demystifying_regular_expressions">
+<div class="titlepage"><div><div><div class="sidebar-title">Demystifying Regular Expressions</div></div></div></div>
+<p id="like_many_devel">Like many developers, you might be familiar with the power of regular expressions, but anything beyond the basics scares you. Fear no more, young padawan! In this talk, we’ll start with the basics and progressively enhance your knowledge until you’re coding regular expressions like a champ. Everything will be demonstrated live with visual examples that ensure maximum comprehension.</p>
+<p id="follow_along_wi">Follow along with Lea’s <a class="ulink" href="http://leaverou.github.io/regexplained/" target="_top">RegEx Playground</a>.</p>
+</div>
+<div class="sect1" data-original-filename="Demystifying-Regular-Expressions.asciidoc" id="_video_transcript_2">
+<div class="titlepage"><div><div><h2 class="title">Video Transcript</h2></div></div></div>
+<p id="hi_there">[0:04] Hi there, I’m Lea Verou. It’s great to be here today. You can see my Twitter username over there. If you have any questions and we don’t have time at the end, you can always ping me on
+Twitter and ask me.</p>
+<p id="regular__id1">[0:15] Regular expressions. Many people use many different names to
+refer to regular expressions, such as regular expression, regexp,
+regex. Some even use the term "monkey puke." Hopefully, by the end
+of this presentation, if you’re one of them, you’ll have started to
+change your mind a bit, so I’m going to ignore this for now.</p>
+<p id="the_firs">[0:36] The first three names can be described in a much more
+concise way. At least if we lived in a world where everybody was a
+developer, we could refer to all three of them just with this line,
+which is basically a regular expression itself, and that’s what
+regular expressions are. They’re a way to describe a set of
+strings.</p>
+<p id="why_is_t">[0:55] Why is that useful? We can use them to check if a string
+matches a certain format. We can use them in HTML5 for a form of
+validation with the pattern attribute. We can use them to extract
+certain parts out of strings or replace certain parts with
+something else.</p>
+<p id="we_can_u">[1:12] We can use them when we’re factoring it out at Text Editor
+or IDE, or even in command line tools or databases and many more
+tools. Luckily, the syntax used in most of these tools is pretty
+much the same. JavaScript has some limitations compared to other
+languages, but it’s pretty much consistent.</p>
+<p id="to_start">[1:34] To start with the syntax, the very basic rules is that every
+regular expression, literal, starts with a slash, ends with a
+slash. What’s between the slashes is the pattern we’re trying to
+match. After the slashes, there are the so-called flags, which in
+JavaScript are just a combination of "g", "i", and "m", in no
+particular order. While I’m explaining the syntax, you can go to
+this web application I made for this talk, to test it for yourself,
+if you want.</p>
+<p id="there_ar_id1">[2:05] There are going to be some small challenges scattered
+throughout the talk, to which you can participate through Twitter,
+and whoever wins gets an O’Reilly "Regular Expressions" book.</p>
+<p id="the_very">[2:18] The very basic regular expression is just a few letters or
+symbols, which just match the exact string. This, for example,
+matches "a" anywhere in the string. It doesn’t even need to start
+or end with "a", it just matches anywhere. Unless, of course, you
+restrict it, which we’ll see how you can do later.</p>
+<p id="by_defau">[2:42] By default, it’s case-insensitive, so this won’t match
+anything. But you can use the "i" flag to change this. That’s very
+useful when testing, for example, if an element is of a particular
+type, because the node name can have any kind of capitalization.</p>
+<p id="if_your">[2:59] If you’re not very familiar with regular expressions, you’d
+assume that this would match something like "1.5". Probably, you
+can guess that it would match it anywhere in the string. But if
+you’re not very familiar with them, you probably wouldn’t expect it
+to match this, or this, or even this.</p>
+<p id="the_dot_">[3:16] The dot matches pretty much any character, except line
+breaks. You can change this behavior, if you just escape it with a
+backslash. Now it only matches the dot. This is called a meta-
+character, which means it’s a character that doesn’t only match
+itself. It might not even match itself at all. It has a special
+meaning.</p>
+<p id="we_have_">[3:38] We have 12 total meta-characters, and if you want to use
+them literally, in most cases you need to escape them. Not in every
+case.</p>
+<p id="regular__id2">[3:45] Regular expression engines are quite smart. In some cases,
+they can figure it out on their own that you are just interested in
+matching these characters literally. In this case, we have a
+regular expression that matches four consecutive a’s, like this.</p>
+<p id="but_what">[4:01] But what if we wanted to match 12 of them or 100 of them?
+Would we have to keep typing, "aaaa" 100 times? We can use
+something called a quantifier to specify this in a much more
+concise way. This is exactly equivalent to the previous regular
+expression, but it’s much shorter, especially if we wanted to match
+more a’s.</p>
+<p id="you_migh">[4:24] You might think that this is very strict. What if I don’t
+want to match exactly 10 a’s? What if I want to match from 0 to 10,
+or from 10 to 100? If you include a comma after the number, it
+basically means at least that number. If you have four commas, it
+means at least four. As you’ve noticed, the regular expression
+engine matches as much as it can. That’s called greediness.</p>
+<p id="if_you_g">[4:49] If you give the regular expression engine a choice, it will
+match as many as it can. You can set an upper bound as well, like
+from four to five, which only matches up to five a’s.</p>
+<p id="there_ar_id2">[5:08] There are certain shortcuts as well. For example, if you
+want to match any number of a’s from zero to whatever, it’s quite
+interesting, in this case, to notice that you can actually match
+the empty string. This regular expression matches the empty string.
+We don’t have anything, but we want to match "a" from zero times to
+whatever. Since we don’t have any a’s, it matches the a’s zero
+times.</p>
+<p id="due_to_g">[5:34] Due to greediness, if we have any a’s, it will match all of
+them, as many as it can consume. We can use the shortcut to match
+exactly this, from zero times to whatever. To infinity.</p>
+<p id="if_we_wa_id1">[5:47] If we want the "a" to be present at least one time to avoid
+matching the empty string, which is usually what we want. In most
+cases, we don’t want to match the empty string, we can use a plus
+sign instead, which means from one time to infinity.</p>
+<p id="if_we_wa_id2">[6:03] If we want something that’s maybe present there but not
+always, but not necessarily, we can use the question mark. This
+matches from zero to one and due to greediness, it always matches,
+in this case, one. If we don’t have any a’s, it matches the empty
+string.</p>
+<p id="like_her">[6:25] Like here. It doesn’t find any a’s, so it matches the empty
+string. If you recall, in our original regular expression about how
+we call regular expressions, we did something like this, which
+means it matches both regex and regexp because the "p" is optional.</p>
+<p id="greedine">[6:48] Greediness can be really annoying in some cases. For
+example, assume you want to match HTML tags. You know that it’s
+pretty simple, HTML… Most commonly, you wouldn’t want to use
+regular expressions to match HTML, but in some cases, when you know
+what to expect, you can do that.</p>
+<p id="here_yo_id1">[7:07] Here, you want to match HTML strings to strip them out. For
+example, from the comment, if you don’t want to allow HTML. You
+think of writing a regular expression like this, angled bracket,
+something whatever number of times, and then a closing angled
+bracket.</p>
+<p id="it_doesn">[7:22] It doesn’t match what you expect. You just wanted to match
+this and the closing tag, but it doesn’t do that. It matches the
+entire thing. Why? Because it matches the first angled bracket
+here. Then it goes and matches as many things as it can. Here, it
+finds this angled bracket.</p>
+<p id="technica">[7:39] Technically, it’s correct. It’s not wrong, but it’s not what
+you wanted. You can change this behavior and reverse greediness by
+putting a question mark after the quantifier. Now, instead of
+matching as many as it can, it matches as little as it can, the
+fewer number of characters it can.</p>
+<p id="now_it_">[8:00] Now, it does exactly what you want. It matches both the
+start and the end string. You can even do things like this. If you
+want something from zero to one time, you can have two question
+marks, one after the other.</p>
+<p id="in_case_">[8:17] In case you want to, say, to use alternation between certain
+characters, you can use square brackets. This basically means any
+character that’s either A or B or C, so this matches any of them
+and doesn’t match D, for example. You can even use the plus sign to
+say any number of these characters.</p>
+<p id="if_you_w">[8:49] If you want to match multiple characters, like for example,
+assuming you want to match a letter, according to this, you could
+start doing this sort of thing and write the entire alphabet and
+the character class.</p>
+<p id="theres_">[9:02] There’s something better you can do. You can use ranges from
+A to Z. Now, it matches every letter, ever letter you can think of.
+It doesn’t match numbers or symbols, but it matches letters.</p>
+<p id="you_can_">[9:20] You can even concatenate multiple of these ranges to produce
+a union. If you want to match letters and numbers, you can do
+something like this. You can even add single characters after them.
+This matches both letters and numbers and the underscore, like
+this.</p>
+<p id="another__id3">[9:40] Another thing to note is that most metacharacters don’t need
+escaping in square brackets. There are very few that do the correct
+closing square bracket, because, otherwise, the regular special
+engine won’t know when to stop, when the character class ends, but
+most of them don’t really need escaping.</p>
+<p id="also_w">[10:01] Also, we get some shortcuts here for very commonly needed
+character classes. For example, \w means, basically, something
+similar to the character class we did before, letters, numbers, and
+the underscore. It’s basically equivalent to A to Z, both lower-
+case and upper-case, 0 to 9, and the underscore. I can type any
+letter, and it keeps matching it, numbers, underscores, or any
+combination of them. One bad thing is that it’s not Unicode-aware,
+so, if you want to match, for example, Greek letters, that won’t
+work.</p>
+<p id="theres_id1">[10:47] There’s also another character class that’s a bit more
+restrictive than this. It only matches digits. It’s basically
+equivalent to a character class from 0 to 9. This could match any
+integer. It won’t match decimals.</p>
+<p id="theres_id2">[11:06] There’s also a character class that matches whitespace, \s.
+Any kind of whitespace. Tabs, line breaks, spaces. It’s actually
+way more wide than what I’m showing there. That’s why I have, not
+the equals sign, but the about equals, because it’s not exactly
+equal to that character class.</p>
+<p id="its_un">[11:31] It’s Unicode-aware, so it supports all the weird whitespace
+characters that Unicode has. You can even combine those character
+classes to form something more complex. For example, if you want to
+match something that’s letters, digits, underscores, or hyphens,
+you can do this, which combines the word character class and a
+hyphen. Now it will even match it even if we have a hyphen there,
+which is useful for matching things like telephone numbers.</p>
+<p id="we_can_">[12:07] We can use this to count words in some text. These are two
+different ways, each with their own advantage. For example, the
+first one matches all the words and it counts how many words it
+matched. The second one splits the text where it has whitespace and
+counts how many words you have according to that.</p>
+<p id="the_sec">[12:36] The second method is much better, because even though it
+will match some things that might not be words, if you have a stray
+dollar sign, for example, how common is that? The first one has a
+much bigger bug. It won’t match any non-English word, because that
+only matches English letters, not even accented English letters,
+just plain, old ASCII English letters, and many text don’t only
+have English words.</p>
+<p id="this_is_id1">[13:07] This is one of the first of the challenges I mentioned at
+the beginning of the talk. If you haven’t noted the URL with the
+Web app, you can see it at the top of this slide. This is just a
+test challenge. It won’t matter in the competition at all. It’s
+just so that you can test the system, see how it works and
+everything. You have a minute for that.</p>
+<p id="the_twe">[13:33] The tweets you post are going to appear here, but don’t be
+disappointed if your tweet doesn’t. It doesn’t mean that it won’t
+be counted, because there’s a bit of a lag. It takes about 25
+seconds for something to appear there. Basically, this counts
+tweets with the regex plain hashtag. If you tweet directly from the
+Web app, that will be added automatically.</p>
+<p id="silence_id1"><span class="emphasis"><em>[silence]</em></span></p>
+<p id="ok_i_g">[14:31] OK. I guess it works. This is the first of the challenges.
+You should write a regular expression that matches a hex color.
+These are some examples of the hex colors you need to match. They
+might be upper-case, lower-case, 3-digit hex codes, or 6-digit hex
+codes.</p>
+<p id="silence_id2"><span class="emphasis"><em>[silence]</em></span></p>
+<p id="by_the_">[15:02] By the way, if you’re interested in who won the book, I’ll
+tweet about that after the talk. I can’t really decide on that
+right this moment.</p>
+<p id="silence_id3"><span class="emphasis"><em>[silence]</em></span></p>
+<p id="whoa_">[16:03] Whoa, 11 tweets. Some of them got quite close. One first
+thought might be something like this. The problem with this is not
+that it doesn’t match some of the hex codes. The problem is that it
+matches too many, and some of them are wrong. It will match hex
+codes with four characters or five characters, which are invalid.
+You need to only match hex codes with three or six characters.</p>
+<p id="thats__id2">[16:24] That’s not exactly correct. That’s more like it. It matches
+any letter from A to F or digit three times, and then this pattern
+is repeated once or twice. By combining these quantifiers, you can
+basically create some sort of quantifier that’s either three or six
+times. It’s impossible to accidentally match hex codes with four
+characters or five characters with this.</p>
+<p id="charact">[17:03] Character classes can also be negated. In this case this
+matches any letter from A to F, but this could also be written in
+an alternative way, a letter from G to Z, and negate this. That’s
+not exactly equivalent to the first one because that will also
+match symbols, for example, there’s nothing that says it should
+only match letters. This matches anything that’s not a letter
+between G and Z.</p>
+<p id="we_even">[17:37] We even have shortcuts for the negated character classes,
+or for the negated versions of the character classes we mentioned
+before. For example, the negated version of this could be written
+more simply as this. That matches anything that’s not a letter, or
+number, or underscore. See, for example, here it matches only the
+percentage sign, or now it matches both of these symbols. It also
+matches whitespace, pretty much anything that’s not a letter, or
+number, or underscore.</p>
+<p id="similar_id1">[18:11] Similarly, the negated version of the digit is the capital,
+\D that matches anything except digits, so it will match every
+character of the string except the digit, and the negated version
+of whitespace that will match anything that’s not whitespace. An
+interesting fact is that even the dot itself is a character class.
+It’s basically this negated character class.</p>
+<p id="what_do">[18:43] What does this mean? It means anything that’s not a line
+break character, that’s exactly what the dot is. See, this matches
+every character in the string. Same happens if we use the dot.</p>
+<p id="an_inte">[19:02] An interesting thing you can do with negated character
+classes is to provide an alternative of patterns like the ones we
+discussed before. For example stripping HTML, you could either use
+lazy quantifiers, by using the question mark, or you can use a
+negated character class, which basically means anything that’s not
+a closing angle bracket, as many times as you want.</p>
+<p id="these_a">[19:27] These are basically equivalent, and the second one is
+slightly faster. I feel I need to remind you again that it’s an
+ANSI pattern to parse arbitrary HTML with regular expressions. I
+need to say this because otherwise I’ll get people after the talk
+telling me, "You shouldn’t do that." Well, if you know what to
+expect you can do it, but in arbitrary HTML you shouldn’t.</p>
+<p id="you_can">[19:53] You can use parentheses to group many alternatives, and the
+pipe character as basically some sort of "or." In this case it
+matches either AB or BA. It matches both of them, and here it
+matches either of them. An interesting fact about parenthesis is
+that they don’t just do grouping, they also capture. In this case
+the entire regular expression matches the CBA, but what’s matched
+by the parentheses is actually stored by the regular expression
+engine. You can retrieve it if you use the proper methods.</p>
+<p id="here_yo_id2">[20:36] Here you go to the entire match CBA or CAB, but also the
+sub match of AB is stored. This is very useful in some cases
+because otherwise you’d have to use multiple regular expressions on
+the same thing, but in many cases you don’t really need it, and it
+consumes extra memory. It’s slower, and in many cases you don’t
+need it, like for example in this case. If you want to just match
+both JavaScript and ECMAScript, and you don’t really care about
+matching the substring that’s either Java or ECMA, you don’t really
+need capturing here, do you?</p>
+<p id="its_po">[21:14] It’s pointless, it just consumes memory for no reason. What
+can you do? You can opt out of capturing by using a question mark
+and the colon, and now you just have the entire match. This group
+is ignored when capturing.</p>
+<p id="this_is_id2">[21:32] This is the second of these challenges, it’s about matching
+numbers, negative integers, positive integers, they can have a sign
+in front of them, they may not have a sign in front of them, they
+might be decimals, they might not have a part before the decimal
+point, they might not have a part after the decimal point. That’s
+why you have two minutes.</p>
+<p id="silence_id4"><span class="emphasis"><em>[silence]</em></span></p>
+<p id="ok_tim_id1">[23:53] OK, time’s up. That got quite a few tweets, and some of
+them are very, very close.</p>
+<p id="silence_id5"><span class="emphasis"><em>[silence]</em></span></p>
+<p id="one_fir">[24:12] One first thought might be something like this. It matches
+the optional sign, and it matches any number of digits, or decimal
+points… By the way, an interesting thing is that here the dot
+doesn’t need to be escaped, even though it’s a meta-character,
+because it’s inside a character class, and it matches any number of
+them in any order. The problem is it’s too lax.</p>
+<p id="it_does">[24:39] It does match the numbers we’re interested in, but it also
+has many false positives. It allows any number of decimal points,
+even consecutive dots with no numbers at all. This is something
+that’s much closer, and it’s what I used to do. I think it’s quite
+good, the only problem is it has one significant false negative. It
+doesn’t allow numbers that just have a part before the decimal
+point, and the decimal point, and nothing after that.</p>
+<p id="it_depe">[25:19] It depends on whether you want to allow these numbers. Many
+people are OK with not allowing them. Another alternative is this,
+which is basically the same as the previous one, except there’s a
+star here instead of a plus sign. That means it matches any number
+of digits after the decimal point, even zero. That solves the
+problem of the previous one, but it allows many false positives,
+like just a dot, or just a sign and a dot, and things like that.</p>
+<p id="somethi">[25:52] Something that’s accurate is the last one, it matches
+exactly the kinds of numbers we want and it doesn’t have any false
+positives that I can think of, at least. But is it really worth it?
+Sometimes it’s better to allow some false positives, or some false
+negatives, depending on your application, rather than writing a
+huge regular expression that matches exactly what you want,
+especially on the client side, like for data validation, for
+example, since you’re going to verify them on the server side
+anyway.</p>
+<p id="if_we_w">[26:31] If we want to match something that’s explicitly in the
+beginning of the string, for example an "a," but only if it’s in
+the beginning of the string, we can use the caret character. Here
+the "a" doesn’t match because it’s inside the string, it needs to
+be in the beginning of the string to match. There’s also something
+similar we can do about the end of the string.</p>
+<p id="here_th">[26:50] Here the "a" will only match if it’s at the end of the
+string, and in the beginning because we also have the caret here.
+If we have both of them the string will only match a literal "a,"
+so it’s kind of pointless to use a regular expression in this case.
+Just compare the two strings. You can also change the way these
+anchors behave if you use the M flag.</p>
+<p id="here_s">[27:20] Here, since we don’t have the M flag, this needs to be both
+at the beginning and the end of the string. If we have a line
+break, and we use a multi-line flag, the correct character matches
+at the beginning of every line, and the dollar sign matches at the
+end of every line. We can have anything here, and as long as "a" is
+on its own line, it will match. These anchors are very useful in
+the poly fill for string prototype trim.</p>
+<p id="thats__id3">[28:00] That’s the shortest poly fill you can write about that
+function. Basically it replaces whitespace that’s either in the
+beginning, or at the end of the string. It’s more performant to
+split this regular expression into two, and do two replaces. One
+for the white space in the beginning, and one for the white space
+at the end, but I think that’s a bit of premature optimization in
+most cases, and sometimes being concise is better than saving one
+millisecond.</p>
+<p id="this_is_id3">[28:34] This is called an assertion, because it matches… It never
+consumes any characters. For example, if you have something like
+this, it matches at this point between the dollar sign and the
+five. The reason is that the word boundaries match anywhere you
+have… At any point between a word character and a non-word
+character. Remember when we explained what these predefined
+character classes do.</p>
+<p id="one_mat">[29:14] One matches letters, and digits, and the underscore
+character, and the other one is the exact opposite. The word
+boundary matches at any point where you have one character that’s
+not a word character, and it’s next to another that is. For
+example, here it matches two times, because the order isn’t
+significant. It will also match on the beginning of the string.</p>
+<p id="if_you__id1">[29:43] If you have a word character that’s at the beginning of the
+string, or at the end of the string, the beginning of the string
+and the end of the string are basically treated like non-word
+characters in this case.</p>
+<p id="thats__id4">[29:57] That’s very useful. If you remember, before we got class
+list in HTML5, we needed to write our own functions for adding
+classes or replacing classes or removing classes. Usually, those
+functions created the regular expression on the fly. It had the
+class name between word characters, so it matched when it wasn’t
+the entire string or when it was part of it or if it was in the
+middle.</p>
+<p id="of_cour_id1">[30:30] Of course, it’s consistent with everything we saw so far.
+There’s also a negative word boundary, a known word boundary, which
+is basically the opposite. A known-word boundary matches between
+two word characters or between two known word characters like this,
+for example.</p>
+<p id="asserti">[30:59] Assertions, like we showed, are always zero width. In most
+cases, if you just care about testing whether a string fits a
+particular format, you don’t need to use assertions. Assertions are
+very useful when you care about what matched, not only if it
+matched.</p>
+<p id="there_a">[31:19] There are also much more complex assertions, which are
+called "look-aheads." In this case, you want to match a B that’s
+after an A. This does exactly what you want, but what if you want
+to only match an A if it precedes a B? But you don’t want to
+actually match the B. You can use a look-ahead for that. That’s
+exactly what this says. I want to match the A when a B follows. But
+the look-ahead itself doesn’t take part in the matching. What I
+find quite interesting is that you can even include capturing
+groups inside the look-ahead.</p>
+<p id="so_in_t">[32:09] So in this case, you will match a zero string, because this
+entire regular expression matches the zero string, but you will
+also match a B, because that’s outside the full match, because it’s
+included in capturing parentheses. This should actually be under
+the B. It appears I found a bug in this little app. But it should
+actually match the B.</p>
+<p id="theres_id3">[32:44] There’s also a negative version of a look-ahead. This
+basically means match the A when it’s not followed by B. So
+anything could be after it and it will still match, except B. This
+is incredibly useful, and in most languages there’s also the
+opposite concept of a look-behind that matches things only if
+they’re after other things. That’s called look-behind.
+Unfortunately ECMA Script doesn’t have look-behind. There’s some
+discussion about adding it on ECMA Script next. I really hope it
+makes it. But right now, there’s no browser that supports look-
+behind in ECMA Script, sadly.</p>
+<p id="this_is_id4">[33:32] This is the third of these challenges. It’s about matching
+dates. It’s actually almost impossible with a regular expression to
+match any valid date. There’s always going to be some false
+positives. Basically the one who wins this challenge is whoever
+gets closest.</p>
+<p id="silence_id6"><span class="emphasis"><em>[silence]</em></span></p>
+<p id="ok_tim_id2">[35:39] OK, time’s up.</p>
+<p id="good_t">[35:46] Good, this one seems to be the closest, by Croft Dracula,
+from a first glance, at least. It’s really hard to tell so quickly.</p>
+<p id="one_ver">[36:00] One very loose regular expression for it could be this.
+Like I said, that’s quite loose. It will match months like 99 or
+days like 99, for example, which don’t really exist.</p>
+<p id="the_clo">[36:14] The closest one would be something like this, which at
+least matches the correct months and the correct days. It also has
+some flaws. It will match dates like thirty-first of February, for
+example, which never exists, or it will match dates like twenty-
+ninth of February, which only exists for certain years.</p>
+<p id="if_we_r">[36:40] If we really try to go that deeply with regular
+expressions, the result will be… It’s either impossible to do
+that or you’ll end up with a huge regular expression that nobody
+will be able to read. It’s basically the same thing as I was saying
+before. Sometimes you need to know when to stop.</p>
+<p id="a_very_">[37:03] A very interesting thing you can do with look-ahead is to
+mimic certain patterns, like intersections, like when you want a
+certain string to match multiple regular expressions. Usually, you
+do that at the code level.</p>
+<p id="if_our_">[37:20] If our string matches this regular expression and it
+matches this regular expression and it matches this regular
+expression, like in the JavaScript. You can actually do that just
+on the regular expression level by using once regular expression
+because it takes advantage of the fact that look-aheads don’t
+change the matching position, so if you have something after the
+look-ahead, it matches at the same position as the look-ahead
+started from. You can have any number of look-aheads after the
+first one, and they will match on the same string because it
+doesn’t advance the matching position.</p>
+<p id="basical">[37:54] Basically, in this case, for example, you want to have a
+six-letter password or more with at least one number, one letter,
+and one symbol. Doing this without look-aheads would be really
+hard, so most people would result in doing it with multiple regular
+expressions.</p>
+<p id="if_you__id2">[38:09] If you use look-aheads, you can have this look-ahead that
+checks if there’s at least one digit. Then this starts matching at
+the same position since the first one doesn’t consume anything and
+it checks that there’s at least one letter. This one checks that
+there’s at least one symbol.</p>
+<p id="finally">[38:29] Finally, if you want to actually match the string, you have
+this that matches anything that has at least six characters.
+Basically, you have one regular expression, one line that matches
+all these conditions.</p>
+<p id="similar_id2">[38:43] Similarly, you can do subtraction, like any number that’s
+not divisible by 50, something that matches this pattern but
+doesn’t match this pattern. That’s basically a very similar thing.
+You’re just using negative look-ahead instead of positive look-
+ahead.</p>
+<p id="of_cour_id2">[38:58] Of course, you can use a sub case of the previous, of
+subtraction, which is negation. Anything that doesn’t match one
+pattern, which is basically a negative look-ahead, and then you
+have anything. Like a dot that can match any number of characters,
+this one matches pretty much anything. If you also want a match
+line breaks, it’s quite easy to wrap it in a character class. That
+will match any kind of string that doesn’t contain foo, again, that
+would be really hard to do with plain regular expressions, without
+look-ahead.</p>
+<p id="the_las">[39:38] The last part of the syntax, if you want to write something
+like a code highlighter, it’ll probably encounter something like
+this. This is supposed to match strings, for example, this. The
+problem with the regular expression I have here is that will also
+match strings like this, where the quote marks are mismatched, and
+that’s really bad because you might actually have double quote
+marks inside a string with single quote marks.</p>
+<p id="for_exa">[40:11] For example, "He said, <span class="emphasis"><em>boo.</em></span>" And it only matches part of
+the string, that’s wrong. It could seriously break an application.
+You can use back references, which is basically a slash and a
+number. The number refers to the index of the capturing group you
+have. Remember parentheses create capturing groups, the regex
+engine remembers what parentheses matched, and you can actually use
+what it remembers in the same regular expression by using this.</p>
+<p id="this_ba">[40:50] This basically means, "I want to match here whatever this
+matched. If it matched a single quote, this is equivalent to a
+single quote, if it matched a double quote, that’s equivalent to a
+double quote." You can match strings properly. Of course this has
+some problems as well, it doesn’t account for escaped quote marks.
+Like this is treated like a quote mark that delimits the string,
+where it actually should be ignored, it should be treated as a
+regular character.</p>
+<p id="which_b">[41:25] Which brings us to the next to the last challenge, which is
+to improve that regular expression, I remind you the regular
+expression was this, so that it actually accounts for this case,
+escaped quote marks, and it also accounts for double backslashes,
+escaped backslashes. I think the answer to that is pretty much the
+most elegant regular expression I’ve seen, as you’ll see after
+this.</p>
+<p id="silence_id7"><span class="emphasis"><em>[silence]</em></span></p>
+<p id="ok_tim_id3">[43:52] OK, time’s up. The answer is basically this, it’s very
+similar to the previous one. It kind of takes advantage of how
+regex engines work, so if they can match a backslash with
+something, they will match it. But they also have to match the
+quote mark at the end, so that basically takes into account all the
+cases that are of interest to us, so it matches exactly what we
+want. I think it’s really elegant for what it does.</p>
+<p id="i_didn">[44:27] I didn’t come up with it, I came up with something very
+close, it’s Steven Levithan that came up with it. To wrap up, some
+best practices. Like I said many times throughout this talk,
+sometimes practicality wins over precision. Sometimes you need to
+accept the fact that you will allow some false positives, or some
+false negatives, otherwise it will drive you crazy. This regular
+expression at the end is what you need to use to match email
+addresses if you want to be really, really precise.</p>
+<p id="is_that">[45:01] Is that practical? I don’t think so, that’s huge. I don’t
+think any sane developer would actually use this. When you’re
+matching email addresses, anything shorter will allow some false
+positives, or some false negatives, it depends on your application
+which of the two you will allow. For example, if you’re doing form
+validation, it’s usually better to allow false positives than false
+negatives, because if somebody has an email address you didn’t
+foresee when you were crafting your regular expression, they’ll go
+through a very distressing experience.</p>
+<p id="their_v">[45:36] Their very valid email address won’t be allowed, and it’s
+pointless anyway, because they may as well enter an email address
+that doesn’t exist, but has a very valid format. It’s better to
+allow some degrees of freedom there. Also, keep it simple. If you
+can do it without using regular expressions in an amount of code
+that’s not insane, don’t use regular expressions. Obviously, if the
+alternative is using 10 lines of code to do it with string
+functions, regular expressions are better.</p>
+<p id="but_if_">[46:09] But if you can do it with just an index of, for example,
+just use the string function, it’s faster. Speaking about
+performance some tips are, avoid greedy quantifiers, if it fits
+your use case, better convert them to lazy ones.</p>
+<p id="dont_f">[46:27] Don’t forget anchors, obviously if it fits your use case,
+try to use anchors, because that means the regular expression can
+realize it failed, the match failed much more early, so it doesn’t
+need to try many different combinations, which basically… a
+special case of the third point.</p>
+<p id="be_as_s">[46:49] Be as specific as possible. For example, don’t use the dot
+when you really need to match a letter for example, just use a
+character class, which is much more specific.</p>
+<p id="prefer_">[47:03] Prefer known capturing groups. If you don’t need to
+capture, just add this question mark and the colon. It’s faster.</p>
+<p id="minimiz">[47:09] Minimize backtracking. Backtracking is what the regular
+expression engine will do when it starts matching and goes on and
+on and then it realizes, "Oops, I went too far," so it backtracks.
+It backtracks one position, one character, and then another
+character, until it finds a match.</p>
+<p id="if_you__id3">[47:29] If you can avoid this behavior, try to avoid it. It can be
+very costly. In some cases, it can even completely make your
+application hang. There are some cases about that. Google the term
+"distractive backtracking," I think. There are some regular
+expressions that are so bad in that regard that can completely hang
+your application with very short strings.</p>
+<p id="thank_y">[48:01] Thank you. Here are my contact details. I hope you learned
+something.</p>
+<p id="applause_id2"><span class="emphasis"><em>[applause]</em></span></p>
+</div></section><section class="chapter" data-original-filename="Interview.asciidoc" id="interview"><div class="titlepage"><div><div><h1 class="title">Chapter 3. Interview with Lea Verou, Fluent 2012</h1></div></div></div>
+<div class="informalfigure" id="informalfigure_id3"><div class="mediaobject"><iframe width="100%" height="300" src="http://www.youtube.com/embed/6E_VXIgPanE?wmode=opaque"></iframe></div></div>
+<div class="sidebar" id="lea_verou_interviewed_at_fluent_">
+<div class="titlepage"><div><div><div class="sidebar-title">Lea Verou Interviewed at Fluent 2012</div></div></div></div>
+<p id="lea_talks_to_ma">Lea talks to Mac Slocum about the importance of having regex in your programming tool belt.</p>
+</div>
+<div class="sect1" data-original-filename="Interview.asciidoc" id="_video_transcript_3">
+<div class="titlepage"><div><div><h2 class="title">Video Transcript</h2></div></div></div>
+<p id="mac_slocum_"><span class="strong"><strong>Mac Slocum:</strong></span> [0:01] Why are regular expressions important?</p>
+<p id="lea_verou_"><span class="strong"><strong>Lea Verou:</strong></span> [0:03] Regular expressions can greatly simplify lots of common code
+sequences. In many cases, you can condense 100 lines of code into
+single-line regular expressions.</p>
+<p id="regular__id3">[0:14] Regular expressions is just a language that describes a set
+of strings. Every time you need to test if a string matches a
+certain pattern, for example, is something an email address? Or if
+you want to extract part of a string, like extracting, for example,
+all the words in a text. Or counting them, or validating data.</p>
+<p id="regular__id4">[0:35] Regular expressions can greatly help in all of these cases,
+and they’re usually much more performant than having 100 lines of
+string manipulation functions.</p>
+<p id="slocum___id1"><span class="strong"><strong>Slocum:</strong></span> [0:43] Is it one of those skills that falls through the cracks? One
+of those things that it’s worth doubling back to make sure that
+you’ve got that in your tool set?</p>
+<p id="verou__i_id1"><span class="strong"><strong>Verou:</strong></span> [0:51] I think many developers don’t focus enough on regular
+expressions, because they’re considered one of the least exciting
+aspects of programming. They tend to get excited about new APIs,
+cool stuff, new frameworks, and libraries. That’s something that’s
+doesn’t have lots of…It’s not considered cool.</p>
+<p id="slocum___id2"><span class="strong"><strong>Slocum:</strong></span> [1:12] Switching gears a little bit, moving over to CSS a bit, do
+you think we’ll get to a point where we don’t have proprietary CSS
+elements anymore, or is that just wishful thinking?</p>
+<p id="verou__t_id1"><span class="strong"><strong>Verou:</strong></span> [1:24] That depends on how we treat the ones we have today. If we
+keep developing for proprietary features of certain browsers, the
+same way people develop for WebKit-only stuff today, then yes,
+companies will still do it, because it helps them advance in the
+browser market.</p>
+<p id="that_bas">[1:41] That basically hurts web developers. Remember what happened
+when we got a very cool browser, with many cool, shiny, proprietary
+features? Web developers got really excited about that browser and
+its proprietary features, they started using them, and then we got
+locked in that browser, and we got a decade of IE6. IE6 was a great
+browser when it was released.</p>
+<p id="slocum___id3"><span class="strong"><strong>Slocum:</strong></span> [2:05] 10 years later, not so much. Last question for you. What is
+your process for experimenting with a new feature? What’s the
+criteria that it has to meet, for you?</p>
+<p id="verou__i_id2"><span class="strong"><strong>Verou:</strong></span> [2:16] I guess the criteria is that I usually want the feature to
+have at least one implementation. It’s really hard to experiment
+with something that’s just a spec, and doesn’t have any
+implementations. Quite often, there are specs that never get
+implemented. There’s no interest from browsers, so they never
+implement them, even though they exist for years.
+For example, there used to be a spec that defined how we can have
+multiple pseudo-elements. Multiple :before pseudo-elements
+or :after pseudo-elements, or multiple ::outside pseudo-elements.
+It was really exciting. Browsers didn’t care, they didn’t implement
+it. We had to actually drop the features in that spec, because when
+there is no interest the specs changes.</p>
+<p id="slocum___id4"><span class="strong"><strong>Slocum:</strong></span> [3:03] Thanks so much for being with us. Appreciate you taking the
+time.</p>
+<p id="verou__t_id2"><span class="strong"><strong>Verou:</strong></span> [3:06] Thank you.</p>
+</div></section>
